@@ -1,37 +1,63 @@
-// import { Outlet } from "react-router-dom";
-// import  Sidebar  from "../components/Sidebar";
-// import  Header  from "../components/Header";
-//
-// export default function MainLayout() {
-//   return (
-//     <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr] ">
-//       <Sidebar />
-//       <div className="flex flex-col">
-//         <Header />
-//         <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
-//           <Outlet />
-//         </main>
-//       </div>
-//     </div>
-//   );
-// }
-
-
-
-
 import { Outlet } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
+import { Button } from "@/components/ui/button";
+import { ArrowUpFromDot } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
 
 export default function MainLayout() {
+  const [showButton, setShowButton] = useState(false);
+  const mainRef = useRef(null);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (mainRef.current) {
+        const scrollTop = mainRef.current.scrollTop;
+
+
+        if (scrollTop > 1) {
+          setShowButton(true);
+        } else {
+          setShowButton(false);
+        }
+      }
+    };
+
+    const mainElement = mainRef.current;
+    if (mainElement) {
+      mainElement.addEventListener('scroll', handleScroll);
+    }
+
+
+    return () => {
+      if (mainElement) {
+        mainElement.removeEventListener('scroll', handleScroll);
+      }
+    };
+  }, []);
+
+  const handleClick = () => {
+    if (mainRef.current) {
+      mainRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
   return (
-    <div className=" flex h-[100vh]   ">
-      <Sidebar/>
+    <div className="flex h-[100vh]">
+      <Sidebar />
       <div className="flex flex-1 flex-col">
         <Header />
-        <main className="flex-1 overflow-x-auto overflow-y-auto ">
+        <main ref={mainRef} className="flex-1 overflow-x-auto overflow-y-auto">
           <Outlet />
         </main>
+        {showButton && (
+          <Button
+            className="fixed bottom-4 right-4 z-50 rounded-full p-3  text-white"
+            onClick={handleClick}
+          >
+            <ArrowUpFromDot />
+          </Button>
+        )}
       </div>
     </div>
   );

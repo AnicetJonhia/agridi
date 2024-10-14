@@ -13,6 +13,8 @@ import Needs from "./pages/Needs.tsx";
 import Orders from "./pages/Orders.tsx";
 
 
+import ProductDetail from './pages/products/ProductDetail.tsx';
+
 
 
 function App() {
@@ -24,14 +26,15 @@ function App() {
                     <Route element={<MainLayout />}>
                         <Route path="/dashboard" element={<Dashboard />} />
                         <Route path="/blogs" element={<Blogs />} />
-                        <Route path="/products" element={<Products />} />
+                        <Route path="/products">
+                            <Route index element={<Products />} />
+                            <Route path="/products/product-detail" element={<ProductDetail />} />
+                          </Route>
                         <Route path="/analytics" element={<Analytics />} />
                           <Route path="/needs" element={<Needs/>} />
                           <Route path="/orders" element={<Orders />} />
                           <Route path="/seasons" element={<Seasons />} />
                           <Route path="/chats" element={<Chats />} />
-
-
 
                     </Route>
                 </Routes>
