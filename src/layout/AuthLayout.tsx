@@ -1,5 +1,5 @@
 import { Outlet } from "react-router-dom";
-import Sidebar from "../components/Sidebar";
+
 import Header from "../components/Header";
 import { Button } from "@/components/ui/button";
 import { ArrowUpFromDot } from 'lucide-react';
@@ -43,9 +43,9 @@ export default function MainLayout() {
   };
 
   return (
-    <div className="flex h-[100vh]">
-      <Sidebar />
-      <div className="flex flex-1 flex-col">
+
+
+      <div className="  h-[100vh] flex flex-1 flex-col">
         <Header />
         <main ref={mainRef} className="flex-1 overflow-x-auto overflow-y-auto">
           <Outlet />
@@ -59,6 +59,6 @@ export default function MainLayout() {
           </Button>
         )}
       </div>
-    </div>
+
   );
 }
