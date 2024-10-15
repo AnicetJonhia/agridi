@@ -1,11 +1,11 @@
 import { Outlet } from "react-router-dom";
 
-import Header from "../components/Header";
+import AuthHeader from "../components/AuthHeader";
 import { Button } from "@/components/ui/button";
 import { ArrowUpFromDot } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 
-export default function MainLayout() {
+export default function AuthLayout() {
   const [showButton, setShowButton] = useState(false);
   const mainRef = useRef(null);
 
@@ -46,8 +46,8 @@ export default function MainLayout() {
 
 
       <div className="  h-[100vh] flex flex-1 flex-col">
-        <Header />
-        <main ref={mainRef} className="flex-1 overflow-x-auto overflow-y-auto">
+        <AuthHeader />
+        <main ref={mainRef} className="flex-1 overflow-x-auto overflow-y-auto mt-16">
           <Outlet />
         </main>
         {showButton && (

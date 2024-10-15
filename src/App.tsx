@@ -15,6 +15,10 @@ import Orders from "./pages/Orders.tsx";
 
 import ProductDetail from './pages/products/ProductDetail.tsx';
 
+import AuthLayout from "@/layout/AuthLayout.tsx";
+import Home from '@/pages/auth/Home.tsx';
+import Login from "@/pages/auth/Login.tsx";
+import Register  from "@/pages/auth/Register.tsx";
 
 
 function App() {
@@ -22,7 +26,11 @@ function App() {
         <AuthProvider>
             <BrowserRouter>
                 <Routes>
-
+                    <Route element={<AuthLayout/>}>
+                        <Route path={"/"} element={<Home/>} />
+                        <Route path={"/login"} element={<Login/>} />
+                         <Route path={"/register"} element={<Register/>} />
+                    </Route>
                     <Route element={<MainLayout />}>
                         <Route path="/dashboard" element={<Dashboard />} />
                         <Route path="/blogs" element={<Blogs />} />
