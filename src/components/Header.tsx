@@ -30,7 +30,7 @@ export default function Header() {
         </SheetTrigger>
         <SheetContent side="left" className="flex flex-col">
           <nav className="grid gap-2 text-lg font-medium">
-            <Link to={"/"} className="flex items-center gap-2 text-lg font-semibold">
+            <Link to={"/dashboard"} className="flex items-center gap-2 text-lg font-semibold">
               <img alt={""} src={logo} className="h-6 w-6" />
               <span>AgriD</span>
             </Link>
@@ -46,6 +46,10 @@ export default function Header() {
           </nav>
         </SheetContent>
       </Sheet>
+      <Link to={"/dashboard"} className=" items-center gap-2 md:hidden">
+        <img alt={""} src={logo} className="h-6 w-6" />
+
+      </Link>
 
       <div className="w-full flex-1">
         <form>
