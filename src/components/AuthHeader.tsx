@@ -1,5 +1,7 @@
 import { Menu, LogIn, UserPlus } from "lucide-react"; // Import des icônes
 import { Button } from "@/components/ui/button";
+
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -66,8 +68,8 @@ export default function AuthHeader() {
             </Button>
           </DropdownMenuTrigger>
 
-          <DropdownMenuContent align="end" className="animate-slide-down "> {/* Padding autour du contenu */}
-            <DropdownMenuItem className="ml-2"> {/* Plus grand margin-top */}
+          <DropdownMenuContent align="end" className="animate-slide-down ">
+            <DropdownMenuItem className="ml-2">
               <Link
             to={"/"}
             className=" block text-foreground hover:text-primary transition-colors duration-200  items-center gap-2"
@@ -78,13 +80,13 @@ export default function AuthHeader() {
             <DropdownMenuSeparator/>
 
             <DropdownMenuItem asChild>
-              <Button variant="outline" className="w-full mt-2 p-3"> {/* Plus d'espacement interne et externe */}
-                <NavLink to="/login" icon={LogIn}>Login</NavLink>
+              <Button variant="outline" className="w-full mt-2 p-3">
+                <NavLink  to="/login" icon={LogIn}>Login</NavLink>
               </Button>
             </DropdownMenuItem>
 
             <DropdownMenuItem asChild>
-              <Button className="w-full mt-2 p-3"> {/* Égalité de padding et largeur */}
+              <Button className="w-full mt-2 p-3">
                 <NavLink to="/register" icon={UserPlus}>Register</NavLink>
               </Button>
             </DropdownMenuItem>

@@ -40,7 +40,7 @@ export const register = async (userData: Record<string, unknown>): Promise<Token
     }
 };
 
-// Connexion de l'utilisateur
+
 export const login = async (credentials: Record<string, unknown>): Promise<TokenResponse> => {
     try {
         const response = await axios.post<TokenResponse>(`${API_URL}/auth/users/login/`, credentials);
