@@ -2,17 +2,17 @@ import axios from 'axios';
 
 const API_URL = 'http://localhost:8000/api';
 
-// Typage des données d'enregistrement et des credentials
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+
 interface UserData {
     username: string;
     password: string;
     email?: string;
+    role: string;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+
 interface Credentials {
-    username: string;
+    username_or_email: string;
     password: string;
 }
 
@@ -29,7 +29,6 @@ interface Product {
     description: string;
 }
 
-// Enregistrement d'un nouvel utilisateur
 export const register = async (userData: Record<string, unknown>): Promise<TokenResponse> => {
     try {
         const response = await axios.post<TokenResponse>(`${API_URL}/auth/users/register/`, userData);
