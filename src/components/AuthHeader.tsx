@@ -12,6 +12,7 @@ import {
 import logo from "../assets/images/logo.png";
 import { ToggleDarkMode } from "./ToggleDarkMode";
 import { Link } from "react-router-dom";
+import LanguageSwitcher  from "@/components/LanguageSwitcher.tsx";
 
 // @ts-ignore
 const NavLink = ({ to, children, icon: Icon }) => (
@@ -34,7 +35,7 @@ export default function AuthHeader() {
         </Link>
       </nav>
 
-      {/* Desktop Nav */}
+
       <nav className="hidden md:flex flex-row gap-6 text-lg">
         <Link
             to={"/"}
@@ -52,6 +53,7 @@ export default function AuthHeader() {
         </Button>
       </nav>
 
+        <LanguageSwitcher />
       <ToggleDarkMode />
 
 

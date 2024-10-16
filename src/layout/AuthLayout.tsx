@@ -1,6 +1,6 @@
 import { Outlet } from "react-router-dom";
 
-import AuthHeader from "../components/AuthHeader";
+import AuthHeader from "@/components/AuthHeader";
 import { Button } from "@/components/ui/button";
 import { ArrowUpFromDot } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
@@ -59,6 +59,5 @@ export default function AuthLayout() {
           </Button>
         )}
       </div>
-
   );
 }

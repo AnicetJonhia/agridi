@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Search, Menu, CircleUser } from "lucide-react";
+import {Search, Menu, CircleUser, LogOut} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuLabel, DropdownMenuItem, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
@@ -10,6 +10,8 @@ import { LayoutDashboard, Edit3, ShoppingCart, Package, Blinds, CalendarArrowUp,
 
 import HeaderNavItem from "./header/HeaderNavItem.tsx";
 import { Link } from "react-router-dom";
+import LanguageSwitcher  from "@/components/LanguageSwitcher.tsx";
+
 
 export default function Header() {
   const [isSheetOpen, setIsSheetOpen] = useState(false); // État pour gérer l'ouverture du Sheet
@@ -60,6 +62,8 @@ export default function Header() {
         </form>
       </div>
 
+
+      <LanguageSwitcher/>
       <ToggleDarkMode />
 
       <DropdownMenu>
@@ -75,7 +79,10 @@ export default function Header() {
           <DropdownMenuItem>Settings</DropdownMenuItem>
           <DropdownMenuItem>Support</DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem>Logout</DropdownMenuItem>
+          <DropdownMenuItem>
+            <LogOut className="mr-2 h-4 w-4" />
+            <span>Logout</span>
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </header>

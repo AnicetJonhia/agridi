@@ -1,6 +1,17 @@
-export default  function Home() {
+import React from 'react';
+import Translate from '@/components/Translate';
 
-    return(
-        <h1>Home page</h1>
-    )
-}
+const Home: React.FC = () => {
+  return (
+    <div>
+      <h2>
+        <Translate str="welcome" />
+      </h2>
+      <p>
+        <Translate str="description" />
+      </p>
+    </div>
+  );
+};
+
+export default Home;
