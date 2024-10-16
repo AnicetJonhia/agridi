@@ -5,10 +5,10 @@ const Home: React.FC = () => {
   return (
     <div>
       <h2>
-        <Translate str="welcome" />
+        <Translate str="welcome"  />
       </h2>
       <p>
-        <Translate str="description" />
+        <Translate str="description"  />
       </p>
     </div>
   );
