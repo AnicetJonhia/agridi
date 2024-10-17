@@ -11,7 +11,7 @@ import { LayoutDashboard, Edit3, ShoppingCart, Package, Blinds, CalendarArrowUp,
 import HeaderNavItem from "./header/HeaderNavItem.tsx";
 import { Link } from "react-router-dom";
 import LanguageSwitcher  from "@/components/LanguageSwitcher.tsx";
-
+import Logout from "@/components/Logout.tsx";
 
 export default function Header() {
   const [isSheetOpen, setIsSheetOpen] = useState(false); // État pour gérer l'ouverture du Sheet
@@ -79,9 +79,8 @@ export default function Header() {
           <DropdownMenuItem>Settings</DropdownMenuItem>
           <DropdownMenuItem>Support</DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem>
-            <LogOut className="mr-2 h-4 w-4" />
-            <span>Logout</span>
+          <DropdownMenuItem asChild>
+                <Logout/>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
