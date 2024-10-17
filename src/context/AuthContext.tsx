@@ -63,7 +63,7 @@ interface AuthProviderProps {
 const AuthProvider = ({ children }: AuthProviderProps) => {
     const [state, dispatch] = useReducer(authReducer, initialState);
 
-    const loginUser = async (credentials: Record<string, unknown>): Promise<{ token: string; user: Record<string, unknown> } | null> => {
+    const loginUser = async (credentials: Record<string, unknown>): Promise<{ token?: string; user?: Record<string, unknown>; error?: string } | null> => {
         try {
             const data = await login(credentials);
             if (data.token) {
@@ -73,13 +73,15 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
                     payload: data
                 });
                 return { token: data.token, user: { id: data.user_id, role: data.role } };
+            } else {
+                return { error: 'Invalid credentials' }; // Exemple d'erreur
             }
-        } catch (error:any) {
+        } catch (error: any) {
             console.error('Login failed:', error);
-            return { error: error.response?.data?.error };
+            return { error: error.response?.data?.error || 'Unknown error' };
         }
-        return null;
     };
+
 
 
     // Register function

@@ -48,7 +48,7 @@ export default function Register() {
 
         if (result?.error) {
 
-            let errorMessage = 'Erreur inconnue';
+            let errorMessage = 'Unknown error';
             if (result.error.email) {
                 errorMessage = result.error.email[0];
             }
