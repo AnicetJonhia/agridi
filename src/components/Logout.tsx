@@ -69,7 +69,7 @@ const Logout = () => {
                 <DialogContent>
                     <DialogHeader>
                         <DialogTitle>
-                            {dialogType === 'success' ? 'Succes' : 'Error'}
+                            {dialogType === 'success' ? 'Success' : 'Error'}
                         </DialogTitle>
                         <DialogDescription>
                             {dialogMessage}
