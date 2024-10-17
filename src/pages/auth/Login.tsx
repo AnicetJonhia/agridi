@@ -87,7 +87,7 @@ export default function Login() {
           <CardContent>
             <div className="grid gap-4">
               <div className="grid gap-2">
-                <Label htmlFor="username_or_email">User or Email</Label>
+                <Label htmlFor="username_or_email">Username or Email</Label>
                 <Input
                   id="username_or_email"
                   type="text"

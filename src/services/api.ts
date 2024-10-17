@@ -38,7 +38,7 @@ export const register = async (userData: Record<string, unknown>): Promise<Token
         return response.data;
     } catch (error) {
         console.error('Erreur lors de l\'enregistrement:', error);
-        throw error; // Relance l'erreur pour que le gestionnaire d'erreur puisse la traiter
+        throw error;
     }
 };
 

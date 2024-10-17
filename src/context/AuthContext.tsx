@@ -83,20 +83,20 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
 
 
     // Register function
-    const registerUser = async (userData: Record<string, unknown>) => {
-        try {
-            const data = await register(userData);
-            if (data.token) {
-                localStorage.setItem('token', data.token); // Store token in localStorage
-                dispatch({ type: 'REGISTER_SUCCESS',    payload:data });
+   const registerUser = async (userData: Record<string, unknown>) => {
+            try {
+                const data = await register(userData);
+                if (data.token) {
+                    localStorage.setItem('token', data.token); // Store token in localStorage
+                    dispatch({ type: 'REGISTER_SUCCESS', payload: data });
+                }
+                return { token: data.token, user: { id: data.user.id, role: data.user.role } };
+            } catch (error: any) {
+                console.error('Registration failed:', error.response?.data || error);
+                return { error: error.response?.data || { message: 'An unknown error occurred.' } };
             }
-            return { token: data.token, user: { id: data.user.id, role: data.user.role } };
-        } catch (error : any) {
-            console.error('Registration failed:', error);
-             return { error: error.response?.data?.error || 'Registration failed' };
+        };
 
-        }
-    };
 
     // Logout function
     const logoutUser = async () => {
