@@ -36,7 +36,6 @@ export default function Login() {
     try {
       const response = await loginUser(credentials);
 
-
        if (response?.error) {
             setDialogTitle('Login failed' )
             setDialogMessage(response.error );
