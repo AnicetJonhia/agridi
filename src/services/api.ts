@@ -18,6 +18,9 @@ interface Credentials {
 
 // Interface pour le token
 interface TokenResponse {
+    user: any;
+    role:  string;
+    user_id: number;
     token: string;
 }
 

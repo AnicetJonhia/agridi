@@ -63,19 +63,23 @@ interface AuthProviderProps {
 const AuthProvider = ({ children }: AuthProviderProps) => {
     const [state, dispatch] = useReducer(authReducer, initialState);
 
-    // Login function
-    const loginUser = async (credentials: Record<string, unknown>) => {
+    const loginUser = async (credentials: Record<string, unknown>): Promise<{ token: string; user: Record<string, unknown> } | null> => {
         try {
             const data = await login(credentials);
             if (data.token) {
-                localStorage.setItem('token', data.token); // Store token in localStorage
-                dispatch({ type: 'LOGIN_SUCCESS', payload: data });
+                localStorage.setItem('token', data.token); // Stocke le token dans localStorage
+                dispatch({
+                    type: 'LOGIN_SUCCESS',
+                    payload: data
+                });
+                return { token: data.token, user: { id: data.user_id, role: data.role } };
             }
         } catch (error) {
             console.error('Login failed:', error);
-            // Optionally, you can dispatch an action here to handle the error
         }
+        return null;
     };
+
 
     // Register function
     const registerUser = async (userData: Record<string, unknown>) => {
@@ -83,11 +87,12 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
             const data = await register(userData);
             if (data.token) {
                 localStorage.setItem('token', data.token); // Store token in localStorage
-                dispatch({ type: 'REGISTER_SUCCESS', payload: data });
+                dispatch({ type: 'REGISTER_SUCCESS',    payload:data });
             }
+            return { token: data.token, user: { id: data.user.id, role: data.user.role } };
         } catch (error) {
             console.error('Registration failed:', error);
-            // Optionally, you can dispatch an action here to handle the error
+
         }
     };
 
@@ -96,9 +101,10 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
         try {
             await logout(state.token!);
             dispatch({ type: 'LOGOUT' });
+            return true;
         } catch (error) {
             console.error('Logout failed:', error);
-            // Optionally, you can dispatch an action here to handle the error
+            return false;
         }
     };
 
