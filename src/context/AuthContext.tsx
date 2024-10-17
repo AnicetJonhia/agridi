@@ -74,8 +74,9 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
                 });
                 return { token: data.token, user: { id: data.user_id, role: data.role } };
             }
-        } catch (error) {
+        } catch (error:any) {
             console.error('Login failed:', error);
+            return { error: error.response?.data?.error };
         }
         return null;
     };
@@ -90,8 +91,9 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
                 dispatch({ type: 'REGISTER_SUCCESS',    payload:data });
             }
             return { token: data.token, user: { id: data.user.id, role: data.user.role } };
-        } catch (error) {
+        } catch (error : any) {
             console.error('Registration failed:', error);
+             return { error: error.response?.data?.error || 'Registration failed' };
 
         }
     };

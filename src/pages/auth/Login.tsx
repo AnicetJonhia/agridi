@@ -16,7 +16,7 @@ import { AuthContext } from "@/context/AuthContext.tsx";
 import {
   Dialog,
   DialogContent, DialogDescription,
-  DialogFooter,
+
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -35,23 +35,38 @@ export default function Login() {
     e.preventDefault();
     try {
       const response = await loginUser(credentials);
-      console.log(response)
-      if (response) {
-        console.log("test ok")
-        setDialogTitle('Success');
-        setDialogMessage('Login successful!');
-        setDialogOpen(true);
-        navigate('/dashboard');
-      } else {
-        setDialogTitle('Error');
-        setDialogMessage('Login failed!');
-        setDialogOpen(true);
-      }
+
+
+       if (response?.error) {
+            setDialogTitle('Login failed' )
+            setDialogMessage(response.error );
+            setDialogOpen(true);
+            setTimeout(() => {
+                setDialogOpen(false);
+              }, 2000);
+        }
+      // @ts-ignore
+      else {
+
+         setDialogTitle('Success');
+         setDialogMessage('Login successful!');
+         setDialogOpen(true);
+         setTimeout(() => {
+           setDialogOpen(false);
+           navigate('/dashboard');
+         }, 2000);
+
+       }
+
+
     } catch (error) {
       console.error("Login failed:", error);
       setDialogTitle('Error');
       setDialogMessage('Login failed. Please try again.');
       setDialogOpen(true);
+      setTimeout(() => {
+          setDialogOpen(false);
+        }, 2000);
     }
   };
 
@@ -135,9 +150,7 @@ export default function Login() {
               {dialogMessage}
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter>
-            <Button onClick={() => setDialogOpen(false)}>Close</Button>
-          </DialogFooter>
+
         </DialogContent>
       </Dialog>
     </>
