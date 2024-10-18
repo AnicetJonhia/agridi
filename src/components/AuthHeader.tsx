@@ -1,4 +1,4 @@
-import { Menu, LogIn, UserPlus } from "lucide-react"; // Import des icônes
+import { Menu, LogIn, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 

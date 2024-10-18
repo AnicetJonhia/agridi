@@ -1,15 +1,18 @@
 import React from 'react';
 import Translate from '@/components/Translate';
+import Description from "@/components/home/Description";
+
 
 const Home: React.FC = () => {
   return (
-    <div>
-      <h2>
-        <Translate str="welcome"  />
-      </h2>
-      <p>
-        <Translate str="description"  />
-      </p>
+    <div className={"m-1"}>
+      {/*<h2>*/}
+      {/*  <Translate str="welcome"  />*/}
+      {/*</h2>*/}
+      {/*<p>*/}
+      {/*  <Translate str="description"  />*/}
+      {/*</p>*/}
+        <Description/>
     </div>
   );
 };
