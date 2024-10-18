@@ -117,7 +117,7 @@ export default function Register() {
         </DialogContent>
       </Dialog>
 
-      <form onSubmit={handleSubmit}>
+      <form className={"mt-10"} onSubmit={handleSubmit}>
         <Card className="mx-auto max-w-sm">
           <CardHeader>
             <CardTitle className="text-xl">Sign Up</CardTitle>

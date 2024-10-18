@@ -1,9 +1,7 @@
 import { useState } from "react";
 import { cn } from "@/lib/utils.ts";
 import Marquee from "@/components/ui/marquee.tsx";
-import { Tractor, Target, Leaf, Users, Globe2, Handshake } from "lucide-react";
-
-
+import { Tractor, Target, Leaf, Users, Globe2, Handshake} from "lucide-react";
 
 const reviews = [
   {
@@ -89,10 +87,11 @@ const ReviewCard = ({
   );
 };
 
-export default function Description() {
+const Description: React.FC = () => {
   return (
-    <div className="relative flex h-[400px] w-full flex-col items-center justify-center overflow-hidden rounded-lg border bg-background md:shadow-xl">
+    <div id="descriptionSection"  className="relative flex h-[400px] w-full flex-col items-center justify-center overflow-hidden   ">
       <div className="flex w-full h-40 items-left justify-center">
+
         <Marquee pauseOnHover className="[--duration:20s] h-40">
           {firstRow.map((review) => (
             <ReviewCard key={review.subtitle} {...review} />
@@ -100,6 +99,7 @@ export default function Description() {
         </Marquee>
       </div>
       <div className="flex w-full h-40 items-center justify-center">
+
         <Marquee reverse pauseOnHover className="[--duration:20s] h-40">
           {secondRow.map((review) => (
             <ReviewCard key={review.subtitle} {...review} />
@@ -111,3 +111,6 @@ export default function Description() {
     </div>
   );
 }
+
+
+export  default Description;

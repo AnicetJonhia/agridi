@@ -15,6 +15,8 @@ import logo from "../assets/images/logo.png";
 import { ToggleDarkMode } from "./ToggleDarkMode";
 import { Link } from "react-router-dom";
 import LanguageSwitcher  from "@/components/LanguageSwitcher.tsx";
+import { CoolMode } from "@/components/ui/cool-mode";
+
 
 // @ts-ignore
 const NavLink = ({ to, children, icon: Icon }) => (
@@ -31,28 +33,33 @@ export default function AuthHeader() {
   return (
     <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6">
       <nav className="flex-1 grid gap-2 text-lg font-medium">
-        <Link to="/" className="flex items-center gap-2 text-lg font-semibold">
+        <CoolMode>
+          <Link to="/" className="flex items-center gap-2 text-lg font-semibold">
           <img alt="Logo" src={logo} className="h-6 w-6" />
           <span>AgriD</span>
         </Link>
+        </CoolMode>
       </nav>
 
 
       <nav className="hidden md:flex flex-row gap-6 text-lg">
+        <CoolMode>
         <Link
             to={"/"}
             className="text-foreground hover:text-primary transition-colors duration-200 flex items-center gap-2"
           >Home
-          </Link>
+          </Link></CoolMode>
 
-
+        <CoolMode>
         <Button  variant="outline">
           <NavLink to="/login" icon={LogIn}>Login</NavLink>
-        </Button>
+        </Button></CoolMode>
 
+
+          <CoolMode>
         <Button >
           <NavLink to="/register" icon={UserPlus}>Register</NavLink>
-        </Button>
+        </Button></CoolMode>
       </nav>
 
         <LanguageSwitcher />
@@ -69,12 +76,12 @@ export default function AuthHeader() {
           </DropdownMenuTrigger>
 
           <DropdownMenuContent align="end" className="animate-slide-down ">
-            <DropdownMenuItem className="ml-2">
-              <Link
-            to={"/"}
-            className=" block text-foreground hover:text-primary transition-colors duration-200  items-center gap-2"
-          >Home
-          </Link>
+            <DropdownMenuItem className="ml-2" asChild>
+             <Link
+                to={"/"}
+                className=" block text-foreground hover:text-primary transition-colors duration-200  items-center gap-2"
+              >Home
+              </Link>
             </DropdownMenuItem>
 
             <DropdownMenuSeparator/>
