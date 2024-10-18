@@ -21,7 +21,7 @@ const Welcome: React.FC = () => {
   return (
     <div className="flex flex-col h-[600px] items-start justify-center max-w-screen-2xlw-screen pt-32 p-5">
       <div className="flex flex-col items-center justify-start text-center max-w-3xl mb-4">
-          <SparklesText text="AgriD" />;
+          <SparklesText text="AgriD" />
       </div>
       <h2 className="text-xl text-gray-600 dark:text-gray-400 mb-10">Connecting Agriculture for a Better Tomorrow</h2>
       <div className="text-xl text-gray-700 dark:text-gray-300 text-start mb-6">
