@@ -3,6 +3,7 @@ import Translate from '@/components/Translate';
 import Description from "@/components/home/Description";
 import Resume from "@/components/home/Resume.tsx";
 import Welcome from "@/components/home/Welcome.tsx";
+import Solution from "@/components/home/Solution";
 
 const Home: React.FC = () => {
   return (
@@ -24,6 +25,7 @@ const Home: React.FC = () => {
       </div>
 
       <Description />
+        <Solution/>
     </div>
   );
 };

@@ -89,7 +89,7 @@ const ReviewCard = ({
 
 const Description: React.FC = () => {
   return (
-    <div id="descriptionSection"  className="relative flex h-[400px] w-full flex-col items-center justify-center overflow-hidden   ">
+    <div id="descriptionSection"  className="relative flex h-[400px] w-full flex-col items-center justify-center overflow-hidden  ">
       <div className="flex w-full h-40 items-left justify-center">
 
         <Marquee pauseOnHover className="[--duration:20s] h-40">

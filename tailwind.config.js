@@ -69,11 +69,20 @@ module.exports = {
   				to: {
   					transform: 'translateY(calc(-100% - var(--gap)))'
   				}
+  			},
+  			grid: {
+  				'0%': {
+  					transform: 'translateY(-50%)'
+  				},
+  				'100%': {
+  					transform: 'translateY(0)'
+  				}
   			}
   		},
   		animation: {
   			marquee: 'marquee var(--duration) infinite linear',
-  			'marquee-vertical': 'marquee-vertical var(--duration) linear infinite'
+  			'marquee-vertical': 'marquee-vertical var(--duration) linear infinite',
+  			grid: 'grid 15s linear infinite'
   		}
   	}
   },

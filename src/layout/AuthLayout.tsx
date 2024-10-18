@@ -49,6 +49,7 @@ export default function AuthLayout() {
         <AuthHeader />
         <main ref={mainRef} className="flex-1 overflow-x-auto overflow-y-auto ">
           <Outlet />
+
         </main>
         {showButton && (
           <Button
