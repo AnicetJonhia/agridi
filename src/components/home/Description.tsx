@@ -1,43 +1,43 @@
 import { useState } from "react";
 import { cn } from "@/lib/utils.ts";
 import Marquee from "@/components/ui/marquee.tsx";
-import { Tractor, Target, Leaf, Users, Globe2, Handshake} from "lucide-react";
+import { Tractor, Target, Leaf, Users, Globe2, Handshake } from "lucide-react";
 
 const reviews = [
   {
-    title: "Révolutionner le commerce agricole",
-    subtitle: "Producteurs, Collecteurs, Consommateurs",
-    description: "AgriD connecte directement producteurs, collecteurs et consommateurs pour une chaîne d'approvisionnement plus courte et efficace.",
+    title: "Revolutionizing Agricultural Trade",
+    subtitle: "Producers, Collectors, Consumers",
+    description: "AgriD connects producers, collectors, and consumers directly for a shorter and more efficient supply chain.",
     icon: <Tractor className="text-green-500 dark:text-green-400" />,
   },
   {
-    title: "Notre mission",
-    subtitle: "Simplifier les transactions agricoles",
-    description: "AgriD vise à rendre les transactions agricoles simples, équitables et transparentes pour tous les acteurs.",
+    title: "Our Mission",
+    subtitle: "Simplifying Agricultural Transactions",
+    description: "AgriD aims to make agricultural transactions simple, fair, and transparent for all participants.",
     icon: <Target className="text-green-500 dark:text-green-400" />,
   },
   {
-    title: "Une plateforme au service de tous",
-    subtitle: "Producteurs, Collecteurs, Consommateurs",
-    description: "AgriD offre une interface intuitive pour créer des profils, gérer des annonces, et faciliter les commandes et paiements.",
+    title: "A Platform for Everyone",
+    subtitle: "Producers, Collectors, Consumers",
+    description: "AgriD offers an intuitive interface to create profiles, manage listings, and facilitate orders and payments.",
     icon: <Users className="text-green-500 dark:text-green-400" />,
   },
   {
-    title: "Bénéfices pour les acteurs",
-    subtitle: "Producteurs, Collecteurs, Consommateurs",
-    description: "AgriD améliore les revenus des producteurs, la gestion des collecteurs et l'accès des consommateurs à des produits locaux à prix justes.",
+    title: "Benefits for Stakeholders",
+    subtitle: "Producers, Collectors, Consumers",
+    description: "AgriD enhances producer income, improves collector management, and gives consumers access to local products at fair prices.",
     icon: <Handshake className="text-green-500 dark:text-green-400" />,
   },
   {
-    title: "Engagement pour le développement durable",
-    subtitle: "Pratiques respectueuses de l'environnement",
-    description: "AgriD promeut une agriculture durable en réduisant le gaspillage alimentaire et soutenant les pratiques respectueuses de l'environnement.",
-    icon: <Leaf className="text-green-500 dark:text-green-400"/>,
+    title: "Commitment to Sustainability",
+    subtitle: "Environmentally Friendly Practices",
+    description: "AgriD promotes sustainable agriculture by reducing food waste and supporting environmentally friendly practices.",
+    icon: <Leaf className="text-green-500 dark:text-green-400" />,
   },
   {
-    title: "Rejoignez le mouvement AgriD !",
-    subtitle: "Vers un futur alimentaire plus juste",
-    description: "AgriD aspire à transformer le système alimentaire mondial vers un futur plus juste et durable.",
+    title: "Join the AgriD Movement!",
+    subtitle: "Towards a Fairer Food Future",
+    description: "AgriD strives to transform the global food system towards a fairer and more sustainable future.",
     icon: <Globe2 className="text-green-500 dark:text-green-400" />,
   },
 ];
@@ -89,28 +89,26 @@ const ReviewCard = ({
 
 const Description: React.FC = () => {
   return (
-    <div id="descriptionSection"  className="relative flex h-[400px] w-full flex-col items-center justify-center overflow-hidden  ">
-      <div className="flex w-full h-40 items-left justify-center">
+    <div id="descriptionSection" className="relative flex h-[400px] w-full flex-col items-center justify-center overflow-hidden">
+      {/* Titre ajouté ici */}
+      <h2 className="text-2xl  font-bold text-gray-800 dark:text-white mb-4">Discover AgriD's Impact</h2>
 
+      <div className="flex w-full h-40 items-left justify-center">
         <Marquee pauseOnHover className="[--duration:20s] h-40">
-          {firstRow.map((review) => (
-            <ReviewCard key={review.subtitle} {...review} />
+          {firstRow.map((review, index) => (
+            <ReviewCard key={index} {...review} />
           ))}
         </Marquee>
       </div>
       <div className="flex w-full h-40 items-center justify-center">
-
         <Marquee reverse pauseOnHover className="[--duration:20s] h-40">
-          {secondRow.map((review) => (
-            <ReviewCard key={review.subtitle} {...review} />
+          {secondRow.map((review, index) => (
+            <ReviewCard key={index} {...review} />
           ))}
         </Marquee>
       </div>
-      <div className="pointer-events-none absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-white dark:from-background"></div>
-      <div className="pointer-events-none absolute inset-y-0 right-0 w-1/3 bg-gradient-to-l from-white dark:from-background"></div>
     </div>
   );
-}
+};
 
-
-export  default Description;
+export default Description;
