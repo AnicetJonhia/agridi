@@ -1,26 +1,22 @@
-import {useEffect, useState} from "react";
-import {Button} from "@/components/ui/button.tsx";
-import {Moon, Sun} from "lucide-react";
+import { Button } from "@/components/ui/button.tsx";
+import { Moon, Sun } from "lucide-react";
+import { useTheme } from "@/context/ThemeContext";
 
 export function ToggleDarkMode() {
-  const [isDark, setIsDark] = useState(false);
+  const { theme, setTheme } = useTheme();
 
-  useEffect(() => {
-    if (isDark) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  }, [isDark]);
+  const toggleTheme = () => {
+    setTheme(theme === "dark" ? "light" : "dark");
+  };
 
   return (
     <Button
       variant="secondary"
       size="icon"
-      onClick={() => setIsDark(!isDark)}
+      onClick={toggleTheme}
       className="rounded-full"
     >
-      {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+      {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
       <span className="sr-only">Toggle dark mode</span>
     </Button>
   );

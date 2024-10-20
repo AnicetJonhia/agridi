@@ -20,34 +20,41 @@ import Home from '@/pages/auth/Home.tsx';
 import Login from "@/pages/auth/Login.tsx";
 import Register  from "@/pages/auth/Register.tsx";
 
+import {ThemeProvider} from "@/context/ThemeContext";
+
 
 function App() {
     return (
-        <AuthProvider>
-            <BrowserRouter>
-                <Routes>
-                    <Route element={<AuthLayout/>}>
-                        <Route path={"/"} element={<Home/>} />
-                        <Route path={"/login"} element={<Login/>} />
-                         <Route path={"/register"} element={<Register/>} />
-                    </Route>
-                    <Route element={<MainLayout />}>
-                        <Route path="/dashboard" element={<Dashboard />} />
-                        <Route path="/blogs" element={<Blogs />} />
-                        <Route path="/products">
-                            <Route index element={<Products />} />
-                            <Route path="/products/product-detail" element={<ProductDetail />} />
-                          </Route>
-                        <Route path="/analytics" element={<Analytics />} />
-                          <Route path="/needs" element={<Needs/>} />
-                          <Route path="/orders" element={<Orders />} />
-                          <Route path="/seasons" element={<Seasons />} />
-                          <Route path="/chats" element={<Chats />} />
+        <ThemeProvider>
 
-                    </Route>
-                </Routes>
-            </BrowserRouter>
-        </AuthProvider>
+
+            <AuthProvider>
+                <BrowserRouter>
+                    <Routes>
+                        <Route element={<AuthLayout/>}>
+                            <Route path={"/"} element={<Home/>} />
+                            <Route path={"/login"} element={<Login/>} />
+                             <Route path={"/register"} element={<Register/>} />
+                        </Route>
+                        <Route element={<MainLayout />}>
+                            <Route path="/dashboard" element={<Dashboard />} />
+                            <Route path="/blogs" element={<Blogs />} />
+                            <Route path="/products">
+                                <Route index element={<Products />} />
+                                <Route path="/products/product-detail" element={<ProductDetail />} />
+                              </Route>
+                            <Route path="/analytics" element={<Analytics />} />
+                              <Route path="/needs" element={<Needs/>} />
+                              <Route path="/orders" element={<Orders />} />
+                              <Route path="/seasons" element={<Seasons />} />
+                              <Route path="/chats" element={<Chats />} />
+
+                        </Route>
+                    </Routes>
+                </BrowserRouter>
+            </AuthProvider>
+
+        </ThemeProvider>
     );
 }
 
