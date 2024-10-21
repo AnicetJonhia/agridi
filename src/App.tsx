@@ -19,7 +19,7 @@ import AuthLayout from "@/layout/AuthLayout.tsx";
 import Home from '@/pages/auth/Home.tsx';
 import Login from "@/pages/auth/Login.tsx";
 import Register  from "@/pages/auth/Register.tsx";
-
+import UserProfile from "@/pages/UserProfile";
 import {ThemeProvider} from "@/context/ThemeContext";
 
 
@@ -48,6 +48,7 @@ function App() {
                               <Route path="/orders" element={<Orders />} />
                               <Route path="/seasons" element={<Seasons />} />
                               <Route path="/chats" element={<Chats />} />
+                             <Route path="/profile" element={<UserProfile />} />
 
                         </Route>
                     </Routes>

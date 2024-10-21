@@ -76,8 +76,7 @@ export default function Header() {
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>My Account</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem>Settings</DropdownMenuItem>
-          <DropdownMenuItem>Support</DropdownMenuItem>
+          <DropdownMenuItem>Profile</DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem asChild>
                 <Logout/>
