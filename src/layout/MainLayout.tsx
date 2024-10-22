@@ -52,7 +52,7 @@ export default function MainLayout() {
         </main>
         {showButton && (
           <Button
-            className="fixed bottom-4 right-4 z-50 rounded-full p-3  text-white"
+            className="fixed bottom-12  z-50 rounded-full p-3  text-white"
             onClick={handleClick}
           >
             <ArrowUpFromDot />
