@@ -1,39 +1,46 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { UserRound } from "lucide-react";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"; // Assurez-vous d'importer tous les composants nécessaires
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { useUser } from "@/context/UserContext";
 
-interface UserProfileProps {
-  user?: {
-    username?: string;
-    firstName?: string;
-    lastName?: string;
-    email?: string;
-    phoneNumber?: string;
-    address?: string;
-    bio?: string;
-    website?: string;
-    profilePicture?: string;
-    role?: string; // Ajout du champ role
-  };
-}
-
-const UserProfile: React.FC<UserProfileProps> = ({ user = {} }) => {
+const UserProfile: React.FC = () => {
+  const { state, fetchUserProfile, updateUserProfile } = useUser();
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
-    username: user.username || "",
-    firstName: user.firstName || "",
-    lastName: user.lastName || "",
-    email: user.email || "",
-    phoneNumber: user.phoneNumber || "",
-    address: user.address || "",
-    bio: user.bio || "",
-    website: user.website || "",
-    role: user.role || "", // Initialisation de role
+    username: "",
+    first_name: "",
+    last_name: "",
+    email: "",
+    phone_number: "",
+    address: "",
+    bio: "",
+    website: "",
+    role: "",
   });
+
+  useEffect(() => {
+    fetchUserProfile();
+  }, [fetchUserProfile]);
+
+  useEffect(() => {
+    if (state.user && !isEditing) {
+      setFormData({
+        username: state.user.username || "",
+        first_name: state.user.first_name || "",
+        last_name: state.user.last_name || "",
+        email: state.user.email || "",
+        phone_number: state.user.phone_number || "",
+        address: state.user.address || "",
+        bio: state.user.bio || "",
+        website: state.user.website || "",
+        role: state.user.role || "",
+      });
+    }
+  }, [state.user, isEditing]);
 
   const handleEditToggle = () => {
     setIsEditing(!isEditing);
@@ -43,9 +50,13 @@ const UserProfile: React.FC<UserProfileProps> = ({ user = {} }) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
   };
 
-  const handleSave = () => {
-    // Logic to save profile information goes here
-    setIsEditing(false);
+  const handleSave = async () => {
+    if (formData.username && formData.email) { // Add more validation as needed
+      await updateUserProfile(formData);
+      setIsEditing(false);
+    } else {
+      console.error('Validation failed: Missing required fields');
+    }
   };
 
   return (
@@ -53,9 +64,9 @@ const UserProfile: React.FC<UserProfileProps> = ({ user = {} }) => {
       <div className="px-4 space-y-6 md:px-6">
         <header className="space-y-1.5">
           <div className="flex items-center space-x-4">
-            {user.profilePicture ? (
+            {state.user?.profile_picture ? (
               <img
-                src={user.profilePicture}
+                src={state.user.profile_picture}
                 alt="Profile Picture"
                 className="w-24 h-24 border rounded-full object-cover"
               />
@@ -66,9 +77,8 @@ const UserProfile: React.FC<UserProfileProps> = ({ user = {} }) => {
               <h1 className="text-2xl font-bold">
                 {formData.username || "You"}
               </h1>
-
               <p className="text-gray-500 dark:text-gray-400">
-              {formData.role}
+                {formData.role}
               </p>
             </div>
           </div>
@@ -89,21 +99,21 @@ const UserProfile: React.FC<UserProfileProps> = ({ user = {} }) => {
                 />
               </div>
               <div>
-                <Label htmlFor="firstName">First Name</Label>
+                <Label htmlFor="first_name">First Name</Label>
                 <Input
-                  id="firstName"
+                  id="first_name"
                   type="text"
-                  value={formData.firstName}
+                  value={formData.first_name}
                   onChange={handleChange}
                   disabled={!isEditing}
                 />
               </div>
               <div>
-                <Label htmlFor="lastName">Last Name</Label>
+                <Label htmlFor="last_name">Last Name</Label>
                 <Input
-                  id="lastName"
+                  id="last_name"
                   type="text"
-                  value={formData.lastName}
+                  value={formData.last_name}
                   onChange={handleChange}
                   disabled={!isEditing}
                 />
@@ -119,11 +129,11 @@ const UserProfile: React.FC<UserProfileProps> = ({ user = {} }) => {
                 />
               </div>
               <div>
-                <Label htmlFor="phoneNumber">Phone</Label>
+                <Label htmlFor="phone_number">Phone</Label>
                 <Input
-                  id="phoneNumber"
+                  id="phone_number"
                   type="tel"
-                  value={formData.phoneNumber}
+                  value={formData.phone_number}
                   onChange={handleChange}
                   disabled={!isEditing}
                 />

@@ -67,17 +67,3 @@ export const logout = async (token: string): Promise<void> => {
     }
 };
 
-// Récupérer les produits
-export const getProducts = async (token: string): Promise<Product[]> => {
-    try {
-        const response = await axios.get<Product[]>(`${API_URL}/products/`, {
-            headers: {
-                'Authorization': `Token ${token}`
-            }
-        });
-        return response.data;
-    } catch (error) {
-        console.error('Erreur lors de la récupération des produits:', error);
-        throw error; // Relance l'erreur pour que le gestionnaire d'erreur puisse la traiter
-    }
-};

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import {useRef, useState} from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import {Search, Menu, CircleUser, LogOut} from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,7 @@ import Logout from "@/components/Logout.tsx";
 export default function Header() {
   const [isSheetOpen, setIsSheetOpen] = useState(false); // État pour gérer l'ouverture du Sheet
 
+  const logoutButtonRef = useRef(null);
   const closeSheet = () => {
     setIsSheetOpen(false); // Fonction pour fermer le Sheet
   };
@@ -76,10 +77,13 @@ export default function Header() {
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>My Account</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem>Profile</DropdownMenuItem>
+          <DropdownMenuItem className={"cursor-pointer"} >
+            <Link to={"/profile"}>Profile</Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem>Settings</DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem asChild>
-                <Logout/>
+                <Logout ref={logoutButtonRef}/>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

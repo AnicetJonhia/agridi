@@ -1,4 +1,4 @@
-import { createContext, useReducer, ReactNode, useContext } from 'react';
+import { createContext, useReducer, ReactNode } from 'react';
 import { login, register, logout } from '../services/api';
 
 // Updated state interface
@@ -119,14 +119,7 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
     );
 };
 
-// Custom hook for using AuthContext
-const useAuth = (): AuthContextType => {
-    const context = useContext(AuthContext);
-    if (context === undefined) {
-        throw new Error('useAuth must be used within an AuthProvider');
-    }
-    return context;
-};
+
 
 // eslint-disable-next-line react-refresh/only-export-components
-export { AuthContext, AuthProvider, useAuth };
+export { AuthContext, AuthProvider };

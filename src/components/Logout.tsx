@@ -1,11 +1,11 @@
-import { useContext, useState } from 'react';
+import { forwardRef, useContext, useState } from 'react';
 import { AuthContext } from '../context/AuthContext.tsx';
 import { useNavigate } from 'react-router-dom';
 import { LogOut } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog.tsx";
 import { Button } from "@/components/ui/button.tsx";
 
-const Logout = () => {
+const Logout = forwardRef((props, ref) => {
     const { logoutUser } = useContext(AuthContext)!;
     const navigate = useNavigate();
     const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -55,6 +55,7 @@ const Logout = () => {
     return (
         <>
             <Button
+                ref={ref} {...props}
                 onClick={handleLogout}
                 disabled={isLoggingOut}
                 variant={"outline"}
@@ -79,6 +80,6 @@ const Logout = () => {
             </Dialog>
         </>
     );
-};
+});
 
 export default Logout;
