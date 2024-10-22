@@ -24,7 +24,9 @@ export const getUserProfile = async (token: string): Promise<UserProfile> => {
     try {
         const response = await axios.get<UserProfile>(`${API_URL}/auth/users/me/`, {
             headers: {
-                'Authorization': `Token ${token}`
+                'Authorization': `Token ${token}`,
+                'Content-Type': 'application/json'
+
             }
         });
         return response.data;

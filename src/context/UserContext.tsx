@@ -56,6 +56,7 @@ const userReducer = (state: UserState, action: UserAction): UserState => {
     case 'UPDATE_PROFILE':
       return {
         ...state,
+        isAuthenticated: true,
         user: action.payload?.user || null,
       };
     default:

@@ -10,6 +10,7 @@ import { useUser } from "@/context/UserContext";
 const UserProfile: React.FC = () => {
   const { state, fetchUserProfile, updateUserProfile } = useUser();
   const [isEditing, setIsEditing] = useState(false);
+
   const [formData, setFormData] = useState({
     username: "",
     first_name: "",
@@ -29,7 +30,7 @@ const UserProfile: React.FC = () => {
     if (state.isAuthenticated) {
       fetchUserProfile();
     }
-  }, [state.isAuthenticated, fetchUserProfile]);
+  }, [state.isAuthenticated, state.token, fetchUserProfile]);
 
   useEffect(() => {
     if (state.user && !isEditing) {
