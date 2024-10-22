@@ -10,14 +10,14 @@ export default function Chat() {
 
   useEffect(() => {
     // Select the first sender by default on large screens
-    if (window.innerWidth >= 768 && senders.length > 0) {
+    if (window.innerWidth >= 1008 && senders.length > 0) {
       setSelectedSender(senders[0]);
     }
   }, []);
 
   const handleSelectSender = (sender) => {
     setSelectedSender(sender);
-    if (window.innerWidth < 768) {
+    if (window.innerWidth < 1008) {
       setShowSenderList(false);
     }
   };
@@ -28,14 +28,14 @@ export default function Chat() {
         <h1 className="text-lg font-semibold">Chats</h1>
       </header>
 
-      <div className="flex flex-1 h-full">
+      <div className="flex flex-1 h-auto md:">
         {showSenderList && (
           <SenderList onSelectSender={handleSelectSender} />
         )}
-        <div className={`flex flex-col flex-1 ${showSenderList ? 'hidden md:flex' : 'flex'}`}>
-          {window.innerWidth < 768 && !showSenderList && (
+        <div className={`flex flex-col flex-1 ${showSenderList ? 'hidden lg:flex' : 'flex'}`}>
+          {window.innerWidth < 1008 && !showSenderList && (
             <Button
-              className="md:hidden p-2"
+              className="lg:hidden p-2"
               onClick={() => setShowSenderList(true)}
             >
               Back to Senders

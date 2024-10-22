@@ -4,12 +4,10 @@ import { Input } from "@/components/ui/input";
 
 // @ts-ignore
 export function ChatWindow({ sender }) {
-  if (!sender) {
-    return <div className="flex-1 p-4">Select a sender to start chatting</div>;
-  }
+
 
   return (
-    <div className="flex flex-col flex-1">
+    <div className="flex flex-col h-[500px]">
       <header className="flex items-center justify-between px-4 py-2 border-b">
         <h1 className="text-lg font-semibold">{sender.name}</h1>
         <Button variant="outline" size="sm">

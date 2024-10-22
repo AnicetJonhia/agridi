@@ -80,7 +80,7 @@ export {senders};
 
 export function SenderList({ onSelectSender }) {
   return (
-    <div className="w-full md:w-1/4 border-r p-2 overflow-y-auto">
+    <div className="w-full lg:w-1/4 border-r p-2 overflow-y-auto">
       {senders.map((sender) => (
         <Card
           key={sender.id}
