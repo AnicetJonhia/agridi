@@ -26,8 +26,10 @@ const UserProfile: React.FC = () => {
   });
 
   useEffect(() => {
-    fetchUserProfile();
-  }, [fetchUserProfile]);
+    if (state.isAuthenticated) {
+      fetchUserProfile();
+    }
+  }, [state.isAuthenticated, fetchUserProfile]);
 
   useEffect(() => {
     if (state.user && !isEditing) {
@@ -58,7 +60,7 @@ const UserProfile: React.FC = () => {
   };
 
   const handleSave = async () => {
-    if (formData.username && formData.email) { // Add more validation as needed
+    if (formData.username && formData.email) {
       await updateUserProfile(formData);
       setIsEditing(false);
     } else {

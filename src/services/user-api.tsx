@@ -2,19 +2,22 @@ import axios from 'axios';
 
 const API_URL = 'http://localhost:8000/api';
 
-// Interface for user profile
 interface UserProfile {
-    username: string;
-    firstName: string;
-    lastName: string;
-    email: string;
-    phoneNumber: string;
-    address: string;
-    bio: string;
-    website: string;
-    role: string;
-    profilePicture: string;
+  username: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone_number: string;
+  address: string;
+  bio: string;
+  website: string;
+  role: string;
+  profile_picture?: string;
+  date_of_birth?: string;
+  alternate_email?: string;
+  linkedin?: string;
 }
+
 
 // Fetch user profile
 export const getUserProfile = async (token: string): Promise<UserProfile> => {
@@ -31,22 +34,7 @@ export const getUserProfile = async (token: string): Promise<UserProfile> => {
     }
 };
 
-export const updateUserProfile = async (token: string, profileData: {
-    lastName: string;
-    website: string;
-    address: string;
-    role: string;
-    bio: string;
-    last_name: string;
-    profile_picture: string | undefined;
-    firstName: string;
-    profilePicture?: string;
-    phoneNumber: string;
-    phone_number: string;
-    first_name: string;
-    email: string;
-    username: string
-}): Promise<UserProfile> => {
+export const updateUserProfile = async (token: string, profileData: UserProfile): Promise<UserProfile> => {
     try {
         const response = await axios.patch<UserProfile>(`${API_URL}/auth/users/profile/edit/`, profileData, {
             headers: {
