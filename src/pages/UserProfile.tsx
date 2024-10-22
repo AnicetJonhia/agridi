@@ -20,6 +20,9 @@ const UserProfile: React.FC = () => {
     bio: "",
     website: "",
     role: "",
+    date_of_birth: "",
+    alternate_email: "",
+    linkedin: "",
   });
 
   useEffect(() => {
@@ -38,6 +41,9 @@ const UserProfile: React.FC = () => {
         bio: state.user.bio || "",
         website: state.user.website || "",
         role: state.user.role || "",
+        date_of_birth: state.user.date_of_birth || "",
+        alternate_email: state.user.alternate_email || "",
+        linkedin: state.user.linkedin || "",
       });
     }
   }, [state.user, isEditing]);
@@ -47,7 +53,8 @@ const UserProfile: React.FC = () => {
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData({ ...formData, [e.target.id]: e.target.value });
+    const { id, value } = e.target;
+    setFormData({ ...formData, [id]: value });
   };
 
   const handleSave = async () => {
@@ -99,6 +106,16 @@ const UserProfile: React.FC = () => {
                 />
               </div>
               <div>
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  disabled={!isEditing}
+                />
+              </div>
+              <div>
                 <Label htmlFor="first_name">First Name</Label>
                 <Input
                   id="first_name"
@@ -114,16 +131,6 @@ const UserProfile: React.FC = () => {
                   id="last_name"
                   type="text"
                   value={formData.last_name}
-                  onChange={handleChange}
-                  disabled={!isEditing}
-                />
-              </div>
-              <div>
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={formData.email}
                   onChange={handleChange}
                   disabled={!isEditing}
                 />
@@ -160,6 +167,36 @@ const UserProfile: React.FC = () => {
                     <SelectItem value="Con">Consumer</SelectItem>
                   </SelectContent>
                 </Select>
+              </div>
+              <div>
+                <Label htmlFor="date_of_birth">Date of Birth</Label>
+                <Input
+                  id="date_of_birth"
+                  type="date"
+                  value={formData.date_of_birth}
+                  onChange={handleChange}
+                  disabled={!isEditing}
+                />
+              </div>
+              <div>
+                <Label htmlFor="alternate_email">Alternate Email</Label>
+                <Input
+                  id="alternate_email"
+                  type="email"
+                  value={formData.alternate_email}
+                  onChange={handleChange}
+                  disabled={!isEditing}
+                />
+              </div>
+              <div>
+                <Label htmlFor="linkedin">LinkedIn</Label>
+                <Input
+                  id="linkedin"
+                  type="url"
+                  value={formData.linkedin}
+                  onChange={handleChange}
+                  disabled={!isEditing}
+                />
               </div>
             </div>
           </div>

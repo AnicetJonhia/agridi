@@ -1,7 +1,6 @@
 import { createContext, useReducer, ReactNode, useContext } from 'react';
 import { getUserProfile, updateUserProfile as updateUserProfileAPI } from '../services/user-api';
 
-// Define the UserProfile interface
 interface UserProfile {
     username: string;
     first_name: string;
@@ -12,7 +11,11 @@ interface UserProfile {
     bio: string;
     website: string;
     role: string;
-    profile_picture?: string; // Optional field
+    profile_picture?: string;
+    date_of_birth?: string;
+    alternate_email?: string;
+    linkedin?: string;
+    is_active?: boolean;
 }
 
 // State interface
