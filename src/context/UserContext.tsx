@@ -74,12 +74,12 @@ const UserProvider = ({ children }: UserProviderProps) => {
   const [state, dispatch] = useReducer(userReducer, initialState);
 
   const fetchUserProfile = async () => {
-    if (!state.isAuthenticated || !state.token) return; // Ne tentez pas de fetch si non authentifié
+    if (!state.isAuthenticated || !state.token) return;
 
     try {
+      console.log('Token:', state.token);
       const userProfile = await getUserProfile(state.token);
-      // @ts-ignore
-        dispatch({ type: 'SET_USER', payload: { user: userProfile } });
+      dispatch({ type: 'SET_USER', payload: { user: userProfile } });
     } catch (error) {
       console.error('Failed to fetch user profile:', error);
     }
@@ -92,11 +92,8 @@ const UserProvider = ({ children }: UserProviderProps) => {
     }
 
     try {
-      console.log('Updating profile with data:', profileData); // Log the payload
       const updatedProfile = await updateUserProfileAPI(state.token, profileData);
-      // @ts-ignore
-        dispatch({ type: 'UPDATE_PROFILE', payload: { user: updatedProfile } });
-      console.log('Profile update success:', updatedProfile); // Log the payload
+      dispatch({ type: 'UPDATE_PROFILE', payload: { user: updatedProfile } });
     } catch (error) {
       console.error('Failed to update user profile:', error);
     }
