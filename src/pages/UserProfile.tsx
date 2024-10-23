@@ -69,27 +69,24 @@ const UserProfile: React.FC = () => {
   };
 
   const handleSave = async () => {
-  if (formData.username && formData.email) {
-    const updatedData = new FormData();
-    Object.keys(formData).forEach((key) => {
-      // Assurez-vous de ne pas inclure les valeurs nulles et que profile_picture est bien pris en compte.
-      if (formData[key] !== null) {
-        // Ajoute une condition spéciale pour profile_picture car c'est un fichier
-        if (key === 'profile_picture' && formData.profile_picture instanceof File) {
-          updatedData.append(key, formData.profile_picture);
-        } else {
-          updatedData.append(key, formData[key]);
+    if (formData.username && formData.email) {
+      const updatedData = new FormData();
+      Object.keys(formData).forEach((key) => {
+        if (formData[key] !== null) {
+          if (key === 'profile_picture' && formData.profile_picture instanceof File) {
+            updatedData.append(key, formData.profile_picture);
+          } else {
+            updatedData.append(key, formData[key]);
+          }
         }
-      }
-    });
+      });
 
-    await updateUserProfile(updatedData);
-    setIsEditing(false);
-  } else {
-    console.error('Validation failed: Missing required fields');
-  }
-};
-
+      await updateUserProfile(updatedData);
+      setIsEditing(false);
+    } else {
+      console.error('Validation failed: Missing required fields');
+    }
+  };
 
   return (
     <div>
@@ -109,6 +106,15 @@ const UserProfile: React.FC = () => {
               <h1 className="text-2xl font-bold">
                 {formData.username || "You"}
               </h1>
+              <div>
+
+                <Input
+                  id="profile_picture"
+                  type="file"
+                  onChange={handleFileChange}
+                  disabled={!isEditing}
+                />
+              </div>
             </div>
           </div>
         </header>
@@ -217,15 +223,6 @@ const UserProfile: React.FC = () => {
                   type="url"
                   value={formData.linkedin}
                   onChange={handleChange}
-                  disabled={!isEditing}
-                />
-              </div>
-              <div>
-                <Label htmlFor="profile_picture">Profile Picture</Label>
-                <Input
-                  id="profile_picture"
-                  type="file"
-                  onChange={handleFileChange}
                   disabled={!isEditing}
                 />
               </div>
