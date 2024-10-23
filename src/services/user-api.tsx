@@ -25,7 +25,7 @@ export const getUserProfile = async (token: string): Promise<UserProfile> => {
         const response = await axios.get<UserProfile>(`${API_URL}/auth/users/me/`, {
             headers: {
                 'Authorization': `Token ${token}`,
-                'Content-Type': 'application/json'
+
 
             }
         });
@@ -41,7 +41,7 @@ export const updateUserProfile = async (token: string, profileData: UserProfile)
         const response = await axios.patch<UserProfile>(`${API_URL}/auth/users/profile/edit/`, profileData, {
             headers: {
                 'Authorization': `Token ${token}`,
-                'Content-Type': 'application/json'
+
             }
         });
         return response.data;
