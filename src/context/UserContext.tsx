@@ -77,7 +77,7 @@ const UserProvider = ({ children }: UserProviderProps) => {
     if (!state.isAuthenticated || !state.token) return;
 
     try {
-      console.log('Token:', state.token);
+
       const userProfile = await getUserProfile(state.token);
       dispatch({ type: 'SET_USER', payload: { user: userProfile } });
     } catch (error) {
@@ -85,7 +85,7 @@ const UserProvider = ({ children }: UserProviderProps) => {
     }
   };
 
-  const updateUserProfile = async (profileData: UserProfile) => {
+  const updateUserProfile = async (profileData: FormData) => {
     if (!state.token) {
       console.error('No token available to update profile.');
       return;

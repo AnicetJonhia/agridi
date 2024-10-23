@@ -9,6 +9,8 @@ export default function MainLayout() {
   const [showButton, setShowButton] = useState(false);
   const mainRef = useRef(null);
 
+
+
   useEffect(() => {
     const handleScroll = () => {
       if (mainRef.current) {
@@ -47,7 +49,7 @@ export default function MainLayout() {
       <Sidebar />
       <div className="flex flex-1 flex-col">
         <Header />
-        <main ref={mainRef} className="flex-1 overflow-x-auto overflow-y-auto">
+        <main ref={mainRef} className="flex-1 overflow-x-auto overflow-y-auto  ">
           <Outlet />
         </main>
         {showButton && (

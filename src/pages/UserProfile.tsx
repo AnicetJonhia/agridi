@@ -11,7 +11,6 @@ const UserProfile: React.FC = () => {
   const { state, fetchUserProfile, updateUserProfile } = useUser();
   const [isEditing, setIsEditing] = useState(false);
 
-
   const [formData, setFormData] = useState({
     username: "",
     first_name: "",
@@ -25,13 +24,14 @@ const UserProfile: React.FC = () => {
     date_of_birth: "",
     alternate_email: "",
     linkedin: "",
+    profile_picture: null,
   });
 
   useEffect(() => {
-      if (state.isAuthenticated && state.token) {
-        fetchUserProfile()
-      }
-    }, [state.isAuthenticated, state.token, fetchUserProfile]);
+    if (state.isAuthenticated && state.token) {
+      fetchUserProfile();
+    }
+  }, [state.isAuthenticated, state.token, fetchUserProfile]);
 
   useEffect(() => {
     if (state.user && !isEditing) {
@@ -48,6 +48,7 @@ const UserProfile: React.FC = () => {
         date_of_birth: state.user.date_of_birth || "",
         alternate_email: state.user.alternate_email || "",
         linkedin: state.user.linkedin || "",
+        profile_picture: state.user.profile_picture || null,
       });
     }
   }, [state.user, isEditing]);
@@ -61,24 +62,44 @@ const UserProfile: React.FC = () => {
     setFormData({ ...formData, [id]: value });
   };
 
-  const handleSave = async () => {
-    if (formData.username && formData.email) {
-      await updateUserProfile(formData);
-      setIsEditing(false);
-    } else {
-      console.error('Validation failed: Missing required fields');
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setFormData({ ...formData, profile_picture: e.target.files[0] });
     }
   };
+
+  const handleSave = async () => {
+  if (formData.username && formData.email) {
+    const updatedData = new FormData();
+    Object.keys(formData).forEach((key) => {
+      // Assurez-vous de ne pas inclure les valeurs nulles et que profile_picture est bien pris en compte.
+      if (formData[key] !== null) {
+        // Ajoute une condition spéciale pour profile_picture car c'est un fichier
+        if (key === 'profile_picture' && formData.profile_picture instanceof File) {
+          updatedData.append(key, formData.profile_picture);
+        } else {
+          updatedData.append(key, formData[key]);
+        }
+      }
+    });
+
+    await updateUserProfile(updatedData);
+    setIsEditing(false);
+  } else {
+    console.error('Validation failed: Missing required fields');
+  }
+};
+
 
   return (
     <div>
       <div className="px-4 space-y-6 md:px-6">
         <header className="space-y-1.5">
           <div className="flex items-center space-x-4">
-            {state.user?.profile_picture ? (
+            {formData.profile_picture ? (
               <img
-                src={state.user.profile_picture}
-                alt="Profile Picture"
+                src={formData.profile_picture instanceof File ? URL.createObjectURL(formData.profile_picture) : formData.profile_picture}
+                alt="you"
                 className="w-24 h-24 border rounded-full object-cover"
               />
             ) : (
@@ -88,9 +109,6 @@ const UserProfile: React.FC = () => {
               <h1 className="text-2xl font-bold">
                 {formData.username || "You"}
               </h1>
-              <p className="text-gray-500 dark:text-gray-400">
-                {formData.role}
-              </p>
             </div>
           </div>
         </header>
@@ -199,6 +217,15 @@ const UserProfile: React.FC = () => {
                   type="url"
                   value={formData.linkedin}
                   onChange={handleChange}
+                  disabled={!isEditing}
+                />
+              </div>
+              <div>
+                <Label htmlFor="profile_picture">Profile Picture</Label>
+                <Input
+                  id="profile_picture"
+                  type="file"
+                  onChange={handleFileChange}
                   disabled={!isEditing}
                 />
               </div>
