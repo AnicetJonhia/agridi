@@ -70,23 +70,25 @@ const UserProfile: React.FC = () => {
 
   const handleSave = async () => {
     if (formData.username && formData.email) {
-      const updatedData = new FormData();
-      Object.keys(formData).forEach((key) => {
-        if (formData[key] !== null) {
-          if (key === 'profile_picture' && formData.profile_picture instanceof File) {
-            updatedData.append(key, formData.profile_picture);
-          } else {
-            updatedData.append(key, formData[key]);
-          }
-        }
-      });
+        const updatedData = new FormData();
+        Object.keys(formData).forEach((key) => {
+            const value = formData[key as keyof typeof formData];
+            if (value !== null) {
+                if (key === 'profile_picture' && value instanceof File) {
+                    updatedData.append(key, value);
+                } else {
+                    updatedData.append(key, value as string);
+                }
+            }
+        });
 
-      await updateUserProfile(updatedData);
-      setIsEditing(false);
+        await updateUserProfile(updatedData);
+        setIsEditing(false);
     } else {
-      console.error('Validation failed: Missing required fields');
+        console.error('Validation failed: Missing required fields');
     }
-  };
+};
+
 
   return (
     <div>
