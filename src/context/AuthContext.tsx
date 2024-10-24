@@ -72,6 +72,7 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
                     type: 'LOGIN_SUCCESS',
                     payload: data
                 });
+
                 return { token: data.token, user: { id: data.user_id, role: data.role } };
             } else {
                 return { error: 'Invalid credentials' }; // Exemple d'erreur

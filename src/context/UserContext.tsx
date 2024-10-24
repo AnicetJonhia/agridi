@@ -1,4 +1,4 @@
-import { createContext, useReducer, ReactNode, useContext } from 'react';
+import {createContext, useReducer, ReactNode, useContext, useEffect} from 'react';
 import { getUserProfile, updateUserProfile as updateUserProfileAPI } from '../services/user-api';
 
 interface UserProfile {
@@ -83,6 +83,10 @@ const UserProvider = ({ children }: UserProviderProps) => {
       console.error('Failed to fetch user profile:', error);
     }
   };
+
+  useEffect(() => {
+        fetchUserProfile();
+    }, [state.token]);
 
   const updateUserProfile = async (profileData: FormData) => {
     if (!state.token) {

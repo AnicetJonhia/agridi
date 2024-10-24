@@ -27,11 +27,12 @@ const UserProfile: React.FC = () => {
     profile_picture: null as string | File | null,
   });
 
-  useEffect(() => {
-    if (state.isAuthenticated && state.token) {
-      fetchUserProfile();
-    }
-  }, [state.isAuthenticated, state.token]);
+
+   useEffect(() => {
+        if (!state.user) {
+            fetchUserProfile();
+        }
+    }, [state.user]);
 
   useEffect(() => {
     if (state.user && !isEditing) {

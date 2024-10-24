@@ -24,13 +24,7 @@ interface TokenResponse {
     token: string;
 }
 
-// Interface pour les produits
-interface Product {
-    id: number;
-    name: string;
-    price: number;
-    description: string;
-}
+
 
 export const register = async (userData: Record<string, unknown>): Promise<TokenResponse> => {
     try {
