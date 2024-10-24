@@ -27,15 +27,11 @@ const UserProfile: React.FC = () => {
     profile_picture: null as string | File | null,
   });
 
-
-   useEffect(() => {
-        if (!state.user) {
-            fetchUserProfile();
-        }
-    }, [state.user]);
-
-
-
+  useEffect(() => {
+    if (state.token && state.isAuthenticated && !state.user) {
+      fetchUserProfile();
+    }
+  }, [state.token, state.isAuthenticated, state.user]);
 
   useEffect(() => {
     if (state.user && !isEditing) {
@@ -71,48 +67,42 @@ const UserProfile: React.FC = () => {
       setFormData({ ...formData, profile_picture: e.target.files[0] });
     }
     console.log('formData:', formData);
-
   };
 
   useEffect(() => {
-      return () => {
-          if (formData.profile_picture instanceof File) {
-              URL.revokeObjectURL(formData.profile_picture);
-          }
-      };
+    return () => {
+      if (formData.profile_picture instanceof File) {
+        URL.revokeObjectURL(formData.profile_picture);
+      }
+    };
   }, [formData.profile_picture]);
 
   const handleSave = async () => {
-      if (formData.username && formData.email) {
-        const updatedData = new FormData();
-        Object.keys(formData).forEach((key) => {
-          const value = formData[key as keyof typeof formData];
-          if (value !== null) {
-            if (key === 'profile_picture' && value instanceof File) {
-              console.log("Appending file to FormData:", value);
-              updatedData.append(key, value);
-            }else if (key !== 'profile_picture') {
-              console.log(`Appending ${key} to FormData:`, value);
-              updatedData.append(key, value as string);
-            }
-
-
+    if (formData.username && formData.email) {
+      const updatedData = new FormData();
+      Object.keys(formData).forEach((key) => {
+        const value = formData[key as keyof typeof formData];
+        if (value !== null) {
+          if (key === 'profile_picture' && value instanceof File) {
+            console.log("Appending file to FormData:", value);
+            updatedData.append(key, value);
+          } else if (key !== 'profile_picture') {
+            console.log(`Appending ${key} to FormData:`, value);
+            updatedData.append(key, value as string);
           }
-        });
-          console.log([...updatedData]);
-        try {
-          await updateUserProfile(updatedData);
-          setIsEditing(false);
-
-        } catch (error) {
-          console.error('Failed to update profile:', error);
         }
-      } else {
-        console.error('Validation failed: Missing required fields');
+      });
+      console.log([...updatedData]);
+      try {
+        await updateUserProfile(updatedData);
+        setIsEditing(false);
+      } catch (error) {
+        console.error('Failed to update profile:', error);
       }
-    };
-
-
+    } else {
+      console.error('Validation failed: Missing required fields');
+    }
+  };
 
   return (
     <div>
@@ -124,7 +114,6 @@ const UserProfile: React.FC = () => {
                 src={formData.profile_picture instanceof File ? URL.createObjectURL(formData.profile_picture) : formData.profile_picture}
                 alt="you"
                 className="w-24 h-24 border rounded-full object-cover"
-
               />
             ) : (
               <UserRound className="w-24 h-24 border rounded-full" />

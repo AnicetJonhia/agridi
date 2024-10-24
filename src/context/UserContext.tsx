@@ -74,19 +74,21 @@ const UserProvider = ({ children }: UserProviderProps) => {
   const [state, dispatch] = useReducer(userReducer, initialState);
 
   const fetchUserProfile = async () => {
-    if (!state.isAuthenticated || !state.token) return;
+      if (!state.isAuthenticated || !state.token) return;
 
-    try {
-      const userProfile = await getUserProfile(state.token);
-      dispatch({ type: 'SET_USER', payload: { user: userProfile } });
-    } catch (error) {
-      console.error('Failed to fetch user profile:', error);
-    }
+      try {
+        const userProfile = await getUserProfile(state.token);
+        dispatch({ type: 'SET_USER', payload: { user: userProfile } });
+      } catch (error) {
+        console.error('Failed to fetch user profile:', error);
+      }
   };
 
   useEffect(() => {
+      if (state.token && state.isAuthenticated && !state.user) {
         fetchUserProfile();
-    }, [state.token]);
+      }
+  }, [state.token, state.isAuthenticated]);
 
   const updateUserProfile = async (profileData: FormData) => {
     if (!state.token) {
