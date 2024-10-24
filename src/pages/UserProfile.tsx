@@ -24,14 +24,14 @@ const UserProfile: React.FC = () => {
     date_of_birth: "",
     alternate_email: "",
     linkedin: "",
-    profile_picture: null,
+    profile_picture: null as string | File | null,
   });
 
   useEffect(() => {
     if (state.isAuthenticated && state.token) {
       fetchUserProfile();
     }
-  }, [state.isAuthenticated, state.token, fetchUserProfile]);
+  }, [state.isAuthenticated, state.token]);
 
   useEffect(() => {
     if (state.user && !isEditing) {
@@ -66,29 +66,37 @@ const UserProfile: React.FC = () => {
     if (e.target.files && e.target.files[0]) {
       setFormData({ ...formData, profile_picture: e.target.files[0] });
     }
+    console.log('formData:', formData);
+
   };
 
   const handleSave = async () => {
-    if (formData.username && formData.email) {
+      if (formData.username && formData.email) {
         const updatedData = new FormData();
         Object.keys(formData).forEach((key) => {
-            const value = formData[key as keyof typeof formData];
-            if (value !== null) {
-                if (key === 'profile_picture' && value instanceof File) {
-                    updatedData.append(key, value);
-                } else {
-                    updatedData.append(key, value as string);
-                }
+          const value = formData[key as keyof typeof formData];
+          if (value !== null) {
+            if (key === 'profile_picture' && value instanceof File) {
+              console.log("Appending file to FormData:", value);
+              updatedData.append(key, value);
+            } else {
+              console.log(`Appending ${key} to FormData:`, value);
+              updatedData.append(key, value as string);
             }
+          }
         });
 
-        await updateUserProfile(updatedData);
-        setIsEditing(false);
-    } else {
-        console.error('Validation failed: Missing required fields');
-    }
-};
+        try {
+          await updateUserProfile(updatedData);
+          setIsEditing(false);
 
+        } catch (error) {
+          console.error('Failed to update profile:', error);
+        }
+      } else {
+        console.error('Validation failed: Missing required fields');
+      }
+    };
 
   return (
     <div>
@@ -100,6 +108,7 @@ const UserProfile: React.FC = () => {
                 src={formData.profile_picture instanceof File ? URL.createObjectURL(formData.profile_picture) : formData.profile_picture}
                 alt="you"
                 className="w-24 h-24 border rounded-full object-cover"
+
               />
             ) : (
               <UserRound className="w-24 h-24 border rounded-full" />
@@ -109,7 +118,6 @@ const UserProfile: React.FC = () => {
                 {formData.username || "You"}
               </h1>
               <div>
-
                 <Input
                   id="profile_picture"
                   type="file"

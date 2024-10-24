@@ -37,7 +37,7 @@ interface UserAction {
 interface UserContextType {
   state: UserState;
   fetchUserProfile: () => Promise<void>;
-  updateUserProfile: (profileData: UserProfile) => Promise<void>;
+  updateUserProfile: (profileData: FormData) => Promise<void>;
 }
 
 // Create context
@@ -77,7 +77,6 @@ const UserProvider = ({ children }: UserProviderProps) => {
     if (!state.isAuthenticated || !state.token) return;
 
     try {
-
       const userProfile = await getUserProfile(state.token);
       dispatch({ type: 'SET_USER', payload: { user: userProfile } });
     } catch (error) {
@@ -94,6 +93,7 @@ const UserProvider = ({ children }: UserProviderProps) => {
     try {
       const updatedProfile = await updateUserProfileAPI(state.token, profileData);
       dispatch({ type: 'UPDATE_PROFILE', payload: { user: updatedProfile } });
+      return  updatedProfile;
     } catch (error) {
       console.error('Failed to update user profile:', error);
     }

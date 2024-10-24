@@ -18,38 +18,35 @@ interface UserProfile {
   linkedin?: string;
 }
 
-
 // Fetch user profile
 export const getUserProfile = async (token: string): Promise<UserProfile> => {
-    try {
-        const response = await axios.get<UserProfile>(`${API_URL}/auth/users/me/`, {
-            headers: {
-                'Authorization': `Token ${token}`,
-
-
-            }
-        });
-        return response.data;
-    } catch (error) {
-        console.error('Error fetching user profile:', error);
-        throw error;
-    }
+  try {
+    const response = await axios.get<UserProfile>(`${API_URL}/auth/users/me/`, {
+      headers: {
+        'Authorization': `Token ${token}`,
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching user profile:', error);
+    throw error;
+  }
 };
 
-export const updateUserProfile = async (token: string, profileData: UserProfile): Promise<UserProfile> => {
-    try {
-        const response = await axios.patch<UserProfile>(`${API_URL}/auth/users/profile/edit/`, profileData, {
-            headers: {
-                'Authorization': `Token ${token}`,
-                'Content-Type': 'multipart/form-data',
-            }
-        });
-        return response.data;
-    } catch (error) {
-        if (axios.isAxiosError(error) && error.response) {
-            console.error('Server response:', error.response.data); // Log server response
-        }
-        console.error('Error updating user profile:', error);
-        throw error;
+export const updateUserProfile = async (token: string, profileData: FormData): Promise<UserProfile> => {
+  try {
+    const response = await axios.patch<UserProfile>(`${API_URL}/auth/users/profile/edit/`, profileData, {
+      headers: {
+        'Authorization': `Token ${token}`,
+        'Content-Type': 'multipart/form-data',
+      }
+    });
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response) {
+      console.error('Server response:', error.response.data); // Log server response
     }
+    console.error('Error updating user profile:', error);
+    throw error;
+  }
 };
