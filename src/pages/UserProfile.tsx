@@ -34,6 +34,9 @@ const UserProfile: React.FC = () => {
         }
     }, [state.user]);
 
+
+
+
   useEffect(() => {
     if (state.user && !isEditing) {
       setFormData({
@@ -71,6 +74,14 @@ const UserProfile: React.FC = () => {
 
   };
 
+  useEffect(() => {
+      return () => {
+          if (formData.profile_picture instanceof File) {
+              URL.revokeObjectURL(formData.profile_picture);
+          }
+      };
+  }, [formData.profile_picture]);
+
   const handleSave = async () => {
       if (formData.username && formData.email) {
         const updatedData = new FormData();
@@ -80,13 +91,15 @@ const UserProfile: React.FC = () => {
             if (key === 'profile_picture' && value instanceof File) {
               console.log("Appending file to FormData:", value);
               updatedData.append(key, value);
-            } else {
+            }else if (key !== 'profile_picture') {
               console.log(`Appending ${key} to FormData:`, value);
               updatedData.append(key, value as string);
             }
+
+
           }
         });
-
+          console.log([...updatedData]);
         try {
           await updateUserProfile(updatedData);
           setIsEditing(false);
@@ -98,6 +111,8 @@ const UserProfile: React.FC = () => {
         console.error('Validation failed: Missing required fields');
       }
     };
+
+
 
   return (
     <div>
