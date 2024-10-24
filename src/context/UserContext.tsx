@@ -1,4 +1,4 @@
-import {createContext, useReducer, ReactNode, useContext, useEffect} from 'react';
+import { createContext, useReducer, ReactNode, useContext, useEffect } from 'react';
 import { getUserProfile, updateUserProfile as updateUserProfileAPI } from '../services/user-api';
 
 interface UserProfile {
@@ -18,14 +18,12 @@ interface UserProfile {
   is_active?: boolean;
 }
 
-// State interface
 interface UserState {
   isAuthenticated: boolean;
   user: UserProfile | null;
   token: string | null;
 }
 
-// Action types
 interface UserAction {
   type: 'SET_USER' | 'UPDATE_PROFILE';
   payload?: {
@@ -33,14 +31,12 @@ interface UserAction {
   };
 }
 
-// Context interface
 interface UserContextType {
   state: UserState;
   fetchUserProfile: () => Promise<void>;
   updateUserProfile: (profileData: FormData) => Promise<void>;
 }
 
-// Create context
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 const initialState: UserState = {
@@ -49,7 +45,6 @@ const initialState: UserState = {
   isAuthenticated: !!localStorage.getItem('token'),
 };
 
-// Reducer function
 const userReducer = (state: UserState, action: UserAction): UserState => {
   switch (action.type) {
     case 'SET_USER':
@@ -64,31 +59,29 @@ const userReducer = (state: UserState, action: UserAction): UserState => {
   }
 };
 
-// UserProvider props interface
 interface UserProviderProps {
   children: ReactNode;
 }
 
-// UserProvider component
 const UserProvider = ({ children }: UserProviderProps) => {
   const [state, dispatch] = useReducer(userReducer, initialState);
 
   const fetchUserProfile = async () => {
-      if (!state.isAuthenticated || !state.token) return;
+    if (!state.token) return;
 
-      try {
-        const userProfile = await getUserProfile(state.token);
-        dispatch({ type: 'SET_USER', payload: { user: userProfile } });
-      } catch (error) {
-        console.error('Failed to fetch user profile:', error);
-      }
+    try {
+      const userProfile = await getUserProfile(state.token);
+      dispatch({ type: 'SET_USER', payload: { user: userProfile } });
+    } catch (error) {
+      console.error('Failed to fetch user profile:', error);
+    }
   };
 
   useEffect(() => {
-      if (state.token && state.isAuthenticated && !state.user) {
-        fetchUserProfile();
-      }
-  }, [state.token, state.isAuthenticated]);
+    if (state.token && !state.user) {
+      fetchUserProfile();
+    }
+  }, [state.token]);
 
   const updateUserProfile = async (profileData: FormData) => {
     if (!state.token) {
@@ -99,7 +92,7 @@ const UserProvider = ({ children }: UserProviderProps) => {
     try {
       const updatedProfile = await updateUserProfileAPI(state.token, profileData);
       dispatch({ type: 'UPDATE_PROFILE', payload: { user: updatedProfile } });
-      return  updatedProfile;
+      return updatedProfile;
     } catch (error) {
       console.error('Failed to update user profile:', error);
     }
@@ -112,7 +105,6 @@ const UserProvider = ({ children }: UserProviderProps) => {
   );
 };
 
-// Custom hook for using UserContext
 const useUser = (): UserContextType => {
   const context = useContext(UserContext);
   if (!context) {

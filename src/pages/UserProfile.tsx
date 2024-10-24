@@ -5,12 +5,10 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { UserRound } from "lucide-react";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
-import { useUser } from "@/context/UserContext";
+import { getUserProfile, updateUserProfile } from "@/services/user-api";
 
 const UserProfile: React.FC = () => {
-  const { state, fetchUserProfile, updateUserProfile } = useUser();
   const [isEditing, setIsEditing] = useState(false);
-
   const [formData, setFormData] = useState({
     username: "",
     first_name: "",
@@ -28,30 +26,34 @@ const UserProfile: React.FC = () => {
   });
 
   useEffect(() => {
-    if (state.token && state.isAuthenticated && !state.user) {
-      fetchUserProfile();
-    }
-  }, [state.token, state.isAuthenticated, state.user]);
+    const fetchProfile = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (token) {
+          const userProfile = await getUserProfile(token);
+          setFormData({
+            username: userProfile.username || "",
+            first_name: userProfile.first_name || "",
+            last_name: userProfile.last_name || "",
+            email: userProfile.email || "",
+            phone_number: userProfile.phone_number || "",
+            address: userProfile.address || "",
+            bio: userProfile.bio || "",
+            website: userProfile.website || "",
+            role: userProfile.role || "",
+            date_of_birth: userProfile.date_of_birth || "",
+            alternate_email: userProfile.alternate_email || "",
+            linkedin: userProfile.linkedin || "",
+            profile_picture: userProfile.profile_picture || null,
+          });
+        }
+      } catch (error) {
+        console.error('Failed to fetch user profile:', error);
+      }
+    };
 
-  useEffect(() => {
-    if (state.user && !isEditing) {
-      setFormData({
-        username: state.user.username || "",
-        first_name: state.user.first_name || "",
-        last_name: state.user.last_name || "",
-        email: state.user.email || "",
-        phone_number: state.user.phone_number || "",
-        address: state.user.address || "",
-        bio: state.user.bio || "",
-        website: state.user.website || "",
-        role: state.user.role || "",
-        date_of_birth: state.user.date_of_birth || "",
-        alternate_email: state.user.alternate_email || "",
-        linkedin: state.user.linkedin || "",
-        profile_picture: state.user.profile_picture || null,
-      });
-    }
-  }, [state.user, isEditing]);
+    fetchProfile();
+  }, []);
 
   const handleEditToggle = () => {
     setIsEditing(!isEditing);
@@ -66,7 +68,6 @@ const UserProfile: React.FC = () => {
     if (e.target.files && e.target.files[0]) {
       setFormData({ ...formData, profile_picture: e.target.files[0] });
     }
-    console.log('formData:', formData);
   };
 
   useEffect(() => {
@@ -84,18 +85,19 @@ const UserProfile: React.FC = () => {
         const value = formData[key as keyof typeof formData];
         if (value !== null) {
           if (key === 'profile_picture' && value instanceof File) {
-            console.log("Appending file to FormData:", value);
             updatedData.append(key, value);
           } else if (key !== 'profile_picture') {
-            console.log(`Appending ${key} to FormData:`, value);
             updatedData.append(key, value as string);
           }
         }
       });
-      console.log([...updatedData]);
+
       try {
-        await updateUserProfile(updatedData);
-        setIsEditing(false);
+        const token = localStorage.getItem('token');
+        if (token) {
+          await updateUserProfile(token, updatedData);
+          setIsEditing(false);
+        }
       } catch (error) {
         console.error('Failed to update profile:', error);
       }
