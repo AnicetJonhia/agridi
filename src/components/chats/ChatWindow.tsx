@@ -1,11 +1,11 @@
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Textarea } from "@/components/ui/textarea"; // Importer Textarea
+import { Textarea } from "@/components/ui/textarea";
 import { MoveLeft, Paperclip, Send } from "lucide-react";
 import Picker from "emoji-picker-react";
 import { useState } from "react";
 
-// @ts-expect-error
-export function ChatWindow({ sender, onBack }) {
+// @ts-ignore
+export function ChatWindow({ sender, messages, onBack, onSendMessage }) {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [message, setMessage] = useState("");
 
@@ -16,7 +16,7 @@ export function ChatWindow({ sender, onBack }) {
 
   const handleSendMessage = () => {
     if (message.trim()) {
-      console.log("Message envoyé :", message);
+      onSendMessage(message); // Utiliser la fonction d'envoi de message
       setMessage("");
     }
   };
@@ -43,30 +43,29 @@ export function ChatWindow({ sender, onBack }) {
         </div>
       </header>
       <main className="flex-1 overflow-y-scroll h-auto p-4 space-y-4">
-        <div className="flex items-end space-x-2">
-          <Avatar>
-            <AvatarImage src={sender.avatar} alt="User Avatar" />
-            <AvatarFallback>U</AvatarFallback>
-          </Avatar>
-          <div className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800">
-            <p className="text-sm">{sender.lastMessage}</p>
+        {messages.map((msg) => (
+          <div key={msg.id} className={`flex items-end space-x-2 ${msg.sender.id === sender.id ? 'justify-start' : 'justify-end'}`}>
+            <Avatar>
+              <AvatarImage src={msg.sender.avatar} alt="User Avatar" />
+              <AvatarFallback>U</AvatarFallback>
+            </Avatar>
+            <div className={`p-2 rounded-lg ${msg.sender.id === sender.id ? 'bg-gray-100 dark:bg-gray-800' : 'bg-primary text-foreground'}`}>
+              <p className="text-sm">{msg.content}</p>
+            </div>
           </div>
-        </div>
+        ))}
       </main>
       <footer className="flex items-center space-x-2 p-2 border-b border-t">
         <div className="flex items-center space-x-2 flex-1">
           <Paperclip className="w-6 h-6 text-muted-foreground cursor-pointer" />
           <Textarea
-            className="flex-1 resize-none h-10 p-2    focus:ring-2 focus:ring-blue-500"
+            className="flex-1 resize-none h-10 p-2 focus:ring-2 focus:ring-blue-500"
             placeholder="Type a message"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            onKeyDown={handleKeyDown} // Gérer l'appui sur la touche Entrée
+            onKeyDown={handleKeyDown}
           />
-          <button
-            onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-            className="cursor-pointer"
-          >
+          <button onClick={() => setShowEmojiPicker(!showEmojiPicker)} className="cursor-pointer">
             😊
           </button>
         </div>
