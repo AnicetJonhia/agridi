@@ -1,7 +1,7 @@
 
 
 import React from 'react';
-import useUserStore from '@/store/userStore';
+import useUserStore from '@/stores/userStore';
 
 const Needs: React.FC = () => {
   const { user } = useUserStore();

@@ -49,7 +49,7 @@ export default function MainLayout() {
       <Sidebar />
       <div className="flex flex-1 flex-col">
         <Header />
-        <main ref={mainRef} className="flex-1 overflow-x-auto overflow-y-auto  ">
+        <main ref={mainRef} className="flex-1 overflow-x-scroll overflow-y-scroll  ">
           <Outlet />
         </main>
         {showButton && (

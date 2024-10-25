@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { UserRound } from "lucide-react";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
-import useUserStore from "@/store/userStore.ts";
+import useUserStore from "@/stores/userStore.ts";
 
 const UserProfile: React.FC = () => {
   const { user, fetchUserProfile, updateUserProfile } = useUserStore();
@@ -91,7 +91,7 @@ const UserProfile: React.FC = () => {
 
   return (
     <div>
-      <div className="px-4 space-y-6 md:px-6">
+      <div className="px-4 space-y-6 md:px-6 m-">
         <header className="space-y-1.5">
           <div className="flex items-center space-x-4">
             {formData.profile_picture ? (
