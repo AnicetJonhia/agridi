@@ -16,13 +16,13 @@ import Login from "@/pages/auth/Login.tsx"
 import Register from "@/pages/auth/Register.tsx";
 import UserProfile from "@/pages/UserProfile";
 import { ThemeProvider } from "@/context/ThemeContext";
-import { UserProvider } from "@/context/UserContext";
+
 
 function App() {
     return (
         <ThemeProvider>
             <AuthProvider>
-                <UserProvider>
+
                     <BrowserRouter>
                         <Routes>
                             <Route element={<AuthLayout />}>
@@ -46,7 +46,7 @@ function App() {
                             </Route>
                         </Routes>
                     </BrowserRouter>
-                </UserProvider>
+
             </AuthProvider>
         </ThemeProvider>
     );

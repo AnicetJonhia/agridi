@@ -5,10 +5,12 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { UserRound } from "lucide-react";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
-import { getUserProfile, updateUserProfile } from "@/services/user-api";
+import useUserStore from "@/store/userStore.ts";
 
 const UserProfile: React.FC = () => {
+  const { user, fetchUserProfile, updateUserProfile } = useUserStore();
   const [isEditing, setIsEditing] = useState(false);
+
   const [formData, setFormData] = useState({
     username: "",
     first_name: "",
@@ -26,34 +28,18 @@ const UserProfile: React.FC = () => {
   });
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        if (token) {
-          const userProfile = await getUserProfile(token);
-          setFormData({
-            username: userProfile.username || "",
-            first_name: userProfile.first_name || "",
-            last_name: userProfile.last_name || "",
-            email: userProfile.email || "",
-            phone_number: userProfile.phone_number || "",
-            address: userProfile.address || "",
-            bio: userProfile.bio || "",
-            website: userProfile.website || "",
-            role: userProfile.role || "",
-            date_of_birth: userProfile.date_of_birth || "",
-            alternate_email: userProfile.alternate_email || "",
-            linkedin: userProfile.linkedin || "",
-            profile_picture: userProfile.profile_picture || null,
-          });
-        }
-      } catch (error) {
-        console.error('Failed to fetch user profile:', error);
-      }
-    };
 
+    const fetchProfile = async () => {
+      await fetchUserProfile();
+    };
     fetchProfile();
-  }, []);
+  }, [fetchUserProfile]);
+
+  useEffect(() => {
+    if (user) {
+      setFormData({ ...user });
+    }
+  }, [user]);
 
   const handleEditToggle = () => {
     setIsEditing(!isEditing);
@@ -93,11 +79,8 @@ const UserProfile: React.FC = () => {
       });
 
       try {
-        const token = localStorage.getItem('token');
-        if (token) {
-          await updateUserProfile(token, updatedData);
-          setIsEditing(false);
-        }
+        await updateUserProfile(updatedData);
+        setIsEditing(false);
       } catch (error) {
         console.error('Failed to update profile:', error);
       }
