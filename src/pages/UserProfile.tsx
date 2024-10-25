@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { UserRound } from "lucide-react";
+import {Pencil, Pocket, UserRound, X} from "lucide-react";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import useUserStore from "@/stores/userStore.ts";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -134,7 +134,7 @@ const UserProfile: React.FC = () => {
 
   return (
     <div>
-      <div className="px-4 space-y-6 md:px-6 mt-2">
+      <div className="px-4 space-y-6 md:px-6 mt-2 mb-2">
         <header className="space-y-1.5">
           <div className="flex items-center space-x-4" onClick={() => setIsDialogOpen(true)}>
             {formData.profile_picture ? (
@@ -292,24 +292,29 @@ const UserProfile: React.FC = () => {
           </div>
         </div>
 
-        <div className="mt-8 space-x-4">
+        <div className="mt-8  space-x-4">
           {isEditing ? (
-            <>
-              <Button variant="outline" onClick={handleEditToggle}>
-                Cancel
-              </Button>
-              <Button onClick={handleSave}>Save</Button>
-            </>
+              <div className="flex justify-end items-center space-x-4">
+                <Button variant="destructive" onClick={handleEditToggle}>
+                  <X/>
+                </Button>
+                <Button onClick={handleSave}>
+                  <span className="mr-2">Save</span>
+                  <Pocket/>
+                </Button>
+              </div>
           ) : (
-            <Button size="lg" onClick={handleEditToggle}>
-              Edit
-            </Button>
+              <div className={"flex justify-end"}>
+                <Button size="lg" onClick={handleEditToggle} className={"space-x-2  "}>
+                <span>Edit</span> <Pencil/>
+              </Button>
+              </div>
           )}
         </div>
       </div>
 
       <Dialog open={isDialogOpen} onOpenChange={(open) => {
-          if (!open) {
+        if (!open) {
             // When the dialog is closed, do not reset the profile picture
             setTempProfilePicture(formData.profile_picture instanceof File ? formData.profile_picture : null);
           }
@@ -346,7 +351,7 @@ const UserProfile: React.FC = () => {
             </div>
             <div className="flex w-full justify-end mt-4">
               {tempProfilePicture && (
-                <Button onClick={handleFileSave}>Save</Button>
+                  <Button onClick={handleFileSave} className={"space-x-2"}><span>Save</span> <Pocket /></Button>
               )}
             </div>
           </DialogContent>

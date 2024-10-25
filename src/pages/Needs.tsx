@@ -1,19 +1,25 @@
+import  { useState } from 'react';
+import Picker from 'emoji-picker-react';
 
+const Needs = () => {
+  const [chosenEmoji, setChosenEmoji] = useState(null);
 
-import React from 'react';
-import useUserStore from '@/stores/userStore';
+  const onEmojiClick = (event, emojiObject) => {
+    setChosenEmoji(emojiObject);
+  };
 
-const Needs: React.FC = () => {
-  const { user } = useUserStore();
-  if (!user) return null;
-
-
+  // @ts-ignore
   return (
     <div>
-      <h1>{user?.username} , what do you need???</h1>
-
+      {chosenEmoji ? (
+        <span>You chose: {chosenEmoji.emoji}</span>
+      ) : (
+        <span>No emoji Chosen</span>
+      )}
+      <Picker onEmojiClick={onEmojiClick} />
     </div>
   );
 };
+
 
 export default Needs;
