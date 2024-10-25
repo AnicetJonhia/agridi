@@ -16,6 +16,7 @@ import { ToggleDarkMode } from "./ToggleDarkMode";
 import { Link } from "react-router-dom";
 import LanguageSwitcher  from "@/components/LanguageSwitcher.tsx";
 import { CoolMode } from "@/components/ui/cool-mode";
+import {useState} from "react";
 
 
 // @ts-ignore
@@ -30,6 +31,10 @@ const NavLink = ({ to, children, icon: Icon }) => (
 );
 
 export default function AuthHeader() {
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const closeDropdown = () => {
+    setIsDropdownOpen(false);
+  }
   return (
     <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6">
       <nav className="flex-1 grid gap-2 text-lg font-medium">
@@ -67,7 +72,7 @@ export default function AuthHeader() {
 
 
       <div className="md:hidden">
-        <DropdownMenu>
+        <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
           <DropdownMenuTrigger asChild>
             <Button variant="secondary" size="icon" className="rounded-full">
               <Menu className="h-5 w-5"/>
@@ -76,7 +81,7 @@ export default function AuthHeader() {
           </DropdownMenuTrigger>
 
           <DropdownMenuContent align="end" className="animate-slide-down ">
-            <DropdownMenuItem className="ml-2" asChild>
+            <DropdownMenuItem className="ml-2" asChild onClick={closeDropdown}>
              <Link
                 to={"/"}
                 className=" block text-foreground hover:text-primary transition-colors duration-200  items-center gap-2"
@@ -86,14 +91,14 @@ export default function AuthHeader() {
 
             <DropdownMenuSeparator/>
 
-            <DropdownMenuItem asChild>
-              <Button variant="outline" className="w-full mt-2 p-3">
+            <DropdownMenuItem asChild >
+              <Button variant="outline" className="w-full mt-2 p-3" onClick={closeDropdown}>
                 <NavLink  to="/login" icon={LogIn}>Login</NavLink>
               </Button>
             </DropdownMenuItem>
 
-            <DropdownMenuItem asChild>
-              <Button className="w-full mt-2 p-3">
+            <DropdownMenuItem asChild >
+              <Button className="w-full mt-2 p-3" onClick={closeDropdown}>
                 <NavLink to="/register" icon={UserPlus}>Register</NavLink>
               </Button>
             </DropdownMenuItem>

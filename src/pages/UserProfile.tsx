@@ -6,10 +6,20 @@ import { Textarea } from "@/components/ui/textarea";
 import { UserRound } from "lucide-react";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import useUserStore from "@/stores/userStore.ts";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useToast } from "@/hooks/use-toast.ts";
+import {Toaster} from "@/components/ui/toaster.tsx";
+import {CloudDownload} from "lucide-react";
 
 const UserProfile: React.FC = () => {
   const { user, fetchUserProfile, updateUserProfile } = useUserStore();
   const [isEditing, setIsEditing] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const { toast } = useToast();
+
+  const handleOpenDialog = () => {
+    setIsDialogOpen(true);
+  }
 
   const [formData, setFormData] = useState({
     username: "",
@@ -28,7 +38,6 @@ const UserProfile: React.FC = () => {
   });
 
   useEffect(() => {
-
     const fetchProfile = async () => {
       await fetchUserProfile();
     };
@@ -56,6 +65,30 @@ const UserProfile: React.FC = () => {
     }
   };
 
+  const handleFileSave = async () => {
+    if (formData.profile_picture instanceof File) {
+      const updatedData = new FormData();
+      updatedData.append('profile_picture', formData.profile_picture);
+
+      try {
+        await updateUserProfile(updatedData);
+        setIsDialogOpen(false);
+        toast({
+          title: "Success",
+          description: "Profile picture updated successfully.",
+
+        });
+      } catch (error) {
+        console.error('Failed to update profile picture:', error);
+        toast({
+          title: "Error",
+          description: "Failed to update profile picture. Please try again.",
+
+        });
+      }
+    }
+  }
+
   useEffect(() => {
     return () => {
       if (formData.profile_picture instanceof File) {
@@ -81,24 +114,39 @@ const UserProfile: React.FC = () => {
       try {
         await updateUserProfile(updatedData);
         setIsEditing(false);
+        toast({
+          title: "Success",
+          description: "Profile updated successfully.",
+
+        });
       } catch (error) {
         console.error('Failed to update profile:', error);
+        toast({
+          title: "Error",
+          description: "Failed to update profile. Please try again.",
+
+        });
       }
     } else {
       console.error('Validation failed: Missing required fields');
+      toast({
+        title: "Validation Error",
+        description: "Please fill in all required fields.",
+
+      });
     }
   };
 
   return (
     <div>
-      <div className="px-4 space-y-6 md:px-6 m-">
+      <div className="px-4 space-y-6 md:px-6 mt-2">
         <header className="space-y-1.5">
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-4" onClick={handleOpenDialog}>
             {formData.profile_picture ? (
               <img
                 src={formData.profile_picture instanceof File ? URL.createObjectURL(formData.profile_picture) : formData.profile_picture}
                 alt="you"
-                className="w-24 h-24 border rounded-full object-cover"
+                className="w-24 h-24 border rounded-full object-cover cursor-pointer"
               />
             ) : (
               <UserRound className="w-24 h-24 border rounded-full" />
@@ -107,14 +155,6 @@ const UserProfile: React.FC = () => {
               <h1 className="text-2xl font-bold">
                 {formData.username || "You"}
               </h1>
-              <div>
-                <Input
-                  id="profile_picture"
-                  type="file"
-                  onChange={handleFileChange}
-                  disabled={!isEditing}
-                />
-              </div>
             </div>
           </div>
         </header>
@@ -272,6 +312,52 @@ const UserProfile: React.FC = () => {
           )}
         </div>
       </div>
+
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Change your profile picture</DialogTitle>
+          </DialogHeader>
+          <img
+            src={
+              formData.profile_picture instanceof File
+                ? URL.createObjectURL(formData.profile_picture)
+                : formData.profile_picture
+            }
+            alt="Profile"
+            className="w-full h-full object-cover rounded-tl-lg rounded-tr-lg"
+          />
+
+
+        <div className="mt-4 flex flex-col items-start space-y-2">
+          <Label
+            htmlFor="profile_picture"
+            className="flex items-center cursor-pointer text-muted-foreground hover:text-foreground space-x-2"
+          >
+            <CloudDownload />
+            <span>Choose a new profile picture</span>
+          </Label>
+
+          <Input
+            id="profile_picture"
+            type="file"
+            onChange={handleFileChange}
+            accept="image/*"
+            style={{ display: 'none' }}
+          />
+        </div>
+
+          <div className="flex w-full justify-end mt-4">
+              {formData.profile_picture && (
+                <Button onClick={handleFileSave}>Save</Button>
+              )}
+          </div>
+        </DialogContent>
+
+      </Dialog>
+
+
+      <Toaster/>
     </div>
   );
 };

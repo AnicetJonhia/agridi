@@ -14,11 +14,15 @@ import LanguageSwitcher  from "@/components/LanguageSwitcher.tsx";
 import Logout from "@/components/Logout.tsx";
 
 export default function Header() {
-  const [isSheetOpen, setIsSheetOpen] = useState(false); // État pour gérer l'ouverture du Sheet
-
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const logoutButtonRef = useRef(null);
   const closeSheet = () => {
     setIsSheetOpen(false); // Fonction pour fermer le Sheet
+  };
+
+  const closeDropdown = () => {
+    setIsDropdownOpen(false);
   };
 
   return (
@@ -67,7 +71,7 @@ export default function Header() {
       <LanguageSwitcher/>
       <ToggleDarkMode />
 
-      <DropdownMenu>
+      <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
         <DropdownMenuTrigger asChild>
           <Button variant="secondary" size="icon" className="rounded-full">
             <CircleUser className="h-5 w-5" />
@@ -77,10 +81,10 @@ export default function Header() {
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>My Account</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem className={"cursor-pointer"} >
-            <Link to={"/profile"}>Profile</Link>
+          <DropdownMenuItem className={"cursor-pointer"} onClick={closeDropdown}>
+            <Link to={"/profile"} >Profile</Link>
           </DropdownMenuItem>
-          <DropdownMenuItem>Settings</DropdownMenuItem>
+          <DropdownMenuItem onClick={closeDropdown}>Settings</DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem asChild>
                 <Logout ref={logoutButtonRef}/>
