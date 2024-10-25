@@ -1,11 +1,19 @@
 
 
-const Needs = () => {
-    return (
-        <div className="flex items-center">
-            <h1 className="text-lg font-semibold md:text-2xl">Needs</h1>
-        </div>
-    );
+import React from 'react';
+import useUserStore from '@/store/userStore';
+
+const Needs: React.FC = () => {
+  const { user } = useUserStore();
+  if (!user) return null;
+
+
+  return (
+    <div>
+      <h1>{user?.username} , what do you need???</h1>
+
+    </div>
+  );
 };
 
 export default Needs;
