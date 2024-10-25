@@ -17,10 +17,6 @@ const UserProfile: React.FC = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { toast } = useToast();
 
-  const handleOpenDialog = () => {
-    setIsDialogOpen(true);
-  }
-
   const [formData, setFormData] = useState({
     username: "",
     first_name: "",
@@ -36,6 +32,9 @@ const UserProfile: React.FC = () => {
     linkedin: "",
     profile_picture: null as string | File | null,
   });
+
+  // New state to track the currently selected file
+  const [tempProfilePicture, setTempProfilePicture] = useState<File | null>(null);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -61,41 +60,40 @@ const UserProfile: React.FC = () => {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setFormData({ ...formData, profile_picture: e.target.files[0] });
+      setTempProfilePicture(e.target.files[0]); // Set the temporary file
     }
   };
 
   const handleFileSave = async () => {
-    if (formData.profile_picture instanceof File) {
+    if (tempProfilePicture) {
       const updatedData = new FormData();
-      updatedData.append('profile_picture', formData.profile_picture);
+      updatedData.append('profile_picture', tempProfilePicture);
 
       try {
         await updateUserProfile(updatedData);
+        setFormData({ ...formData, profile_picture: tempProfilePicture }); // Update the profile picture in formData
         setIsDialogOpen(false);
         toast({
           title: "Success",
           description: "Profile picture updated successfully.",
-
         });
       } catch (error) {
         console.error('Failed to update profile picture:', error);
         toast({
           title: "Error",
           description: "Failed to update profile picture. Please try again.",
-
         });
       }
     }
-  }
+  };
 
   useEffect(() => {
     return () => {
-      if (formData.profile_picture instanceof File) {
-        URL.revokeObjectURL(formData.profile_picture);
+      if (tempProfilePicture) {
+        URL.revokeObjectURL(URL.createObjectURL(tempProfilePicture));
       }
     };
-  }, [formData.profile_picture]);
+  }, [tempProfilePicture]);
 
   const handleSave = async () => {
     if (formData.username && formData.email) {
@@ -117,14 +115,12 @@ const UserProfile: React.FC = () => {
         toast({
           title: "Success",
           description: "Profile updated successfully.",
-
         });
       } catch (error) {
         console.error('Failed to update profile:', error);
         toast({
           title: "Error",
           description: "Failed to update profile. Please try again.",
-
         });
       }
     } else {
@@ -132,7 +128,6 @@ const UserProfile: React.FC = () => {
       toast({
         title: "Validation Error",
         description: "Please fill in all required fields.",
-
       });
     }
   };
@@ -141,7 +136,7 @@ const UserProfile: React.FC = () => {
     <div>
       <div className="px-4 space-y-6 md:px-6 mt-2">
         <header className="space-y-1.5">
-          <div className="flex items-center space-x-4" onClick={handleOpenDialog}>
+          <div className="flex items-center space-x-4" onClick={() => setIsDialogOpen(true)}>
             {formData.profile_picture ? (
               <img
                 src={formData.profile_picture instanceof File ? URL.createObjectURL(formData.profile_picture) : formData.profile_picture}
@@ -313,48 +308,49 @@ const UserProfile: React.FC = () => {
         </div>
       </div>
 
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Change your profile picture</DialogTitle>
-          </DialogHeader>
-          <img
-            src={
-              formData.profile_picture instanceof File
-                ? URL.createObjectURL(formData.profile_picture)
-                : formData.profile_picture
-            }
-            alt="Profile"
-            className="w-full h-full object-cover rounded-tl-lg rounded-tr-lg"
-          />
-
-
-        <div className="mt-4 flex flex-col items-start space-y-2">
-          <Label
-            htmlFor="profile_picture"
-            className="flex items-center cursor-pointer text-muted-foreground hover:text-foreground space-x-2"
-          >
-            <CloudDownload />
-            <span>Choose a new profile picture</span>
-          </Label>
-
-          <Input
-            id="profile_picture"
-            type="file"
-            onChange={handleFileChange}
-            accept="image/*"
-            style={{ display: 'none' }}
-          />
-        </div>
-
-          <div className="flex w-full justify-end mt-4">
-              {formData.profile_picture && (
+      <Dialog open={isDialogOpen} onOpenChange={(open) => {
+          if (!open) {
+            // When the dialog is closed, do not reset the profile picture
+            setTempProfilePicture(formData.profile_picture instanceof File ? formData.profile_picture : null);
+          }
+          setIsDialogOpen(open);
+        }}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Change your profile picture</DialogTitle>
+            </DialogHeader>
+            <img
+              src={
+                tempProfilePicture
+                  ? URL.createObjectURL(tempProfilePicture)
+                  : formData.profile_picture
+              }
+              alt="Profile"
+              className="w-full h-full object-cover rounded-tl-lg rounded-tr-lg"
+            />
+            <div className="mt-4 flex flex-col items-start space-y-2">
+              <Label
+                htmlFor="profile_picture"
+                className="flex items-center cursor-pointer text-muted-foreground hover:text-foreground space-x-2"
+              >
+                <CloudDownload />
+                <span>Choose a new profile picture</span>
+              </Label>
+              <Input
+                id="profile_picture"
+                type="file"
+                onChange={handleFileChange}
+                accept="image/*"
+                style={{ display: 'none' }}
+              />
+            </div>
+            <div className="flex w-full justify-end mt-4">
+              {tempProfilePicture && (
                 <Button onClick={handleFileSave}>Save</Button>
               )}
-          </div>
-        </DialogContent>
-
-      </Dialog>
+            </div>
+          </DialogContent>
+        </Dialog>
 
 
       <Toaster/>
