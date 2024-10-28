@@ -4,7 +4,8 @@ import { useState } from "react";
 
 export function ConversationList({ conversations, onSelectConversation }) {
     const [selectedConversationId, setSelectedConversationId] = useState(null);
-    const currentUserId = localStorage.getItem("userId");
+    const currentUserId  = Number(localStorage.getItem("userId"));
+
 
     const handleSelectConversation = (conversation) => {
         setSelectedConversationId(conversation.id);
@@ -32,6 +33,7 @@ export function ConversationList({ conversations, onSelectConversation }) {
     return (
         <div className="w-full lg:w-1/3 border-r p-2 overflow-y-scroll h-full">
             {conversations.map((conversation) => {
+
                 const displayName =
                     currentUserId === conversation.receiver?.id
                         ? conversation.sender?.username // Affiche le nom de l'expéditeur

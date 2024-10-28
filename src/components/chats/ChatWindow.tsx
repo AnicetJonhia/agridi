@@ -7,6 +7,7 @@ import { useState } from "react";
 export function ChatWindow({ conversation, messages, onBack, onSendMessage }) {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [message, setMessage] = useState("");
+  const currentUserId = Number(localStorage.getItem("userId"));
 
   const handleEmojiSelect = (emojiData) => {
     setMessage((prevMessage) => prevMessage + emojiData.emoji);
@@ -35,24 +36,35 @@ export function ChatWindow({ conversation, messages, onBack, onSendMessage }) {
         </div>
         <div className="flex items-center space-x-1">
           <Avatar className="w-10 h-10">
-            <AvatarFallback>{conversation.group?.name.charAt(0) || conversation.receiver?.username.charAt(0) || "U"}</AvatarFallback>
+            <AvatarFallback>{conversation.group?.name?.charAt(0) || conversation.receiver?.username?.charAt(0) || "U"}</AvatarFallback>
           </Avatar>
           <h1 className="text-lg font-semibold">{conversation.group?.name || conversation.receiver?.username || "Unknown"}</h1>
         </div>
       </header>
       <main className="flex-1 overflow-y-scroll h-auto p-4 space-y-4">
-        {messages.map((msg) => (
-          <div key={msg.id} className={`flex items-end space-x-2 ${msg.sender.id === conversation.receiver?.id ? 'justify-end' : 'justify-start'}`}>
-            <Avatar>
-              <AvatarImage src={"test"} alt="User Avatar" />
-              <AvatarFallback>U</AvatarFallback>
-            </Avatar>
-            <div className={`p-2 rounded-lg ${msg.sender.id === conversation.receiver?.id ? 'bg-gray-100' +
-                ' dark:bg-gray-800' : 'bg-primary text-foreground'}`}>
-              <p className="text-sm">{msg.content}</p>
+        {messages.map((msg) => {
+          const isCurrentUserSender = msg.sender.id === currentUserId;
+          return (
+            <div
+              key={msg.id}
+              className={`flex items-end space-x-2 ${isCurrentUserSender ? 'justify-end' : 'justify-start'}`}
+            >
+              {!isCurrentUserSender && (
+                <Avatar>
+                  <AvatarImage src={"test"} alt="User Avatar" />
+                  <AvatarFallback>{msg.sender.username.charAt(0)}</AvatarFallback>
+                </Avatar>
+              )}
+              <div
+                className={`p-2 rounded-lg ${
+                  isCurrentUserSender ? 'bg-primary text-foreground' : 'bg-gray-100 dark:bg-gray-800'
+                }`}
+              >
+                <p className="text-sm">{msg.content}</p>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </main>
       <footer className="flex items-center space-x-2 p-2 border-b border-t">
         <div className="flex items-center space-x-2 flex-1">
