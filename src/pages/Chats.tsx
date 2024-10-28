@@ -3,6 +3,7 @@ import { ConversationList } from "@/components/chats/ConversationList";
 import { ChatWindow } from "@/components/chats/ChatWindow";
 import { getConversations, getChatHistory, sendMessage } from "@/services/chats-api";
 
+
 export default function Chat() {
   const [selectedConversation, setSelectedConversation] = useState(null);
   const [showConversationList, setShowConversationList] = useState(true);
@@ -15,7 +16,12 @@ export default function Chat() {
       if (token) {
         try {
           const fetchedConversations = await getConversations(token);
-          setConversations(fetchedConversations);
+          // setConversations(fetchedConversations);
+          const sortedConversations = fetchedConversations.sort((a, b) =>
+            new Date(b.timestamp) - new Date(a.timestamp)
+          );
+
+          setConversations(sortedConversations);
           if (window.innerWidth >= 1008 && fetchedConversations.length > 0) {
             setSelectedConversation(fetchedConversations[0]);
           }
@@ -25,6 +31,7 @@ export default function Chat() {
       }
     };
     fetchConversations();
+
   }, []);
 
 
@@ -58,38 +65,53 @@ export default function Chat() {
   };
 
   const handleSendMessage = async (content) => {
-  if (selectedConversation) {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      console.error("Token not found");
-      return;
+    if (selectedConversation) {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            console.error("Token not found");
+            return;
+        }
+
+        try {
+            // Envoie du message
+            const newMessage = await sendMessage(
+                selectedConversation.group?.id,
+                selectedConversation.receiver?.id,
+                content,
+                token
+            );
+
+            // Mise à jour des messages dans l'état
+            setMessages((prevMessages) => [...prevMessages, newMessage]);
+
+            // Mise à jour de la conversation sélectionnée pour inclure le dernier message
+            const updatedConversation = {
+                ...selectedConversation,
+                lastMessage: newMessage,
+                timestamp: newMessage.timestamp,
+            };
+
+            setSelectedConversation(updatedConversation); // Sélectionner la conversation mise à jour
+
+            // Mise à jour de la liste des conversations sans faire d'appel API
+            setConversations((prevConversations) => {
+                // Rechercher et mettre à jour la conversation existante
+                const updatedConversations = prevConversations.map((conv) =>
+                    conv.id === (selectedConversation.group?.id || selectedConversation.receiver?.id)
+                        ? updatedConversation : conv
+                );
+
+                // Réorganiser pour avoir la conversation récente en premier
+                return updatedConversations.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            });
+
+            // Assurez-vous que la conversation mise à jour est affichée
+            setSelectedConversation(updatedConversation);
+        } catch (error) {
+            console.error("Erreur lors de l'envoi du message :", error);
+        }
     }
-
-    try {
-      // Send the message
-      const newMessage = await sendMessage(selectedConversation.group?.id , selectedConversation.receiver?.id, content, token);
-
-      // Update messages in the state
-      setMessages((prevMessages) => [...prevMessages, newMessage]);
-
-      console.log("newMessage :",newMessage);
-
-      // Update the last message in the conversation list
-      setConversations((prevConversations) =>
-        prevConversations.map((conv) =>
-          conv.id === selectedConversation.group?.id || conv.id === selectedConversation.receiver?.id || conv === selectedConversation.id
-            ? { ...conv, content: newMessage.content, timestamp: newMessage.timestamp } // Ensure you are updating content and timestamp as needed
-            : conv
-        )
-      );
-
-    } catch (error) {
-      console.error("Erreur lors de l'envoi du message :", error);
-    }
-  }
 };
-
-
 
 
 
