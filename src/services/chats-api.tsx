@@ -116,24 +116,32 @@ export const getChatHistory = async (pk: number, token: string): Promise<Message
   }
 };
 
-// Envoyer un message
+// Exemple d'envoi de message avec vérification du token
 export const sendMessage = async (
-  content: string,
-  token: string,
+
   groupId?: number,
-  receiverId?: number
+  receiverId?: number,
+  content: string,
+  token: string
 ): Promise<Message> => {
-  setAuthToken(token);
+  setAuthToken(token); // S'assurer que le token est bien défini
+
   try {
     const data = {
-      content,
+
       ...(groupId && { group: groupId }),
-      ...(receiverId && { receiver: receiverId })
+      ...(receiverId && { receiver: receiverId }),
+        content,
+        token
     };
+
+    // Envoyer la requête
     const response = await api.post<Message>("/custom_messages/send_message/", data);
     return response.data;
+
   } catch (error) {
     handleRequestError(error);
     throw error;
   }
 };
+

@@ -67,7 +67,7 @@ export default function Chat() {
 
     try {
       // Send the message
-      const newMessage = await sendMessage(selectedConversation.group?.id || selectedConversation.receiver?.id, content, token);
+      const newMessage = await sendMessage(selectedConversation.group?.id , selectedConversation.receiver?.id, content, token);
 
       // Update messages in the state
       setMessages((prevMessages) => [...prevMessages, newMessage]);
