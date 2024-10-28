@@ -83,7 +83,8 @@ export default function Chat() {
           selectedConversation.group?.id,
           selectedConversation.receiver?.id,
           content,
-          token
+          token,
+          { senderId: 20 } // En supposant que 20 est l'ID de l'expéditeur authentifié (Anicet)
         );
 
         setMessages((prevMessages) => [...prevMessages, newMessage]);

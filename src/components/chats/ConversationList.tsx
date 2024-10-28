@@ -4,6 +4,7 @@ import { useState } from "react";
 
 export function ConversationList({ conversations, onSelectConversation }) {
     const [selectedConversationId, setSelectedConversationId] = useState(null);
+    const currentUserId = localStorage.getItem("userId");
 
     const handleSelectConversation = (conversation) => {
         setSelectedConversationId(conversation.id);
@@ -30,29 +31,42 @@ export function ConversationList({ conversations, onSelectConversation }) {
 
     return (
         <div className="w-full lg:w-1/3 border-r p-2 overflow-y-scroll h-full">
-            {conversations.map((conversation) => (
-                <Card
-                    key={conversation.id + conversation.timestamp }
-                    className={`flex flex-col p-4 cursor-pointer hover:bg-muted mb-2 ${selectedConversationId === conversation.id ? 'bg-muted' : ''}`}
-                    onClick={() => handleSelectConversation(conversation)} // Utilisez la nouvelle fonction pour gérer la sélection
-                >
-                    {conversation.id && (
-                        <div className="flex items-center">
-                            <Avatar className="w-10 h-10">
-                                <AvatarFallback>{conversation.group?.name.charAt(0) || conversation.receiver?.username.charAt(0)}</AvatarFallback>
-                            </Avatar>
-                            <div className="ml-4 flex-1">
-                                <div
-                                    className="font-semibold">{conversation.group?.name || conversation.receiver?.username}</div>
-                                <div className="text-sm text-muted-foreground">{conversation.content}</div>
+            {conversations.map((conversation) => {
+                const displayName =
+                    currentUserId === conversation.receiver?.id
+                        ? conversation.sender?.username // Affiche le nom de l'expéditeur
+                        : conversation.receiver?.username || conversation.group?.name; // Sinon, affiche le nom du destinataire ou le nom du groupe
+
+                return (
+                    <Card
+                        key={conversation.id + conversation.timestamp}
+                        className={`flex flex-col p-4 cursor-pointer hover:bg-muted mb-2 ${selectedConversationId === conversation.id ? 'bg-muted' : ''}`}
+                        onClick={() => handleSelectConversation(conversation)}
+                    >
+                        {conversation.id && (
+                            <div className="flex items-center">
+                                <Avatar className="w-10 h-10">
+                                    <AvatarFallback>
+                                        {conversation.group?.name.charAt(0) ||
+                                         (currentUserId === conversation.receiver?.id
+                                             ? conversation.sender?.username.charAt(0)
+                                             : conversation.receiver?.username.charAt(0))}
+                                    </AvatarFallback>
+                                </Avatar>
+                                <div className="ml-4 flex-1">
+                                    <div className="font-semibold">
+                                        {displayName}
+                                    </div>
+                                    <div className="text-sm text-muted-foreground">{conversation.content}</div>
+                                </div>
+                                <div className="text-xs text-muted-foreground">
+                                    {calculateTimeAgo(conversation.timestamp)}
+                                </div>
                             </div>
-                            <div className="text-xs text-muted-foreground">
-                                 {calculateTimeAgo(conversation.timestamp)}
-                            </div>
-                        </div>
-                    )}
-                </Card>
-            ))}
+                        )}
+                    </Card>
+                );
+            })}
         </div>
     );
 }

@@ -4,6 +4,7 @@ import {create} from 'zustand';
 import { getUserProfile, updateUserProfile as updateUserProfileAPI } from '@/services/user-api.tsx';
 
 interface UserProfile {
+  id: number;
   username: string;
   first_name: string;
   last_name: string;

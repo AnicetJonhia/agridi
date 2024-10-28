@@ -67,7 +67,8 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
         try {
             const data = await login(credentials);
             if (data.token) {
-                localStorage.setItem('token', data.token); // Stocke le token dans localStorage
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('userId', data.user_id);
                 dispatch({
                     type: 'LOGIN_SUCCESS',
                     payload: data
@@ -91,6 +92,7 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
                 const data = await register(userData);
                 if (data.token) {
                     localStorage.setItem('token', data.token); // Store token in localStorage
+                    localStorage.setItem('userId', data.user.id);
                     dispatch({ type: 'REGISTER_SUCCESS', payload: data });
                 }
                 return { token: data.token, user: { id: data.user.id, role: data.user.role } };

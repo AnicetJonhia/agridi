@@ -18,6 +18,7 @@ const UserProfile: React.FC = () => {
   const { toast } = useToast();
 
   const [formData, setFormData] = useState({
+    id:"",
     username: "",
     first_name: "",
     last_name: "",
@@ -41,13 +42,17 @@ const UserProfile: React.FC = () => {
       await fetchUserProfile();
     };
     fetchProfile();
+
   }, [fetchUserProfile]);
 
   useEffect(() => {
     if (user) {
       setFormData({ ...user });
+
     }
   }, [user]);
+
+
 
   const handleEditToggle = () => {
     setIsEditing(!isEditing);
@@ -131,6 +136,9 @@ const UserProfile: React.FC = () => {
       });
     }
   };
+
+
+
 
   return (
     <div>
