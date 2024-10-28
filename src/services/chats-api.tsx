@@ -1,7 +1,19 @@
-// src/services/chats-api.tsx
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 
-const BASE_URL = "http://localhost:8000/api"; // Remplacez par l'URL de votre API
+const BASE_URL = "http://localhost:8000/api";
+
+// Configuration de l'instance Axios
+const api = axios.create({
+  baseURL: BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+// Ajouter le token d'authentification à chaque requête
+const setAuthToken = (token: string) => {
+  api.defaults.headers['Authorization'] = `Token ${token}`;
+};
 
 // Types pour les données de l'API
 interface Sender {
@@ -21,57 +33,107 @@ interface Group {
 interface Message {
   id: number;
   content: string;
-  file?: string; // Pour gérer les fichiers si nécessaire
-  sender: Sender; // Le sender est maintenant un objet Sender
-  receiver?: Sender; // L'expéditeur peut avoir un récepteur
-  group?: Group; // L'option de groupe est maintenant un objet Group
-  timestamp: string; // Représentation de la date/heure en format string
+  file?: string;
+  sender: Sender;
+  receiver?: Sender;
+  group?: Group;
+  timestamp: string;
 }
 
-// Récupérer les groupes (senders)
+// Utilitaire pour la gestion des erreurs
+const handleRequestError = (error: unknown): void => {
+  if (axios.isAxiosError(error)) {
+    const axiosError = error as AxiosError;
+    console.error("Erreur API :", axiosError.response?.data || error.message);
+  } else {
+    console.error("Erreur :", error);
+  }
+};
+
+// Récupérer les groupes
 export const getGroups = async (token: string): Promise<Group[]> => {
+  setAuthToken(token);
   try {
-    const response = await axios.get<Group[]>(`${BASE_URL}/custom_messages/groups/`, {
-      headers: {
-        'Authorization': `Token ${token}`,
-      },
-    });
+    const response = await api.get<Group[]>("/custom_messages/groups/");
     return response.data;
   } catch (error) {
-    console.error("Erreur lors de la récupération des groupes :", error);
+    handleRequestError(error);
     return [];
   }
 };
 
-// Récupérer les messages d'un groupe donné
-export const getMessages = async (groupId: number, token: string): Promise<Message[]> => {
+// Créer un groupe
+export const createGroup = async (
+  name: string,
+  members: number[],
+  token: string
+): Promise<Group> => {
+  setAuthToken(token);
   try {
-    const response = await axios.get<Message[]>(`${BASE_URL}/custom_messages/?group=${groupId}`, {
-      headers: {
-        'Authorization': `Token ${token}`,
-      },
+    const response = await api.post<Group>("/custom_messages/groups/", {
+      name,
+      members,
     });
     return response.data;
   } catch (error) {
-    console.error("Erreur lors de la récupération des messages :", error);
+    handleRequestError(error);
+    throw error;
+  }
+};
+
+// Quitter un groupe
+export const leaveGroup = async (groupId: number, token: string): Promise<void> => {
+  setAuthToken(token);
+  try {
+    await api.post(`/custom_messages/groups/${groupId}/leave/`);
+  } catch (error) {
+    handleRequestError(error);
+    throw error;
+  }
+};
+
+// Récupérer les conversations
+export const getConversations = async (token: string): Promise<Message[]> => {
+  setAuthToken(token);
+  try {
+    const response = await api.get<Message[]>("/custom_messages/conversations/");
+    return response.data;
+  } catch (error) {
+    handleRequestError(error);
+    return [];
+  }
+};
+
+// Récupérer l'historique du chat
+export const getChatHistory = async (pk: number, token: string): Promise<Message[]> => {
+  setAuthToken(token);
+  try {
+    const response = await api.get<Message[]>(`/custom_messages/${pk}/chat_history/`);
+    return response.data;
+  } catch (error) {
+    handleRequestError(error);
     return [];
   }
 };
 
 // Envoyer un message
-export const sendMessage = async (groupId: number, content: string, token: string): Promise<Message> => {
+export const sendMessage = async (
+  content: string,
+  token: string,
+  groupId?: number,
+  receiverId?: number
+): Promise<Message> => {
+  setAuthToken(token);
   try {
-    const response = await axios.post<Message>(`${BASE_URL}/custom_messages/`, {
-      group: groupId,
+    const data = {
       content,
-    }, {
-      headers: {
-        'Authorization': `Token ${token}`,
-      },
-    });
+      ...(groupId && { group: groupId }),
+      ...(receiverId && { receiver: receiverId })
+    };
+    const response = await api.post<Message>("/custom_messages/send_message/", data);
     return response.data;
   } catch (error) {
-    console.error("Erreur lors de l'envoi du message :", error);
+    handleRequestError(error);
     throw error;
   }
 };

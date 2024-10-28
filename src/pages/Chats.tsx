@@ -1,74 +1,98 @@
 import { useState, useEffect } from "react";
-import { SenderList } from "@/components/chats/SenderList";
+import { ConversationList } from "@/components/chats/ConversationList";
 import { ChatWindow } from "@/components/chats/ChatWindow";
-import { getGroups, getMessages, sendMessage } from "@/services/chats-api.tsx";
+import { getConversations, getChatHistory, sendMessage } from "@/services/chats-api";
 
 export default function Chat() {
-  const [selectedSender, setSelectedSender] = useState(null);
-  const [showSenderList, setShowSenderList] = useState(true);
+  const [selectedConversation, setSelectedConversation] = useState(null);
+  const [showConversationList, setShowConversationList] = useState(true);
   const [messages, setMessages] = useState([]);
-  const [senders, setSenders] = useState([]); // Pour stocker les senders récupérés
+  const [conversations, setConversations] = useState([]);
 
   useEffect(() => {
-    const fetchGroups = async () => {
+    const fetchConversations = async () => {
       const token = localStorage.getItem("token");
       if (token) {
         try {
-          const fetchedSenders = await getGroups(token);
-          setSenders(fetchedSenders);
-          if (window.innerWidth >= 1008 && fetchedSenders.length > 0) {
-            setSelectedSender(fetchedSenders[0]);
+          const fetchedConversations = await getConversations(token);
+          setConversations(fetchedConversations);
+          if (window.innerWidth >= 1008 && fetchedConversations.length > 0) {
+            setSelectedConversation(fetchedConversations[0]);
           }
         } catch (error) {
-          console.error("Erreur lors de la récupération des groupes :", error);
+          console.error("Erreur lors de la récupération des conversations :", error);
         }
       }
     };
-
-    fetchGroups();
+    fetchConversations();
   }, []);
 
+
   useEffect(() => {
-    const fetchMessages = async () => {
-      if (selectedSender) {
+    const fetchChatHistory = async () => {
+      if (selectedConversation) {
         try {
           const token = localStorage.getItem("token");
-          const fetchedMessages = await getMessages(selectedSender.id, token);
+          const fetchedMessages = await getChatHistory(selectedConversation.group?.id || selectedConversation.receiver?.id, token);
           setMessages(fetchedMessages);
-          console.log(fetchedMessages);
-          if (fetchedMessages.length > 0) {
-            console.log(fetchedMessages[fetchedMessages.length - 1].sender.username);
-          }
+
         } catch (error) {
-          console.error("Erreur lors de la récupération des messages :", error);
+          console.error("Erreur lors de la récupération de l'historique du chat :", error);
         }
       }
     };
-    fetchMessages();
-  }, [selectedSender]);
+    fetchChatHistory();
+  }, [selectedConversation]);
 
-  const handleSelectSender = (sender) => {
-    setSelectedSender(sender);
+
+
+  const handleSelectConversation = (conversation) => {
+    setSelectedConversation(conversation);
     if (window.innerWidth < 1008) {
-      setShowSenderList(false);
+      setShowConversationList(false);
     }
   };
 
   const handleBack = () => {
-    setShowSenderList(true);
+    setShowConversationList(true);
   };
 
   const handleSendMessage = async (content) => {
-    if (selectedSender) {
-      const token = localStorage.getItem("token");
-      try {
-        const newMessage = await sendMessage(selectedSender.id, content, token);
-        setMessages((prevMessages) => [...prevMessages, newMessage]); // Ajouter le nouveau message à l'état
-      } catch (error) {
-        console.error("Erreur lors de l'envoi du message :", error);
-      }
+  if (selectedConversation) {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.error("Token not found");
+      return;
     }
-  };
+
+    try {
+      // Send the message
+      const newMessage = await sendMessage(selectedConversation.group?.id || selectedConversation.receiver?.id, content, token);
+
+      // Update messages in the state
+      setMessages((prevMessages) => [...prevMessages, newMessage]);
+
+      console.log("newMessage :",newMessage);
+
+      // Update the last message in the conversation list
+      setConversations((prevConversations) =>
+        prevConversations.map((conv) =>
+          conv.id === selectedConversation.group?.id || conv.id === selectedConversation.receiver?.id || conv === selectedConversation.id
+            ? { ...conv, content: newMessage.content, timestamp: newMessage.timestamp } // Ensure you are updating content and timestamp as needed
+            : conv
+        )
+      );
+
+    } catch (error) {
+      console.error("Erreur lors de l'envoi du message :", error);
+    }
+  }
+};
+
+
+
+
+
 
   return (
     <div className="flex flex-col h-full">
@@ -77,16 +101,16 @@ export default function Chat() {
       </header>
 
       <div className="flex flex-1 h-full">
-        {showSenderList && (
-          <SenderList senders={senders} onSelectSender={handleSelectSender} />
+        {showConversationList && (
+          <ConversationList conversations={conversations} onSelectConversation={handleSelectConversation} />
         )}
-        <div className={`flex flex-col flex-1 ${showSenderList ? 'hidden lg:flex' : 'flex'}`}>
-          {selectedSender && (
+        <div className={`flex flex-col flex-1 ${showConversationList ? 'hidden lg:flex' : 'flex'}`}>
+          {selectedConversation && (
             <ChatWindow
-              sender={selectedSender}
-              messages={messages} // Passer les messages au ChatWindow
+              conversation={selectedConversation}
+              messages={messages}
               onBack={handleBack}
-              onSendMessage={handleSendMessage} // Passer la fonction d'envoi
+              onSendMessage={handleSendMessage}
             />
           )}
         </div>

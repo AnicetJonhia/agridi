@@ -4,8 +4,8 @@ import { MoveLeft, Paperclip, Send } from "lucide-react";
 import Picker from "emoji-picker-react";
 import { useState } from "react";
 
-// @ts-ignore
-export function ChatWindow({ sender, messages, onBack, onSendMessage }) {
+
+export function ChatWindow({ conversation, messages , onBack, onSendMessage }) {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [message, setMessage] = useState("");
 
@@ -16,7 +16,7 @@ export function ChatWindow({ sender, messages, onBack, onSendMessage }) {
 
   const handleSendMessage = () => {
     if (message.trim()) {
-      onSendMessage(message); // Utiliser la fonction d'envoi de message
+      onSendMessage(message);
       setMessage("");
     }
   };
@@ -31,25 +31,26 @@ export function ChatWindow({ sender, messages, onBack, onSendMessage }) {
   return (
     <div className="flex flex-col h-full">
       <header className="flex items-center justify-start space-x-6 px-4 py-2 border-b">
-        <div className={"lg:hidden"}>
+        <div className="lg:hidden">
           <MoveLeft className="cursor-pointer" onClick={onBack} />
         </div>
-        <div className={"flex items-center space-x-1"}>
+        <div className="flex items-center space-x-1">
           <Avatar className="w-10 h-10">
-            <AvatarImage src={sender.avatar} alt={sender.name} />
-            <AvatarFallback>{sender.name.charAt(0)}</AvatarFallback>
-          </Avatar>
-          <h1 className="text-lg font-semibold">{sender.name}</h1>
+
+                    <AvatarFallback>{conversation.group?.name.charAt(0) || conversation.receiver?.username.charAt(0) || "U"}</AvatarFallback>
+                  </Avatar>
+          <h1 className="text-lg font-semibold">{conversation.group?.name || conversation.receiver?.username || "Unknown"} </h1>
         </div>
       </header>
       <main className="flex-1 overflow-y-scroll h-auto p-4 space-y-4">
         {messages.map((msg) => (
-          <div key={msg.id} className={`flex items-end space-x-2 ${msg.sender.id === sender.id ? 'justify-start' : 'justify-end'}`}>
+          <div key={msg.id} className={`flex items-end space-x-2 ${msg.sender.id === conversation.sender.id ? 'justify-end' : 'justify-start'}`}>
             <Avatar>
-              <AvatarImage src={msg.sender.avatar} alt="User Avatar" />
+              <AvatarImage src={"test"} alt="User Avatar" />
               <AvatarFallback>U</AvatarFallback>
             </Avatar>
-            <div className={`p-2 rounded-lg ${msg.sender.id === sender.id ? 'bg-gray-100 dark:bg-gray-800' : 'bg-primary text-foreground'}`}>
+            <div className={`p-2 rounded-lg ${msg.sender.id === conversation.sender.id ? 'bg-gray-100' +
+                ' dark:bg-gray-800' : 'bg-primary text-foreground'}`}>
               <p className="text-sm">{msg.content}</p>
             </div>
           </div>
@@ -73,7 +74,7 @@ export function ChatWindow({ sender, messages, onBack, onSendMessage }) {
       </footer>
 
       {showEmojiPicker && (
-        <div className="absolute bottom-10 z-10">
+        <div className="absolute bottom-20 right-6">
           <Picker onEmojiClick={handleEmojiSelect} />
         </div>
       )}
