@@ -33,6 +33,8 @@ export default function Chat() {
           new Date(b.timestamp) - new Date(a.timestamp)
         );
 
+        console.log("Conversations fetched:", sortedConversations);
+
         setConversations(sortedConversations);
         if (window.innerWidth >= 1008 && fetchedConversations.length > 0) {
           setSelectedConversation(fetchedConversations[0]);
