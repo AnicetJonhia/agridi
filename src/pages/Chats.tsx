@@ -89,20 +89,23 @@ export default function Chat() {
       }
 
       const currentUserId = Number(localStorage.getItem("userId"));
-      const isGroupConversation = Boolean(selectedConversation.group);
+      const isGroupConversation = Boolean(selectedConversation?.group);
 
       try {
+        const receiverId =
+        currentUserId === selectedConversation.receiver?.id
+          ? selectedConversation.sender?.id // Si l'utilisateur est le récepteur, utilise l'ID de l'expéditeur
+          : selectedConversation.receiver?.id; // Sinon, utilise l'ID du récepteur
+
+        const groupId = isGroupConversation ? selectedConversation.group?.id : null;
+
+        // Vérifier d'abord si currentUserId est sender ou receiver avant de vérifier pour un groupe
         const newMessage = await sendMessage(
-          isGroupConversation
-            ? selectedConversation.group?.id  // Utilise l'ID du groupe pour une conversation de groupe
-            : currentUserId === selectedConversation.receiver?.id
-            ? selectedConversation.sender?.id  // Si l'utilisateur est le récepteur, le `sender` devient le `receiver`
-            : selectedConversation.receiver?.id, // Sinon, utilise l'ID du récepteur
-          isGroupConversation ? null : currentUserId === selectedConversation.receiver?.id ? selectedConversation.sender?.id : selectedConversation.receiver?.id,
+          groupId, // Utilise l'ID du groupe ou l'ID du récepteur
+          receiverId,
           content,
           token
         );
-
         setMessages((prevMessages) => [...prevMessages, newMessage]);
 
         const updatedConversation = {
