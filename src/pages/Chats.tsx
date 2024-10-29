@@ -23,6 +23,8 @@ export default function Chat() {
     }
   }, [refreshConversations]);
 
+
+
   // Fetch conversations function
   const fetchConversations = async () => {
     const token = localStorage.getItem("token");
