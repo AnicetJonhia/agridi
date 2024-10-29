@@ -43,21 +43,30 @@ export default function Chat() {
     }
   };
 
-  // Fetch chat history when selectedConversation changes
   useEffect(() => {
-    const fetchChatHistory = async () => {
-      if (selectedConversation) {
-        try {
-          const token = localStorage.getItem("token");
-          const fetchedMessages = await getChatHistory(selectedConversation.group?.id || selectedConversation.receiver?.id, token);
-          setMessages(fetchedMessages);
-        } catch (error) {
-          console.error("Erreur lors de la récupération de l'historique du chat :", error);
-        }
+  const fetchChatHistory = async () => {
+    if (selectedConversation) {
+      try {
+        const token = localStorage.getItem("token");
+        const currentUserId = Number(localStorage.getItem("userId"));
+
+        // Si c'est une conversation de groupe, utilise l'ID du groupe
+        const conversationId = selectedConversation.group
+          ? selectedConversation.group?.id // ID de groupe pour une conversation de groupe
+          : currentUserId === selectedConversation.receiver?.id
+          ? selectedConversation.sender?.id // Si l'utilisateur est le récepteur, utilise l'ID de l'expéditeur
+          : selectedConversation.receiver?.id; // Sinon, utilise l'ID du récepteur
+
+        const fetchedMessages = await getChatHistory(conversationId, token);
+        setMessages(fetchedMessages);
+      } catch (error) {
+        console.error("Erreur lors de la récupération de l'historique du chat :", error);
       }
-    };
-    fetchChatHistory();
-  }, [selectedConversation]);
+    }
+  };
+  fetchChatHistory();
+}, [selectedConversation]);
+
 
   const handleSelectConversation = (conversation) => {
     setSelectedConversation(conversation);
@@ -70,6 +79,7 @@ export default function Chat() {
     setShowConversationList(true);
   };
 
+
   const handleSendMessage = async (content) => {
     if (selectedConversation) {
       const token = localStorage.getItem("token");
@@ -78,13 +88,19 @@ export default function Chat() {
         return;
       }
 
+      const currentUserId = Number(localStorage.getItem("userId"));
+      const isGroupConversation = Boolean(selectedConversation.group);
+
       try {
         const newMessage = await sendMessage(
-          selectedConversation.group?.id,
-          selectedConversation.receiver?.id,
+          isGroupConversation
+            ? selectedConversation.group?.id  // Utilise l'ID du groupe pour une conversation de groupe
+            : currentUserId === selectedConversation.receiver?.id
+            ? selectedConversation.sender?.id  // Si l'utilisateur est le récepteur, le `sender` devient le `receiver`
+            : selectedConversation.receiver?.id, // Sinon, utilise l'ID du récepteur
+          isGroupConversation ? null : currentUserId === selectedConversation.receiver?.id ? selectedConversation.sender?.id : selectedConversation.receiver?.id,
           content,
-          token,
-          { senderId: 20 } // En supposant que 20 est l'ID de l'expéditeur authentifié (Anicet)
+          token
         );
 
         setMessages((prevMessages) => [...prevMessages, newMessage]);
@@ -107,13 +123,13 @@ export default function Chat() {
           return updatedConversations.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
         });
 
-        // Set refreshConversations to true to trigger re-fetch
         setRefreshConversations(true);
       } catch (error) {
         console.error("Erreur lors de l'envoi du message :", error);
       }
     }
   };
+
 
   return (
     <div className="flex flex-col h-full">
