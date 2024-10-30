@@ -6,10 +6,10 @@ const VideoPreview = ({ fileURL }) => (
     <DialogTrigger asChild>
       <video
         src={fileURL}
-        poster // Utilise le premier frame de la vidéo comme miniature
+        poster
         className="w-28 h-28 cursor-pointer rounded"
-        onClick={(e) => e.stopPropagation()} // Pour empêcher le clic sur la vidéo
-        muted // Assurez-vous que la vidéo ne se lance avec le son
+        onClick={(e) => e.stopPropagation()}
+        muted
       />
     </DialogTrigger>
     <DialogContent className="p-10 max-w-screen-lg">
