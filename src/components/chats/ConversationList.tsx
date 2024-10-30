@@ -39,6 +39,11 @@ export function ConversationList({ conversations, onSelectConversation }) {
                         ? conversation.sender?.username // Affiche le nom de l'expéditeur
                         : conversation.receiver?.username || conversation.group?.name; // Sinon, affiche le nom du destinataire ou le nom du groupe
 
+
+                const contentPreview =
+                    conversation.content.length > 30
+                        ? `${conversation.content.slice(0, 30)}...`
+                        : conversation.content;
                 return (
                     <Card
                         key={conversation.id + conversation.timestamp}
@@ -87,7 +92,7 @@ export function ConversationList({ conversations, onSelectConversation }) {
                                     <div className="font-semibold">
                                         {displayName}
                                     </div>
-                                    <div className="text-sm text-muted-foreground">{conversation.content}</div>
+                                    <div className="text-sm text-muted-foreground">{contentPreview}</div>
                                 </div>
                                 <div className="text-xs text-muted-foreground">
                                     {calculateTimeAgo(conversation.timestamp)}

@@ -2,7 +2,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Textarea } from "@/components/ui/textarea";
 import { MoveLeft, Paperclip, Send } from "lucide-react";
 import Picker from "emoji-picker-react";
-import React, { useState } from "react";
+import React, {useEffect, useRef, useState} from "react";
 import ImagePreview from "@/components/utils/ImagePreview.tsx";
 import { Input } from "@/components/ui/input";
 import VideoPreview from "@/components/utils/VideoPreview.tsx";
@@ -22,7 +22,9 @@ export function ChatWindow({ conversation, messages, onBack, onSendMessage }) {
   const [message, setMessage] = useState("");
   const currentUserId = Number(localStorage.getItem("userId"));
   const [file, setFile] = useState(null);
-  const [filePreview, setFilePreview] = useState(null); // État pour stocker l'aperçu du fichier
+  const [filePreview, setFilePreview] = useState(null);
+  const messagesEndRef = useRef(null);
+
 
   const handleEmojiSelect = (emojiData) => {
     setMessage((prevMessage) => prevMessage + emojiData.emoji);
@@ -34,9 +36,54 @@ export function ChatWindow({ conversation, messages, onBack, onSendMessage }) {
       onSendMessage(message, file);
       setMessage("");
       setFile(null);
-      setFilePreview(null); // Réinitialiser l'aperçu du fichier après l'envoi
+      setFilePreview(null);
     }
   };
+
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "auto" });
+  }, [messages]);
+
+
+
+    const formatMessageContent = (content, maxCharsPerLine = 45, wordsPerLine = 7) => {
+      const splitLongSequences = (text, maxChars) => {
+        return text.split(" ").map(word => {
+          if (word.length > maxChars) {
+            const chars = word.split("");
+            let newWord = "";
+            let charCount = 0;
+
+            chars.forEach(char => {
+              newWord += char;
+              charCount++;
+
+              // Ajoute un espace après maxChars
+              if (charCount === maxChars) {
+                newWord += "\n"; // Ici, on utilise \n pour un retour à la ligne
+                charCount = 0;
+              }
+            });
+
+            return newWord.trim(); // Retire les espaces superflus
+          }
+
+          return word;
+        }).join(" ");
+      };
+
+  const adjustedContent = splitLongSequences(content, maxCharsPerLine);
+  const words = adjustedContent.split(" ");
+
+  // Ajout d'un retour à la ligne après wordsPerLine mots
+  return words.map((word, index) => {
+    return (index + 1) % wordsPerLine === 0 ? word + "\n" : word;
+  }).join(" ");
+};
+
+
+
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -102,91 +149,92 @@ export function ChatWindow({ conversation, messages, onBack, onSendMessage }) {
 
           if (isNewDay) {
             acc.push(
-              <div key={`date-${msg.id}`} className="text-center text-sm text-muted-foreground my-4">
-                {msgDate}
-              </div>
+                <div key={`date-${msg.id}`} className="text-center text-sm text-muted-foreground my-4">
+                  {msgDate}
+                </div>
             );
           }
 
           const isCurrentUserSender = msg.sender.id === currentUserId;
           acc.push(
-            <div
-              key={msg.id}
-              className={`flex items-end space-x-2 ${isCurrentUserSender ? 'justify-end' : 'justify-start'}`}
-            >
-              {!isCurrentUserSender && (
-                <Avatar className={"w-6 h-6"}>
-                  {msg.sender?.profile_picture ? (
-                    <AvatarImage
-                      src={
-                        msg.sender.profile_picture instanceof File
-                          ? URL.createObjectURL(msg.sender.profile_picture)
-                          : msg.sender.profile_picture
-                      }
-                      alt="S"
-                    />
-                  ) : (
-                    <AvatarFallback>{msg.sender.username.charAt(0)}</AvatarFallback>
-                  )}
-                </Avatar>
-              )}
-              <div className="space-y-0.5 ">
-                <div className={"flex space-x-2"}>
-                  {!isCurrentUserSender && msg.sender && conversation?.group && (
-                    <p className="text-xs text-muted-foreground">{msg.sender.username}</p>
-                  )}
-                  <span className={"text-xs text-muted-foreground"}>
-                    {new Date(msg.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-                  </span>
-                </div>
-                <div
-                  className={`p-2 rounded-lg ${
-                    isCurrentUserSender
-                      ? "bg-[#149911] text-foreground rounded-br-none"
-                      : "bg-muted  rounded-bl-none"
-                  }`}
-                >
-                  <p className="text-sm">{msg.content}</p>
-                </div>
-
-                {msg?.file && (
-                  (() => {
-                    const fileURL = msg.file;
-                    const fileExtension = fileURL.split('.').pop().toLowerCase();
-
-                    if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'jfif'].includes(fileExtension)) {
-                      return <ImagePreview fileURL={fileURL} />;
-                    } else if (['mp4', 'webm', 'ogg'].includes(fileExtension)) {
-                      return <VideoPreview fileURL={fileURL} />;
-                    } else if (['mp3', 'wav'].includes(fileExtension)) {
-                      return (
-                        <audio
-                          src={fileURL}
-                          controls
-                          className="w-20 h-20"
-                        />
-                      );
-                    } else {
-                      return (
-                        <div className="mt-2">
-                          <a
-                            href={fileURL}
-                            download
-                            className="text-sm border-2 border-t-0 border-dashed border-bg-muted font-semibold text-foreground hover:text-muted-foreground no-underline bg-transparent px-2 py-1 rounded-lg shadow-sm hover:shadow-md transition duration-200 ease-in-out"
-                          >
-                            {fileURL.split('/').pop()}
-                          </a>
-                        </div>
-                      );
-                    }
-                  })()
+              <div
+                  key={msg.id}
+                  className={`flex items-end space-x-2 ${isCurrentUserSender ? 'justify-end' : 'justify-start'}`}
+              >
+                {!isCurrentUserSender && (
+                    <Avatar className={"w-6 h-6"}>
+                      {msg.sender?.profile_picture ? (
+                          <AvatarImage
+                              src={
+                                msg.sender.profile_picture instanceof File
+                                    ? URL.createObjectURL(msg.sender.profile_picture)
+                                    : msg.sender.profile_picture
+                              }
+                              alt="S"
+                          />
+                      ) : (
+                          <AvatarFallback>{msg.sender.username.charAt(0)}</AvatarFallback>
+                      )}
+                    </Avatar>
                 )}
+                <div className="space-y-0.5 ">
+                  <div className={"flex space-x-2"}>
+                    {!isCurrentUserSender && msg.sender && conversation?.group && (
+                        <p className="text-xs text-muted-foreground">{msg.sender.username}</p>
+                    )}
+                    <span className={"text-xs text-muted-foreground"}>
+                    {new Date(msg.timestamp).toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"})}
+                  </span>
+                  </div>
+                  <div
+                      className={`p-2 rounded-lg ${
+                          isCurrentUserSender
+                              ? "bg-[#149911] text-foreground rounded-br-none"
+                              : "bg-muted  rounded-bl-none"
+                      }`}
+                  >
+                    <p className="text-sm whitespace-pre-wrap">{formatMessageContent(msg.content)}</p>
+                  </div>
+
+                  {msg?.file && (
+                      (() => {
+                        const fileURL = msg.file;
+                        const fileExtension = fileURL.split('.').pop().toLowerCase();
+
+                        if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'jfif'].includes(fileExtension)) {
+                          return <ImagePreview fileURL={fileURL}/>;
+                        } else if (['mp4', 'webm', 'ogg'].includes(fileExtension)) {
+                          return <VideoPreview fileURL={fileURL}/>;
+                        } else if (['mp3', 'wav'].includes(fileExtension)) {
+                          return (
+                              <audio
+                                  src={fileURL}
+                                  controls
+                                  className="w-20 h-20"
+                              />
+                          );
+                        } else {
+                          return (
+                              <div className="mt-2">
+                                <a
+                                    href={fileURL}
+                                    download
+                                    className="text-sm border-2 border-t-0 border-dashed border-bg-muted font-semibold text-foreground hover:text-muted-foreground no-underline bg-transparent px-2 py-1 rounded-lg shadow-sm hover:shadow-md transition duration-200 ease-in-out"
+                                >
+                                  {fileURL.split('/').pop()}
+                                </a>
+                              </div>
+                          );
+                        }
+                      })()
+                  )}
+                </div>
               </div>
-            </div>
           );
 
           return acc;
         }, [])}
+        <div ref={messagesEndRef}/>
       </main>
       <footer className="flex items-center space-x-2 p-2 border-b border-t">
         <div className="flex items-center space-x-2 flex-1">
