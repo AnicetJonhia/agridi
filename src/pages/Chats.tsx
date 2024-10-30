@@ -84,7 +84,7 @@ export default function Chat() {
   };
 
 
-  const handleSendMessage = async (content) => {
+  const handleSendMessage = async (content, file) => {
     if (selectedConversation) {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -108,7 +108,8 @@ export default function Chat() {
           groupId, // Utilise l'ID du groupe ou l'ID du récepteur
           receiverId,
           content,
-          token
+          token,
+            file,
         );
         setMessages((prevMessages) => [...prevMessages, newMessage]);
 
@@ -137,7 +138,7 @@ export default function Chat() {
     }
   };
 
-  console.log("conversations", conversations);
+
 
 
   return (

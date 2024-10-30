@@ -116,32 +116,50 @@ export const getChatHistory = async (pk: number, token: string): Promise<Message
   }
 };
 
-// Exemple d'envoi de message avec vérification du token
 export const sendMessage = async (
-
   groupId?: number,
   receiverId?: number,
   content: string,
-  token: string
+  token: string,
+  file?: File | null, // Accepter le fichier
+
 ): Promise<Message> => {
   setAuthToken(token); // S'assurer que le token est bien défini
 
   try {
-    const data = {
-
+    const data: any = {
       ...(groupId && { group: groupId }),
       ...(receiverId && { receiver: receiverId }),
-        content,
-        token
+      content,
     };
 
-    // Envoyer la requête
-    const response = await api.post<Message>("/custom_messages/send_message/", data);
-    return response.data;
+    // Ajouter le fichier si présent
+    if (file) {
+      const formData = new FormData();
+      Object.keys(data).forEach((key) => formData.append(key, data[key]));
+      formData.append("file", file); // Ajouter le fichier au FormData
+
+      // Envoyer la requête avec FormData
+      const response = await api.post<Message>("/custom_messages/send_message/", formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      return response.data;
+    } else {
+      // Si pas de fichier, envoyer simplement les données
+      const response = await api.post<Message>("/custom_messages/send_message/", data, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      return response.data;
+    }
 
   } catch (error) {
     handleRequestError(error);
     throw error;
   }
 };
+
 

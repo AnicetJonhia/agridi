@@ -1,9 +1,12 @@
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Textarea } from "@/components/ui/textarea";
-import { MoveLeft, Paperclip, Send } from "lucide-react";
+import { MoveLeft, Paperclip, Send} from "lucide-react";
 import Picker from "emoji-picker-react";
-import { useState } from "react";
-
+import React, { useState } from "react";
+import ImagePreview from "@/components/utils/ImagePreview.tsx"
+import { Input } from "@/components/ui/input";
+import VideoPreview from "@/components/utils/VideoPreview.tsx";
+import {Label} from "@/components/ui/label.tsx";
 
 // Fonction pour formater la date en "Mercredi 30 Octobre"
 const formatDate = (date) => {
@@ -18,18 +21,30 @@ export function ChatWindow({ conversation, messages, onBack, onSendMessage }) {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [message, setMessage] = useState("");
   const currentUserId = Number(localStorage.getItem("userId"));
+   const [file, setFile] = useState(null);
+
 
   const handleEmojiSelect = (emojiData) => {
     setMessage((prevMessage) => prevMessage + emojiData.emoji);
     setShowEmojiPicker(false);
   };
 
-  const handleSendMessage = () => {
-    if (message.trim()) {
-      onSendMessage(message);
+
+
+   const handleSendMessage = () => {
+    if (message.trim() || file) {
+      onSendMessage(message, file);
       setMessage("");
+      setFile(null);
     }
   };
+
+   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setFile(e.target.files[0]);
+    }
+  };
+
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -48,6 +63,9 @@ export function ChatWindow({ conversation, messages, onBack, onSendMessage }) {
     (currentUserId === conversation.receiver?.id
         ? conversation.sender?.profile_picture
         : conversation.receiver?.profile_picture);
+
+
+
 
   return (
     <div className="flex flex-col h-full">
@@ -109,34 +127,86 @@ export function ChatWindow({ conversation, messages, onBack, onSendMessage }) {
                   )}
                 </Avatar>
               )}
-              <div className="space-y-0.5">
-                <div className={"flex space-x-2"}>
-                  {!isCurrentUserSender && msg.sender && conversation?.group && (
-                    <p className="text-xs text-muted-foreground">{msg.sender.username}</p>
-                  )}
-                  <span className={"text-xs text-muted-foreground"}>
-                    {new Date(msg.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                <div className="space-y-0.5 ">
+                    <div className={"flex space-x-2"}>
+                        {!isCurrentUserSender && msg.sender && conversation?.group && (
+                            <p className="text-xs text-muted-foreground">{msg.sender.username}</p>
+                        )}
+                        <span className={"text-xs text-muted-foreground"}>
+                    {new Date(msg.timestamp).toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"})}
                   </span>
+                    </div>
+                    <div
+                        className={`p-2 rounded-lg ${
+                            isCurrentUserSender
+                                ? "bg-primary text-foreground rounded-br-none"
+                                : "bg-muted  rounded-bl-none"
+                        }`}
+                    >
+                        <p className="text-sm">{msg.content}</p>
+
+                    </div>
+
+                    {msg?.file && (
+                      (() => {
+                        const fileURL = msg.file;
+                        const fileExtension = fileURL.split('.').pop().toLowerCase();
+
+                        if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'jfif'].includes(fileExtension)) {
+
+                          return <ImagePreview fileURL={fileURL} />;
+                        } else if (['mp4', 'webm', 'ogg'].includes(fileExtension)) {
+
+                          return (
+                            <VideoPreview fileURL={fileURL} />
+                          );
+                        } else if (['mp3', 'wav'].includes(fileExtension)) {
+
+                          return (
+                            <audio
+                              src={fileURL}
+                              controls
+                              className="w-20 h-20"
+                            />
+                          );
+                        } else {
+
+                          return (
+                              <div className="mt-1">
+                                  <a
+                                      href={fileURL}
+                                      download
+                                      className="text-sm border border-1 border-dashed border-bg-muted font-semibold text-primary hover:text-muted-foreground no-underline bg-transparent px-2 py-1 rounded-lg shadow-sm hover:shadow-md transition duration-200 ease-in-out"
+                                  >
+                                      {fileURL.split('/').pop()}
+                                  </a>
+                              </div>
+
+
+                          );
+                        }
+                      })()
+                    )}
+
+
                 </div>
-                <div
-                  className={`p-2 rounded-lg ${
-                    isCurrentUserSender
-                      ? "bg-primary text-foreground rounded-br-none"
-                      : "bg-gray-100 dark:bg-gray-800 rounded-bl-none"
-                  }`}
-                >
-                  <p className="text-sm">{msg.content}</p>
-                </div>
-              </div>
+
+
             </div>
           );
 
-          return acc;
+            return acc;
         }, [])}
       </main>
-      <footer className="flex items-center space-x-2 p-2 border-b border-t">
+        <footer className="flex items-center space-x-2 p-2 border-b border-t">
         <div className="flex items-center space-x-2 flex-1">
-          <Paperclip className="w-6 h-6 text-muted-foreground cursor-pointer" />
+          <Label
+                htmlFor="file"
+                className="flex items-center cursor-pointer text-muted-foreground hover:text-foreground space-x-2"
+              >
+                  <Paperclip className="w-6 h-6 text-muted-foreground cursor-pointer" />
+              </Label>
+          <Input id={"file"} onChange={handleFileChange} className={"w-48"} type={"file"} style={{ display: 'none' }}/>
           <Textarea
             className="flex-1 resize-none h-10 p-2 focus:ring-2 focus:ring-blue-500"
             placeholder="Type a message"
