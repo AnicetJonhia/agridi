@@ -230,7 +230,7 @@ export function ChatWindow({ conversation, messages, onBack, onSendMessage }) {
 
                 return (
                     <div className={"flex relative justify-between text-center"}>
-                      <img src={filePreview} alt="uploaded" className="w-20 h-20 rounded-lg "/>
+                      <img src={filePreview} alt="uploaded" className="w-20 h-auto rounded-lg "/>
 
                       <button onClick={handleRemoveFile} className="text-red-500 ml-2">
                       ❌
@@ -243,7 +243,7 @@ export function ChatWindow({ conversation, messages, onBack, onSendMessage }) {
                       <video
                           src={filePreview}
                           poster
-                          className="w-28 h-28  rounded"
+                          className="w-28 h-28 cursor-pointer rounded"
                           onClick={(e) => e.stopPropagation()}
                           muted
                       />

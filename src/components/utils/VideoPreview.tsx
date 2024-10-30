@@ -7,7 +7,7 @@ const VideoPreview = ({ fileURL }) => (
       <video
         src={fileURL}
         poster
-        className="w-28 h-28 cursor-pointer rounded"
+        className="w-28 h-auto cursor-pointer rounded"
         onClick={(e) => e.stopPropagation()}
         muted
       />
