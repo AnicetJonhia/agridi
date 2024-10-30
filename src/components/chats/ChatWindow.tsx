@@ -47,40 +47,56 @@ export function ChatWindow({ conversation, messages, onBack, onSendMessage }) {
 
 
 
-    const formatMessageContent = (content, maxCharsPerLine = 45, wordsPerLine = 7) => {
-      const splitLongSequences = (text, maxChars) => {
-        return text.split(" ").map(word => {
-          if (word.length > maxChars) {
-            const chars = word.split("");
-            let newWord = "";
-            let charCount = 0;
+  const formatMessageContent = (content, maxCharsPerLine = 45) => {
+  const splitLongSequences = (text, maxChars) => {
+    return text.split(" ").map(word => {
+      if (word.length > maxChars) {
+        const chars = word.split("");
+        let newWord = "";
+        let charCount = 0;
 
-            chars.forEach(char => {
-              newWord += char;
-              charCount++;
+        chars.forEach(char => {
+          newWord += char;
+          charCount++;
 
-              // Ajoute un espace après maxChars
-              if (charCount === maxChars) {
-                newWord += "\n"; // Ici, on utilise \n pour un retour à la ligne
-                charCount = 0;
-              }
-            });
 
-            return newWord.trim(); // Retire les espaces superflus
+          if (charCount === maxChars) {
+            newWord += "\n";
+            charCount = 0;
           }
+        });
 
-          return word;
-        }).join(" ");
-      };
+        return newWord.trim();
+      }
+
+      return word;
+    }).join(" ");
+  };
 
   const adjustedContent = splitLongSequences(content, maxCharsPerLine);
-  const words = adjustedContent.split(" ");
+  const lines = [];
+  let currentLine = "";
 
-  // Ajout d'un retour à la ligne après wordsPerLine mots
-  return words.map((word, index) => {
-    return (index + 1) % wordsPerLine === 0 ? word + "\n" : word;
-  }).join(" ");
+  adjustedContent.split(" ").forEach(word => {
+
+    if ((currentLine + word).length > maxCharsPerLine) {
+
+      lines.push(currentLine.trim());
+      currentLine = word + " ";
+    } else {
+      currentLine += word + " ";
+    }
+  });
+
+  // Add any remaining content in currentLine to lines
+  if (currentLine) {
+    lines.push(currentLine.trim());
+  }
+
+  return lines.join("\n");
 };
+
+
 
 
 
