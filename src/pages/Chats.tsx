@@ -137,6 +137,8 @@ export default function Chat() {
     }
   };
 
+  console.log("conversations", conversations);
+
 
   return (
     <div className="flex flex-col h-full">

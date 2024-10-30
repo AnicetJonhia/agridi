@@ -48,12 +48,40 @@ export function ConversationList({ conversations, onSelectConversation }) {
                         {conversation.id && (
                             <div className="flex items-center">
                                 <Avatar className="w-10 h-10">
-                                    <AvatarFallback>
-                                        {conversation.group?.name.charAt(0) ||
-                                         (currentUserId === conversation.receiver?.id
-                                             ? conversation.sender?.username.charAt(0)
-                                             : conversation.receiver?.username.charAt(0))}
-                                    </AvatarFallback>
+
+                                        {conversation.group?.photo ? (
+                                            <img src={
+                                                conversation.group.photo instanceof File ? URL.createObjectURL(conversation.group.photo) : conversation.group.photo
+                                            } alt="Gr" />
+                                        ) : conversation.group?.name ? (
+                                            <AvatarFallback>{conversation.group?.name.charAt(0)}</AvatarFallback>
+                                        ) : currentUserId === conversation.receiver?.id ? (
+                                            conversation.sender?.profile_picture ? (
+                                                <img
+                                                    src={
+                                                        conversation.sender.profile_picture instanceof File
+                                                            ? URL.createObjectURL(conversation.sender.profile_picture)
+                                                            : conversation.sender.profile_picture
+                                                    }
+                                                    alt="Sd"
+                                                />
+                                            ) : (
+                                                <AvatarFallback>{conversation.sender?.username.charAt(0)}</AvatarFallback>
+                                            )
+                                        ) : conversation.receiver?.profile_picture ? (
+                                            <img
+                                                src={
+                                                    conversation.receiver.profile_picture instanceof File
+                                                        ? URL.createObjectURL(conversation.receiver.profile_picture)
+                                                        : conversation.receiver.profile_picture
+                                                }
+                                                alt="Rv"
+                                            />
+                                        ) : (
+                                            <AvatarFallback>{conversation.receiver?.username.charAt(0)}</AvatarFallback>
+                                        )}
+
+
                                 </Avatar>
                                 <div className="ml-4 flex-1">
                                     <div className="font-semibold">

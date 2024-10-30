@@ -11,6 +11,8 @@ import { useToast } from "@/hooks/use-toast.ts";
 import {Toaster} from "@/components/ui/toaster.tsx";
 import {CloudDownload} from "lucide-react";
 
+
+
 const UserProfile: React.FC = () => {
   const { user, fetchUserProfile, updateUserProfile } = useUserStore();
   const [isEditing, setIsEditing] = useState(false);
@@ -138,7 +140,7 @@ const UserProfile: React.FC = () => {
   };
 
 
-
+  console.log("formData", formData);
 
   return (
     <div>
