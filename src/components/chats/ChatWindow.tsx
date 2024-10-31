@@ -205,7 +205,7 @@ export function ChatWindow({ conversation, messages, onBack, onSendMessage }) {
                   <div
                       className={`p-2 rounded-lg ${
                           isCurrentUserSender
-                              ? "bg-[#149911] text-foreground rounded-br-none"
+                              ? "bg-[#149911] text-white rounded-br-none"
                               : "bg-muted  rounded-bl-none"
                       }`}
                   >
@@ -255,35 +255,44 @@ export function ChatWindow({ conversation, messages, onBack, onSendMessage }) {
       <footer className="flex items-center space-x-2 p-2 border-b border-t">
         <div className="flex items-center space-x-2 flex-1">
           <Label
-            htmlFor="file"
-            className="flex items-center cursor-pointer text-muted-foreground hover:text-foreground space-x-2"
+              htmlFor="file"
+              className="flex items-center cursor-pointer text-muted-foreground hover:text-foreground space-x-2"
           >
-            <Paperclip className="w-6 h-6 text-muted-foreground cursor-pointer" />
+            <Paperclip className="w-6 h-6 text-muted-foreground cursor-pointer"/>
           </Label>
-          <Input id={"file"} onChange={handleFileChange} className={"w-48"} type={"file"} style={{ display: 'none' }} />
+          <Input id={"file"} onChange={handleFileChange} className={"w-48"} type={"file"} style={{display: 'none'}}/>
           <Textarea
-            className="flex-1 resize-none h-10 p-2 focus:ring-2 focus:ring-blue-500"
-            placeholder="Type a message"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            onKeyDown={handleKeyDown}
+              className="flex-1 resize-none h-10 p-2 focus:ring-2 focus:ring-blue-500"
+              placeholder="Type a message"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              onKeyDown={handleKeyDown}
           />
           <button onClick={() => setShowEmojiPicker(!showEmojiPicker)} className="cursor-pointer">
             😊
           </button>
         </div>
-        <Send className="w-6 h-6 cursor-pointer" onClick={handleSendMessage} />
+        <button
+            onClick={handleSendMessage}
+            disabled={!message.trim() }
+            className={`w-6 h-6 cursor-pointer transition-colors ${
+                !message.trim() ? 'text-muted-foreground cursor-not-allowed' : 'text-[#149911] hover:text-primary'
+            }`}
+        >
+          <Send/>
+        </button>
+
       </footer>
 
       {showEmojiPicker && (
-        <div className="absolute bottom-20 right-6">
-          <Picker onEmojiClick={handleEmojiSelect} />
-        </div>
+          <div className="absolute bottom-20 right-6">
+            <Picker onEmojiClick={handleEmojiSelect}/>
+          </div>
       )}
 
 
       {filePreview && (
-        <div className="absolute bg-muted bottom-20 p-2 rounded-lg ">
+          <div className="absolute bg-muted bottom-20 p-2 rounded-lg ">
           {/* Overlay responsive */}
           <div className="relative inset-0 bg-gray-500 opacity-50 z-10" />
           {file && (
@@ -306,7 +315,7 @@ export function ChatWindow({ conversation, messages, onBack, onSendMessage }) {
                     <div className={"flex relative justify-between text-center"}>
                       <video
                           src={filePreview}
-                          poster
+
                           className="w-28 h-28 cursor-pointer rounded"
                           onClick={(e) => e.stopPropagation()}
                           muted

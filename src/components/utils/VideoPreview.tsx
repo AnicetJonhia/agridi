@@ -6,7 +6,7 @@ const VideoPreview = ({ fileURL }) => (
     <DialogTrigger asChild>
       <video
         src={fileURL}
-        poster
+
         className="w-28 h-auto cursor-pointer rounded"
         onClick={(e) => e.stopPropagation()}
         muted
