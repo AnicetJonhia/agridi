@@ -140,7 +140,7 @@ const UserProfile: React.FC = () => {
   };
 
 
-  console.log("formData", formData);
+
 
   return (
     <div>

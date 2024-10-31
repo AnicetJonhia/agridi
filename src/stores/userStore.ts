@@ -1,7 +1,5 @@
-
-
-import {create} from 'zustand';
-import { getUserProfile, updateUserProfile as updateUserProfileAPI } from '@/services/user-api.tsx';
+import { create } from 'zustand';
+import { getUserProfile, updateUserProfile as updateUserProfileAPI, getAllUsers } from '@/services/user-api.tsx';
 
 interface UserProfile {
   id: number;
@@ -23,16 +21,20 @@ interface UserProfile {
 
 interface UserState {
   user: UserProfile | null;
+  users: UserProfile[]; // Ajout de la liste des utilisateurs
   token: string | null;
   isAuthenticated: boolean;
   fetchUserProfile: () => Promise<void>;
   updateUserProfile: (profileData: FormData) => Promise<void>;
+  fetchAllUsers: () => Promise<void>;
 }
 
 const useUserStore = create<UserState>((set) => ({
   user: null,
+  users: [],
   token: localStorage.getItem('token'),
   isAuthenticated: !!localStorage.getItem('token'),
+
   fetchUserProfile: async () => {
     const token = localStorage.getItem('token');
     if (!token) return;
@@ -44,6 +46,7 @@ const useUserStore = create<UserState>((set) => ({
       console.error('Failed to fetch user profile:', error);
     }
   },
+
   updateUserProfile: async (profileData: FormData) => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -56,6 +59,19 @@ const useUserStore = create<UserState>((set) => ({
       set({ user: updatedProfile });
     } catch (error) {
       console.error('Failed to update user profile:', error);
+    }
+  },
+
+  fetchAllUsers: async () => { // Correction du nom de la méthode
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    try {
+      const users = await getAllUsers(token);
+
+      set({ users : users, isAuthenticated: true });
+    } catch (error) {
+      console.error('Failed to fetch users:', error);
     }
   },
 }));

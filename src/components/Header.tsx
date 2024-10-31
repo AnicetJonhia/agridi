@@ -1,22 +1,39 @@
-import {useRef, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import {Search, Menu, CircleUser, LogOut} from "lucide-react";
+import {Search, Menu, CircleUser} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuLabel, DropdownMenuItem, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import logo from "../assets/images/logo.png";
 import { ToggleDarkMode } from "./ToggleDarkMode";
-import { LayoutDashboard, Edit3, ShoppingCart, Package, Blinds, CalendarArrowUp, MessageCircle, LineChart } from "lucide-react"; // Importez les icônes nécessaires
+import { LayoutDashboard, Edit3, ShoppingCart, Package, Blinds, CalendarArrowUp, MessageCircle, LineChart } from "lucide-react";
 
 import HeaderNavItem from "./header/HeaderNavItem.tsx";
 import { Link } from "react-router-dom";
 import LanguageSwitcher  from "@/components/LanguageSwitcher.tsx";
 import Logout from "@/components/Logout.tsx";
 
+import userStore from "@/stores/userStore.ts";
+
+
 export default function Header() {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const logoutButtonRef = useRef(null);
+  const [userProfilePicture, setUserProfilePicture] = useState(null);
+  const {user} = userStore();
+
+
+  useEffect(() => {
+      if (user?.profile_picture) {
+      setUserProfilePicture(user.profile_picture);
+      }
+  }, [user]);
+
+
+
+
+
   const closeSheet = () => {
     setIsSheetOpen(false); // Fonction pour fermer le Sheet
   };
@@ -24,6 +41,8 @@ export default function Header() {
   const closeDropdown = () => {
     setIsDropdownOpen(false);
   };
+
+
 
   return (
     <header className=" flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6">
@@ -62,7 +81,7 @@ export default function Header() {
         <form>
           <div className="relative">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input type="search" placeholder="Search products..." className="w-full appearance-none bg-background pl-8 shadow-none md:w-2/3 lg:w-1/3" />
+            <Input type="search" placeholder="Search..." className="w-full appearance-none bg-background pl-8 shadow-none md:w-2/3 lg:w-1/3" />
           </div>
         </form>
       </div>
@@ -74,7 +93,15 @@ export default function Header() {
       <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
         <DropdownMenuTrigger asChild>
           <Button variant="secondary" size="icon" className="rounded-full">
-            <CircleUser className="h-5 w-5" />
+
+            {userProfilePicture ? (
+                <img
+                    src={userProfilePicture instanceof File ? URL.createObjectURL(userProfilePicture) : userProfilePicture}
+                    alt="you"
+                    className="w-9 h-auto border rounded-full object-cover cursor-pointer"
+                />
+            ) : <CircleUser className="h-5 w-5"/>}
+
             <span className="sr-only">Toggle user menu</span>
           </Button>
         </DropdownMenuTrigger>

@@ -253,7 +253,7 @@ export function ChatWindow({ conversation, messages, onBack, onSendMessage }) {
         <div ref={messagesEndRef}/>
       </main>
       <footer className="flex items-center space-x-2 p-2 border-b border-t">
-        <div className="flex items-center space-x-2 flex-1">
+        <div className="flex relative items-center space-x-2 flex-1">
           <Label
               htmlFor="file"
               className="flex items-center cursor-pointer text-muted-foreground hover:text-foreground space-x-2"
@@ -268,7 +268,7 @@ export function ChatWindow({ conversation, messages, onBack, onSendMessage }) {
               onChange={(e) => setMessage(e.target.value)}
               onKeyDown={handleKeyDown}
           />
-          <button onClick={() => setShowEmojiPicker(!showEmojiPicker)} className="cursor-pointer">
+          <button onClick={() => setShowEmojiPicker(!showEmojiPicker)} className="cursor-pointer absolute right-2">
             😊
           </button>
         </div>

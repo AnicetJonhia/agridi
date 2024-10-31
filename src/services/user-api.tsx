@@ -50,3 +50,20 @@ export const updateUserProfile = async (token: string, profileData: FormData): P
     throw error;
   }
 };
+
+
+
+
+export const getAllUsers = async (token: string): Promise<UserProfile[]> => {
+  try {
+    const response = await axios.get<UserProfile[]>(`${API_URL}/auth/users/all`, {
+      headers: {
+        'Authorization': `Token ${token}`,
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching all users:', error);
+    throw error;
+  }
+}

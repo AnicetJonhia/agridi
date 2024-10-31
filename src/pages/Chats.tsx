@@ -1,7 +1,12 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { ConversationList } from "@/components/chats/ConversationList";
 import { ChatWindow } from "@/components/chats/ChatWindow";
 import { getConversations, getChatHistory, sendMessage } from "@/services/chats-api";
+import {MessageCirclePlus, Search} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import {SearchForm} from "@/components/utils/SearchForm.tsx";
+
 
 export default function Chat() {
   const [selectedConversation, setSelectedConversation] = useState(null);
@@ -9,6 +14,7 @@ export default function Chat() {
   const [messages, setMessages] = useState([]);
   const [conversations, setConversations] = useState([]);
   const [refreshConversations, setRefreshConversations] = useState(false);
+  const [isDialogOpen, setDialogOpen] = useState(false);
 
   // Initial fetch of conversations on component mount
   useEffect(() => {
@@ -19,7 +25,7 @@ export default function Chat() {
   useEffect(() => {
     if (refreshConversations) {
       fetchConversations();
-      setRefreshConversations(false); // Reset after fetching to avoid continuous fetching
+      setRefreshConversations(false);
     }
   }, [refreshConversations]);
 
@@ -143,22 +149,43 @@ export default function Chat() {
 
   return (
     <div className="flex flex-col h-full">
-      <header className="border-b p-4">
-        <h1 className="text-lg font-semibold">Chats</h1>
+      <header className="flex items-center justify-between border-b p-4">
+        <h1 className="text-lg font-semibold flex-shrink-0">Chats</h1>
+
+
+        <div className="ml-auto flex items-center space-x-4">
+          <Button className={"border-none"} variant={"outline"} onClick={() => setDialogOpen(true)}>
+            <Search className="h-5 w-5 text-gray-500 cursor-pointer" aria-hidden="true" />
+          </Button>
+          <Button>
+              <MessageCirclePlus  className={"text-white"}/>
+          </Button>
+        </div>
       </header>
+
+       <Dialog open={isDialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent>
+          <SearchForm
+            conversations={conversations}
+            onSelectConversation={handleSelectConversation}
+            onClose={() => setDialogOpen(false)}
+          />
+        </DialogContent>
+      </Dialog>
+
 
       <div className="flex flex-1 h-full">
         {showConversationList && (
-          <ConversationList conversations={conversations} onSelectConversation={handleSelectConversation} />
+            <ConversationList conversations={conversations} onSelectConversation={handleSelectConversation}/>
         )}
         <div className={`flex flex-col flex-1 ${showConversationList ? 'hidden lg:flex' : 'flex'}`}>
           {selectedConversation && (
-            <ChatWindow
-              conversation={selectedConversation}
-              messages={messages}
-              onBack={handleBack}
-              onSendMessage={handleSendMessage}
-            />
+              <ChatWindow
+                  conversation={selectedConversation}
+                  messages={messages}
+                  onBack={handleBack}
+                  onSendMessage={handleSendMessage}
+              />
           )}
         </div>
       </div>
