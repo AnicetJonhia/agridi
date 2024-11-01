@@ -2,12 +2,12 @@ import React, { useState, useEffect } from "react";
 import { ConversationList } from "@/components/chats/ConversationList";
 import { ChatWindow } from "@/components/chats/ChatWindow";
 import { getConversations, getChatHistory, sendMessage } from "@/services/chats-api";
-import {MessageCirclePlus, Search} from "lucide-react";
+import { MessageCirclePlus, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import {SearchConversation} from "@/components/chats/SearchConversation.tsx";
+import { SearchConversation } from "@/components/chats/SearchConversation.tsx";
 import useUserStore from '@/stores/userStore';
-import {SearchUser} from "@/components/chats/SearchUser";
+import { SearchUser } from "@/components/chats/SearchUser";
 import SpecificUserDialog from "@/components/chats/SpecifcUserDialog";
 
 export default function Chat() {
@@ -17,10 +17,11 @@ export default function Chat() {
   const [conversations, setConversations] = useState([]);
   const [refreshConversations, setRefreshConversations] = useState(false);
   const [isDialogOpen, setDialogOpen] = useState(false);
-  const { users, specificUser, fetchAllUsers,fetchSpecificUser  } = useUserStore();
+  const { users, specificUser, fetchAllUsers, fetchSpecificUser } = useUserStore();
   const [isUserDialogOpen, setUserDialogOpen] = useState(false);
   const [isSpecificUserDialogOpen, setSpecificUserDialogOpen] = useState(false);
-
+  const [selectedUserForChat, setSelectedUserForChat] = useState(null);
+  const [isChatWindowDialogOpen, setChatWindowDialogOpen] = useState(false);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -39,7 +40,6 @@ export default function Chat() {
     fetchConversations();
   }, []);
 
-  // Refetch conversations only when refreshConversations is set to true
   useEffect(() => {
     if (refreshConversations) {
       fetchConversations();
@@ -47,9 +47,6 @@ export default function Chat() {
     }
   }, [refreshConversations]);
 
-
-
-  // Fetch conversations function
   const fetchConversations = async () => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -58,9 +55,6 @@ export default function Chat() {
         const sortedConversations = fetchedConversations.sort((a, b) =>
           new Date(b.timestamp) - new Date(a.timestamp)
         );
-
-
-
         setConversations(sortedConversations);
         if (window.innerWidth >= 1008 && fetchedConversations.length > 0) {
           setSelectedConversation(fetchedConversations[0]);
@@ -72,29 +66,25 @@ export default function Chat() {
   };
 
   useEffect(() => {
-  const fetchChatHistory = async () => {
-    if (selectedConversation) {
-      try {
-        const token = localStorage.getItem("token");
-        const currentUserId = Number(localStorage.getItem("userId"));
-
-        // Si c'est une conversation de groupe, utilise l'ID du groupe
-        const conversationId = selectedConversation.group
-          ? selectedConversation.group?.id // ID de groupe pour une conversation de groupe
-          : currentUserId === selectedConversation.receiver?.id
-          ? selectedConversation.sender?.id // Si l'utilisateur est le récepteur, utilise l'ID de l'expéditeur
-          : selectedConversation.receiver?.id; // Sinon, utilise l'ID du récepteur
-
-        const fetchedMessages = await getChatHistory(conversationId, token);
-        setMessages(fetchedMessages);
-      } catch (error) {
-        console.error("Erreur lors de la récupération de l'historique du chat :", error);
+    const fetchChatHistory = async () => {
+      if (selectedConversation) {
+        try {
+          const token = localStorage.getItem("token");
+          const currentUserId = Number(localStorage.getItem("userId"));
+          const conversationId = selectedConversation.group
+            ? selectedConversation.group?.id
+            : currentUserId === selectedConversation.receiver?.id
+            ? selectedConversation.sender?.id
+            : selectedConversation.receiver?.id;
+          const fetchedMessages = await getChatHistory(conversationId, token);
+          setMessages(fetchedMessages);
+        } catch (error) {
+          console.error("Erreur lors de la récupération de l'historique du chat :", error);
+        }
       }
-    }
-  };
-  fetchChatHistory();
-}, [selectedConversation]);
-
+    };
+    fetchChatHistory();
+  }, [selectedConversation]);
 
   const handleSelectConversation = (conversation) => {
     setSelectedConversation(conversation);
@@ -106,7 +96,6 @@ export default function Chat() {
   const handleBack = () => {
     setShowConversationList(true);
   };
-
 
   const handleSendMessage = async (content, file) => {
     if (selectedConversation) {
@@ -121,19 +110,17 @@ export default function Chat() {
 
       try {
         const receiverId =
-        currentUserId === selectedConversation.receiver?.id
-          ? selectedConversation.sender?.id // Si l'utilisateur est le récepteur, utilise l'ID de l'expéditeur
-          : selectedConversation.receiver?.id; // Sinon, utilise l'ID du récepteur
-
+          currentUserId === selectedConversation.receiver?.id
+            ? selectedConversation.sender?.id
+            : selectedConversation.receiver?.id;
         const groupId = isGroupConversation ? selectedConversation.group?.id : null;
 
-        // Vérifier d'abord si currentUserId est sender ou receiver avant de vérifier pour un groupe
         const newMessage = await sendMessage(
-          groupId, // Utilise l'ID du groupe ou l'ID du récepteur
+          groupId,
           receiverId,
           content,
           token,
-            file,
+          file
         );
         setMessages((prevMessages) => [...prevMessages, newMessage]);
 
@@ -156,32 +143,45 @@ export default function Chat() {
         });
 
         setRefreshConversations(true);
+        setChatWindowDialogOpen(false); // Close the dialog after sending the message
       } catch (error) {
         console.error("Erreur lors de l'envoi du message :", error);
       }
     }
   };
 
+  const handleSendMessageToUser = (user) => {
+    const existingConversation = conversations.find(
+      (conv) =>
+        (conv.sender?.id === user.id || conv.receiver?.id === user.id) &&
+        !conv.group
+    );
 
+    if (existingConversation) {
+      setSelectedConversation(existingConversation);
+    } else {
+      setSelectedUserForChat(user);
+    }
 
+    setSpecificUserDialogOpen(false);
+    setChatWindowDialogOpen(true);
+  };
 
   return (
     <div className="flex flex-col h-full">
       <header className="flex items-center justify-between border-b p-4">
         <h1 className="text-lg font-semibold flex-shrink-0">Chats</h1>
-
-
         <div className="ml-auto flex items-center space-x-4">
-          <Button className={"border-none"} variant={"outline"} onClick={() => setDialogOpen(true)}>
+          <Button className="border-none" variant="outline" onClick={() => setDialogOpen(true)}>
             <Search className="h-5 w-5 text-gray-500 cursor-pointer" aria-hidden="true" />
           </Button>
           <Button onClick={() => setUserDialogOpen(true)}>
-              <MessageCirclePlus  className={"text-white"}/>
+            <MessageCirclePlus className="text-white" />
           </Button>
         </div>
       </header>
 
-       <Dialog open={isDialogOpen} onOpenChange={setDialogOpen}>
+      <Dialog open={isDialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>
           <SearchConversation
             conversations={conversations}
@@ -205,21 +205,50 @@ export default function Chat() {
         user={specificUser}
         open={isSpecificUserDialogOpen}
         onClose={() => setSpecificUserDialogOpen(false)}
-        />
+        onSendMessage={handleSendMessageToUser}
+      />
 
+      <Dialog open={isChatWindowDialogOpen} onOpenChange={setChatWindowDialogOpen}>
+        <DialogContent>
+          {selectedConversation && (
+            <ChatWindow
+              conversation={selectedConversation}
+              messages={messages}
+              onBack={handleBack}
+              onSendMessage={handleSendMessage}
+            />
+          )}
+          {selectedUserForChat && (
+            <ChatWindow
+              conversation={{ receiver: selectedUserForChat }}
+              messages={messages}
+              onBack={handleBack}
+              onSendMessage={handleSendMessage}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
 
       <div className="flex flex-1 h-full">
         {showConversationList && (
-            <ConversationList conversations={conversations} onSelectConversation={handleSelectConversation}/>
+          <ConversationList conversations={conversations} onSelectConversation={handleSelectConversation} />
         )}
         <div className={`flex flex-col flex-1 ${showConversationList ? 'hidden lg:flex' : 'flex'}`}>
           {selectedConversation && (
-              <ChatWindow
-                  conversation={selectedConversation}
-                  messages={messages}
-                  onBack={handleBack}
-                  onSendMessage={handleSendMessage}
-              />
+            <ChatWindow
+              conversation={selectedConversation}
+              messages={messages}
+              onBack={handleBack}
+              onSendMessage={handleSendMessage}
+            />
+          )}
+          {selectedUserForChat && (
+            <ChatWindow
+              conversation={{ receiver: selectedUserForChat }}
+              messages={messages}
+              onBack={handleBack}
+              onSendMessage={handleSendMessage}
+            />
           )}
         </div>
       </div>
