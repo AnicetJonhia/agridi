@@ -70,6 +70,8 @@ const useUserStore = create<UserState>((set) => ({
       const users = await getAllUsers(token);
 
       set({ users : users, isAuthenticated: true });
+
+
     } catch (error) {
       console.error('Failed to fetch users:', error);
     }

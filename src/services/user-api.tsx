@@ -54,16 +54,27 @@ export const updateUserProfile = async (token: string, profileData: FormData): P
 
 
 
+
+
 export const getAllUsers = async (token: string): Promise<UserProfile[]> => {
   try {
-    const response = await axios.get<UserProfile[]>(`${API_URL}/auth/users/all`, {
+    const response = await axios.get<UserProfile[]>(`${API_URL}/auth/users/all/`, {
       headers: {
-        'Authorization': `Token ${token}`,
-      }
+        Authorization: `Token ${token}`,
+      },
     });
+
+
     return response.data;
-  } catch (error) {
-    console.error('Error fetching all users:', error);
-    throw error;
+  } catch (error: any) {
+
+    if (axios.isAxiosError(error)) {
+      console.error('Erreur lors de la récupération de tous les utilisateurs:', error.response?.data || error.message);
+      throw new Error(`Erreur de récupération des utilisateurs: ${error.response?.data?.detail || error.message}`);
+    } else {
+
+      console.error('Erreur inattendue:', error);
+      throw new Error('Une erreur inattendue est survenue');
+    }
   }
-}
+};

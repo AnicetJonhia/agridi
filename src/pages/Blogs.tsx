@@ -2,32 +2,34 @@ import { useEffect, useState } from 'react';
 import useUserStore from '@/stores/userStore';
 
 const Blogs = () => {
-  const [formData, setFormData] = useState([]);
-  const { fetchAllUsers } = useUserStore();
+  const { users, fetchAllUsers } = useUserStore(); // Assurez-vous que users est bien récupéré
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchProfile = async () => {
       setLoading(true);
-      try {
-        const users = await fetchAllUsers(); // Assuming fetchAllUsers returns the fetched users
-        setFormData(users);
-      } catch (error) {
-        console.error('Failed to fetch users:', error);
-      } finally {
-        setLoading(false);
-      }
+      await fetchAllUsers(); // Appel pour récupérer les utilisateurs
+      setLoading(false);
     };
     fetchProfile();
   }, [fetchAllUsers]);
 
-  console.log("formdata",formData)
-
   return (
     <div>
       <h2>Liste des utilisateurs</h2>
-
-
+      {loading ? (
+        <p>Chargement...</p>
+      ) : (
+        <ul>
+          {users.length > 0 ? (
+            users.map((user) => (
+              <li key={user.id}>{user.username} {user.email}</li> // Utilisation de `username` pour l'affichage
+            ))
+          ) : (
+            <p>Aucun utilisateur trouvé.</p>
+          )}
+        </ul>
+      )}
     </div>
   );
 };
