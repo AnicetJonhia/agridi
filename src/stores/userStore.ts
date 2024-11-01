@@ -1,5 +1,10 @@
 import { create } from 'zustand';
-import { getUserProfile, updateUserProfile as updateUserProfileAPI, getAllUsers } from '@/services/user-api.tsx';
+import {
+  getUserProfile,
+  updateUserProfile as updateUserProfileAPI,
+  getAllUsers,
+  getSpecificUSer
+} from '@/services/user-api.tsx';
 
 interface UserProfile {
   id: number;
@@ -22,16 +27,19 @@ interface UserProfile {
 interface UserState {
   user: UserProfile | null;
   users: UserProfile[]; // Ajout de la liste des utilisateurs
+  specificUser: UserProfile | null;
   token: string | null;
   isAuthenticated: boolean;
   fetchUserProfile: () => Promise<void>;
   updateUserProfile: (profileData: FormData) => Promise<void>;
   fetchAllUsers: () => Promise<void>;
+  fetchSpecificUser: (userId: number) => Promise<void>;
 }
 
 const useUserStore = create<UserState>((set) => ({
   user: null,
   users: [],
+  specificUser: null,
   token: localStorage.getItem('token'),
   isAuthenticated: !!localStorage.getItem('token'),
 
@@ -76,6 +84,19 @@ const useUserStore = create<UserState>((set) => ({
       console.error('Failed to fetch users:', error);
     }
   },
+
+  fetchSpecificUser: async (userId: number) => { // Implémentation de la méthode
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    try {
+      const specificUser = await getSpecificUSer(token, userId);
+      set({ specificUser });
+    } catch (error) {
+      console.error('Failed to fetch specific user profile:', error);
+    }
+  },
+
 }));
 
 export default useUserStore;

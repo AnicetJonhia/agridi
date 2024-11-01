@@ -1,37 +1,30 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import useUserStore from '@/stores/userStore';
 
-const Blogs = () => {
-  const { users, fetchAllUsers } = useUserStore(); // Assurez-vous que users est bien récupéré
-  const [loading, setLoading] = useState(true);
+const Blogs: React.FC<{ userId: number }> = ({ userId=5 }) => {
+  const { fetchSpecificUser, specificUser } = useUserStore();
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      setLoading(true);
-      await fetchAllUsers(); // Appel pour récupérer les utilisateurs
-      setLoading(false);
-    };
-    fetchProfile();
-  }, [fetchAllUsers]);
+    fetchSpecificUser(userId);
+  }, [userId]);
+
+
+
 
   return (
     <div>
-      <h2>Liste des utilisateurs</h2>
-      {loading ? (
-        <p>Chargement...</p>
+      {specificUser ? (
+        <div>
+          <h1>{specificUser.username}</h1>
+          <p>Email: {specificUser.email}</p>
+          {/* Affichez d'autres informations de l'utilisateur */}
+        </div>
       ) : (
-        <ul>
-          {users.length > 0 ? (
-            users.map((user) => (
-              <li key={user.id}>{user.username} {user.email}</li> // Utilisation de `username` pour l'affichage
-            ))
-          ) : (
-            <p>Aucun utilisateur trouvé.</p>
-          )}
-        </ul>
+        <p>Loading...</p>
       )}
     </div>
   );
 };
+
 
 export default Blogs;

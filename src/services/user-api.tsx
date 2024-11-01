@@ -78,3 +78,18 @@ export const getAllUsers = async (token: string): Promise<UserProfile[]> => {
     }
   }
 };
+
+
+export const getSpecificUSer = async (token: string, userId: number): Promise<UserProfile> => {
+  try {
+    const response = await axios.get<UserProfile>(`${API_URL}/auth/users/${userId}/profile/`, {
+      headers: {
+        'Authorization': `Token ${token}`,
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching specific user profile:', error);
+    throw error;
+  }
+};

@@ -14,7 +14,10 @@ export function SearchConversation({ conversations, onSelectConversation, onClos
       : conversation.receiver?.username || conversation.group?.name;
 
 
-    return displayName.toLowerCase().includes(searchTerm.toLowerCase());
+    const messageIncludesSearchTerm = conversation.content.toLowerCase().includes(searchTerm.toLowerCase());
+
+    return displayName.toLowerCase().includes(searchTerm.toLowerCase()) || messageIncludesSearchTerm;
+
   });
 
   const handleSelectConversation = (conversation) => {
@@ -44,6 +47,11 @@ export function SearchConversation({ conversations, onSelectConversation, onClos
                   ? conversation.sender?.profile_picture
                   : conversation.receiver?.profile_picture);
 
+          const contentPreview =
+                    conversation.content.length > 30
+                        ? `${conversation.content.slice(0, 30)}...`
+                        : conversation.content;
+
 
           return (
             <Card
@@ -65,9 +73,10 @@ export function SearchConversation({ conversations, onSelectConversation, onClos
                           <AvatarFallback>{displayName.charAt(0)}</AvatarFallback>
                         )}
               </Avatar>
-              <div className="ml-4">
-                <div className="font-semibold">{displayName}</div>
-              </div>
+                <div className="ml-4">
+                    <div className="font-semibold">{displayName}</div>
+                    <div className="text-sm text-muted-foreground">{contentPreview}</div>
+                </div>
             </Card>
           );
         })}

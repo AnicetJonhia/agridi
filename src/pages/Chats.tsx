@@ -8,6 +8,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import {SearchConversation} from "@/components/chats/SearchConversation.tsx";
 import useUserStore from '@/stores/userStore';
 import {SearchUser} from "@/components/chats/SearchUser";
+import SpecificUserDialog from "@/components/chats/SpecifcUserDialog";
 
 export default function Chat() {
   const [selectedConversation, setSelectedConversation] = useState(null);
@@ -16,8 +17,9 @@ export default function Chat() {
   const [conversations, setConversations] = useState([]);
   const [refreshConversations, setRefreshConversations] = useState(false);
   const [isDialogOpen, setDialogOpen] = useState(false);
-  const { users, fetchAllUsers } = useUserStore();
+  const { users, specificUser, fetchAllUsers,fetchSpecificUser  } = useUserStore();
   const [isUserDialogOpen, setUserDialogOpen] = useState(false);
+  const [isSpecificUserDialogOpen, setSpecificUserDialogOpen] = useState(false);
 
 
   useEffect(() => {
@@ -29,6 +31,8 @@ export default function Chat() {
 
   const handleSelectUser = (user) => {
     console.log("Utilisateur sélectionné :", user);
+    fetchSpecificUser(user.id);
+    setSpecificUserDialogOpen(true);
   };
 
   useEffect(() => {
@@ -196,6 +200,12 @@ export default function Chat() {
           />
         </DialogContent>
       </Dialog>
+
+      <SpecificUserDialog
+        user={specificUser}
+        open={isSpecificUserDialogOpen}
+        onClose={() => setSpecificUserDialogOpen(false)}
+        />
 
 
       <div className="flex flex-1 h-full">
