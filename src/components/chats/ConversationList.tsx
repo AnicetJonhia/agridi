@@ -32,9 +32,11 @@ export function ConversationList({ conversations, onSelectConversation }) {
 
     return (
         <div className="w-full lg:w-1/3 border-r p-2 overflow-y-scroll h-full">
-            {conversations.map((conversation) => {
+             {conversations && conversations.map((conversation) => {
+
 
                 const displayName =
+
                     currentUserId === conversation.receiver?.id
                         ? conversation.sender?.username // Affiche le nom de l'expéditeur
                         : conversation.receiver?.username || conversation.group?.name; // Sinon, affiche le nom du destinataire ou le nom du groupe

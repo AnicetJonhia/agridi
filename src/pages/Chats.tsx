@@ -96,60 +96,76 @@ export default function Chat() {
     setShowConversationList(true);
   };
 
+
   const handleSendMessage = async (content, file) => {
-    if (selectedConversation) {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        console.error("Token not found");
-        return;
-      }
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.error("Token not found");
+      return;
+    }
 
-      const currentUserId = Number(localStorage.getItem("userId"));
-      const isGroupConversation = Boolean(selectedConversation?.group);
+    const currentUserId = Number(localStorage.getItem("userId"));
+    const isGroupConversation = Boolean(selectedConversation?.group);
+    const receiverId = selectedConversation
+      ? currentUserId === selectedConversation.receiver?.id
+        ? selectedConversation.sender?.id
+        : selectedConversation.receiver?.id  || selectedConversation.group?.id
+      : selectedUserForChat?.id;
 
-      try {
-        const receiverId =
-          currentUserId === selectedConversation.receiver?.id
-            ? selectedConversation.sender?.id
-            : selectedConversation.receiver?.id;
-        const groupId = isGroupConversation ? selectedConversation.group?.id : null;
+    if (!receiverId) {
+      console.error("Receiver ID not found");
+      return;
+    }
 
-        const newMessage = await sendMessage(
-          groupId,
-          receiverId,
-          content,
-          token,
-          file
-        );
-        setMessages((prevMessages) => [...prevMessages, newMessage]);
+    try {
+      const groupId = isGroupConversation ? selectedConversation.group?.id : null;
 
-        const updatedConversation = {
-          ...selectedConversation,
-          lastMessage: newMessage,
-          timestamp: newMessage.timestamp,
-        };
+      const newMessage = await sendMessage(
+        groupId,
+        receiverId,
+        content,
+        token,
+        file
+      );
+      setMessages((prevMessages) => [...prevMessages, newMessage]);
 
-        setSelectedConversation(updatedConversation);
+      const updatedConversation = selectedConversation
+        ? {
+            ...selectedConversation,
+            lastMessage: newMessage,
+            timestamp: newMessage.timestamp,
+          }
+        : {
+            id: receiverId,
+            receiver: selectedUserForChat,
+            lastMessage: newMessage,
+            timestamp: newMessage.timestamp,
+          };
 
-        setConversations((prevConversations) => {
-          const updatedConversations = prevConversations.map((conv) =>
-            conv.id === (selectedConversation.group?.id || selectedConversation.receiver?.id)
-              ? updatedConversation
-              : conv
-          );
+      setSelectedConversation(updatedConversation);
 
-          return updatedConversations.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-        });
+      setConversations((prevConversations) => {
+        const updatedConversations = selectedConversation
+          ? prevConversations.map((conv) =>
+              conv.id === (selectedConversation.group?.id || selectedConversation.receiver?.id)
+                ? updatedConversation
+                : conv
+            )
+          : [...prevConversations, updatedConversation];
 
-        setRefreshConversations(true);
-        setChatWindowDialogOpen(false); // Close the dialog after sending the message
-      } catch (error) {
-        console.error("Erreur lors de l'envoi du message :", error);
-      }
+        return updatedConversations.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+      });
+
+      setRefreshConversations(true);
+      setChatWindowDialogOpen(false); // Close the dialog after sending the message
+    } catch (error) {
+      console.error("Erreur lors de l'envoi du message :", error);
     }
   };
 
   const handleSendMessageToUser = (user) => {
+
+    setSelectedConversation(null);
     const existingConversation = conversations.find(
       (conv) =>
         (conv.sender?.id === user.id || conv.receiver?.id === user.id) &&
@@ -160,6 +176,7 @@ export default function Chat() {
       setSelectedConversation(existingConversation);
     } else {
       setSelectedUserForChat(user);
+      setMessages([]);
     }
 
     setSpecificUserDialogOpen(false);

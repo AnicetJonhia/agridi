@@ -18,7 +18,7 @@ const SpecificUserDialog = ({ user, open, onClose, onSendMessage }) => {
         <div className="mt-4 border rounded-lg">
           <div className="flex p-4 flex-col items-center md:flex-row md:items-start">
             {user.profile_picture ? (
-              <Avatar className="w-32 h-auto rounded-full">
+              <Avatar className="w-32 h-32 rounded-full">
                 <img
                   src={
                     user.profile_picture instanceof File
