@@ -35,7 +35,7 @@ export default function Header() {
 
 
   const closeSheet = () => {
-    setIsSheetOpen(false); // Fonction pour fermer le Sheet
+    setIsSheetOpen(false);
   };
 
   const closeDropdown = () => {
