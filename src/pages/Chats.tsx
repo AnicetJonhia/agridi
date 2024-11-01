@@ -31,7 +31,6 @@ export default function Chat() {
   }, []);
 
   const handleSelectUser = (user) => {
-    console.log("Utilisateur sélectionné :", user);
     fetchSpecificUser(user.id);
     setSpecificUserDialogOpen(true);
   };
@@ -209,23 +208,25 @@ export default function Chat() {
       />
 
       <Dialog open={isChatWindowDialogOpen} onOpenChange={setChatWindowDialogOpen}>
-        <DialogContent>
-          {selectedConversation && (
-            <ChatWindow
-              conversation={selectedConversation}
-              messages={messages}
-              onBack={handleBack}
-              onSendMessage={handleSendMessage}
-            />
-          )}
-          {selectedUserForChat && (
-            <ChatWindow
-              conversation={{ receiver: selectedUserForChat }}
-              messages={messages}
-              onBack={handleBack}
-              onSendMessage={handleSendMessage}
-            />
-          )}
+        <DialogContent className="h-[80vh] overflow-hidden">
+          <div className="h-full overflow-y-auto">
+            {selectedConversation && (
+              <ChatWindow
+                conversation={selectedConversation}
+                messages={messages}
+                onBack={handleBack}
+                onSendMessage={handleSendMessage}
+              />
+            )}
+            {selectedUserForChat && (
+              <ChatWindow
+                conversation={{ receiver: selectedUserForChat }}
+                messages={messages}
+                onBack={handleBack}
+                onSendMessage={handleSendMessage}
+              />
+            )}
+          </div>
         </DialogContent>
       </Dialog>
 
