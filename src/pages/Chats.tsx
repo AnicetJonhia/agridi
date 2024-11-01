@@ -5,8 +5,9 @@ import { getConversations, getChatHistory, sendMessage } from "@/services/chats-
 import {MessageCirclePlus, Search} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import {SearchForm} from "@/components/utils/SearchForm.tsx";
-
+import {SearchConversation} from "@/components/chats/SearchConversation.tsx";
+import useUserStore from '@/stores/userStore';
+import {SearchUser} from "@/components/chats/SearchUser";
 
 export default function Chat() {
   const [selectedConversation, setSelectedConversation] = useState(null);
@@ -15,8 +16,21 @@ export default function Chat() {
   const [conversations, setConversations] = useState([]);
   const [refreshConversations, setRefreshConversations] = useState(false);
   const [isDialogOpen, setDialogOpen] = useState(false);
+  const { users, fetchAllUsers } = useUserStore();
+  const [isUserDialogOpen, setUserDialogOpen] = useState(false);
 
-  // Initial fetch of conversations on component mount
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      await fetchAllUsers();
+    };
+    fetchProfile();
+  }, []);
+
+  const handleSelectUser = (user) => {
+    console.log("Utilisateur sélectionné :", user);
+  };
+
   useEffect(() => {
     fetchConversations();
   }, []);
@@ -157,7 +171,7 @@ export default function Chat() {
           <Button className={"border-none"} variant={"outline"} onClick={() => setDialogOpen(true)}>
             <Search className="h-5 w-5 text-gray-500 cursor-pointer" aria-hidden="true" />
           </Button>
-          <Button>
+          <Button onClick={() => setUserDialogOpen(true)}>
               <MessageCirclePlus  className={"text-white"}/>
           </Button>
         </div>
@@ -165,10 +179,20 @@ export default function Chat() {
 
        <Dialog open={isDialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>
-          <SearchForm
+          <SearchConversation
             conversations={conversations}
             onSelectConversation={handleSelectConversation}
             onClose={() => setDialogOpen(false)}
+          />
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isUserDialogOpen} onOpenChange={setUserDialogOpen}>
+        <DialogContent>
+          <SearchUser
+            users={users}
+            onSelectUser={handleSelectUser}
+            onClose={() => setUserDialogOpen(false)}
           />
         </DialogContent>
       </Dialog>

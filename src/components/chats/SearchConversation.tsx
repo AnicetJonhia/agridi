@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
-export function SearchForm({ conversations, onSelectConversation, onClose }) {
+export function SearchConversation({ conversations, onSelectConversation, onClose }) {
   const [searchTerm, setSearchTerm] = useState("");
    const currentUserId = Number(localStorage.getItem("userId"));
 
