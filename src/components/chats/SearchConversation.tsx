@@ -9,10 +9,10 @@ export function SearchConversation({ conversations, onSelectConversation, onClos
 
   const filteredConversations = conversations.filter((conversation) => {
     const displayName =
-    currentUserId === conversation.receiver?.id
-      ? conversation.sender?.username
-      : conversation.receiver?.username || conversation.group?.name;
-
+        conversation.group?.name ||
+        (currentUserId === conversation.receiver?.id
+            ? conversation.sender?.username
+            : conversation.receiver?.username);
 
     const messageIncludesSearchTerm = conversation.content.toLowerCase().includes(searchTerm.toLowerCase());
 
@@ -38,9 +38,11 @@ export function SearchConversation({ conversations, onSelectConversation, onClos
         {filteredConversations.map((conversation) => {
 
             const displayName =
-                currentUserId === conversation.receiver?.id
-                  ? conversation.sender?.username
-                  : conversation.receiver?.username || conversation.group?.name;
+                conversation.group?.name ||
+                (currentUserId === conversation.receiver?.id
+                    ? conversation.sender?.username
+                    : conversation.receiver?.username);
+
           const displayPhoto =
                 conversation.group?.photo ||
                 (currentUserId === conversation.receiver?.id

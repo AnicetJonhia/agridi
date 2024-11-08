@@ -36,11 +36,8 @@ export function ConversationList({ conversations, onSelectConversation }) {
 
 
                 const displayName =
-
-                    currentUserId === conversation.receiver?.id
-                        ? conversation.sender?.username // Affiche le nom de l'expéditeur
-                        : conversation.receiver?.username || conversation.group?.name; // Sinon, affiche le nom du destinataire ou le nom du groupe
-
+                    conversation.group?.name ||
+                    (currentUserId === conversation.receiver?.id ? conversation.sender?.username : conversation.receiver?.username);
 
                 const contentPreview =
                     conversation.content.length > 30

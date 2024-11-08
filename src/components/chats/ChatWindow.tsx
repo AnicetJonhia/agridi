@@ -8,7 +8,6 @@ import { Input } from "@/components/ui/input";
 import VideoPreview from "@/components/utils/VideoPreview.tsx";
 import { Label } from "@/components/ui/label.tsx";
 
-// Fonction pour formater la date en "Mercredi 30 Octobre"
 const formatDate = (date) => {
   return new Intl.DateTimeFormat("en-En", {
     weekday: "long",
@@ -123,9 +122,10 @@ export function ChatWindow({ conversation, messages, onBack, onSendMessage }) {
   };
 
   const displayName =
-    currentUserId === conversation.receiver?.id
-      ? conversation.sender?.username
-      : conversation.receiver?.username || conversation.group?.name;
+      conversation.group?.name ||
+      (currentUserId === conversation.receiver?.id
+          ? conversation.sender?.username
+          : conversation.receiver?.username);
 
   const displayPhoto =
     conversation.group?.photo ||
@@ -172,6 +172,7 @@ export function ChatWindow({ conversation, messages, onBack, onSendMessage }) {
           }
 
           const isCurrentUserSender = msg.sender.id === currentUserId;
+
           acc.push(
               <div
                   key={msg.id}
@@ -210,6 +211,7 @@ export function ChatWindow({ conversation, messages, onBack, onSendMessage }) {
                       }`}
                   >
                     <p className="text-sm whitespace-pre-wrap">{formatMessageContent(msg.content)}</p>
+
                   </div>
 
                   {msg?.file && (
