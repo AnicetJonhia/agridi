@@ -66,26 +66,34 @@ export default function Chat() {
     }
   };
 
+
+
   useEffect(() => {
-    const fetchChatHistory = async () => {
-      if (selectedConversation) {
-        try {
-          const token = localStorage.getItem("token");
-          const currentUserId = Number(localStorage.getItem("userId"));
-          const conversationId = selectedConversation.group
-            ? selectedConversation.group?.id
-            : currentUserId === selectedConversation.receiver?.id
-            ? selectedConversation.sender?.id
-            : selectedConversation.receiver?.id;
-          const fetchedMessages = await getChatHistory(conversationId, token);
-          setMessages(fetchedMessages);
-        } catch (error) {
-          console.error("Erreur lors de la récupération de l'historique du chat :", error);
-        }
+  const fetchChatHistory = async () => {
+    if (selectedConversation) {
+      try {
+        const token = localStorage.getItem("token");
+        const currentUserId = Number(localStorage.getItem("userId"));
+        const isGroupConversation = Boolean(selectedConversation.group);
+        const conversationId = isGroupConversation
+          ? selectedConversation.group?.id
+          : currentUserId === selectedConversation.receiver?.id
+          ? selectedConversation.sender?.id
+          : selectedConversation.receiver?.id;
+
+        const type = isGroupConversation ? 'group' : 'private';
+
+        const fetchedMessages = await getChatHistory(type, conversationId, token);
+
+        setMessages(fetchedMessages);
+      } catch (error) {
+        console.error("Erreur lors de la récupération de l'historique du chat :", error);
       }
-    };
-    fetchChatHistory();
-  }, [selectedConversation]);
+    }
+  };
+  fetchChatHistory();
+}, [selectedConversation]);
+
 
   const handleSelectConversation = (conversation) => {
     setSelectedConversation(conversation);

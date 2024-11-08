@@ -104,17 +104,19 @@ export const getConversations = async (token: string): Promise<Message[]> => {
   }
 };
 
+
 // Récupérer l'historique du chat
-export const getChatHistory = async (pk: number, token: string): Promise<Message[]> => {
+export const getChatHistory = async (type: 'group' | 'private', pk: number, token: string): Promise<Message[]> => {
   setAuthToken(token);
   try {
-    const response = await api.get<Message[]>(`/custom_messages/${pk}/chat_history/`);
+    const response = await api.get<Message[]>(`/custom_messages/${type}/${pk}/chat_history/`);
     return response.data;
   } catch (error) {
     handleRequestError(error);
     return [];
   }
 };
+
 
 export const sendMessage = async (
   groupId?: number,
