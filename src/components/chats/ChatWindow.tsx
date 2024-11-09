@@ -39,6 +39,7 @@ const formatDate = (date: string) => {
   }).format(new Date(date));
 };
 
+
 export function ChatWindow({ conversation, messages, onBack, onSendMessage }: ChatWindowProps) {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [message, setMessage] = useState("");
@@ -48,6 +49,8 @@ export function ChatWindow({ conversation, messages, onBack, onSendMessage }: Ch
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const textareaRef = useRef(null);
     const emojiPickerRef = useRef<HTMLDivElement | null>(null);
+  const [showDropdown, setShowDropdown] = useState(null);
+
 
   const handleEmojiSelect = (emojiData: { emoji: string }) => {
     setMessage((prevMessage) => prevMessage + emojiData.emoji);
@@ -238,33 +241,45 @@ export function ChatWindow({ conversation, messages, onBack, onSendMessage }: Ch
                 </div>
 
                 {msg.content && (
-                    <div className={"flex "}>
-                        {!isCurrentUserSender && (
-                            <div className="flex items-end space-x-0">
-                              <span className="w-2 h-2 bg-muted rounded-full"></span>
-                              <span className="w-3 h-3 bg-muted rounded-full "></span>
-
-
-                            </div>
-                        )}
+                    <div className="flex relative">
+                      {!isCurrentUserSender && (
+                        <div className="flex items-end space-x-0">
+                          <span className="w-2 h-2 bg-muted rounded-full"></span>
+                          <span className="w-3 h-3 bg-muted rounded-full"></span>
+                        </div>
+                      )}
                       <div
-                          className={`p-2 rounded-lg -ml-0.5 -mr-0.5 ${
-                              isCurrentUserSender
-                                  ? "bg-[#149911] text-white rounded-br-none "
-                                  : "bg-muted  rounded-bl-none "
-                          }`}
+                        className={`p-2 rounded-lg -ml-0.5 -mr-0.5 ${
+                          isCurrentUserSender
+                            ? "bg-gradient-to-br from-primary to-[#149911] text-white"
+                            : "bg-gradient-to-r from-muted to-transparent"
+                        }`}
                       >
-                        <p className="text-sm whitespace-pre-wrap">{formatMessageContent(msg.content)}</p>
+                        <p
+                          className="cursor-pointer text-sm whitespace-pre-wrap"
+                          onClick={() => setShowDropdown(showDropdown === msg.id ? null : msg.id)}
+                        >
+                          {formatMessageContent(msg.content)}
+                        </p>
                       </div>
-
                       {isCurrentUserSender && (
-                            <div className="flex items-end space-x-0">
-                              <span className="w-3 h-3 bg-[#149911] rounded-full "></span>
-                              <span className="w-2 h-2 bg-[#149911] rounded-full"></span>
-                            </div>
-                        )}
+                        <div className="flex items-end space-x-0">
+                          <span className="w-3 h-3 bg-[#149911] rounded-full"></span>
+                          <span className="w-2 h-2 bg-[#149911] rounded-full"></span>
+                        </div>
+                      )}
+                      {showDropdown === msg.id && (
+                        <div className="absolute z-10 top-full right-0 mt-2 w-32 bg-white border border-gray-300 rounded shadow-lg">
+                          <button className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                            Modify
+                          </button>
+                          <button className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                            Delete
+                          </button>
+                        </div>
+                      )}
                     </div>
-                )}
+                  )}
 
                 {msg?.file && (
                     (() => {
@@ -317,7 +332,7 @@ export function ChatWindow({ conversation, messages, onBack, onSendMessage }: Ch
           <Input id={"file"} onChange={handleFileChange} className={"w-48"} type={"file"} style={{ display: 'none' }} />
           <Textarea
             ref={textareaRef}
-            className="flex-1 resize-none  pl-10  focus:ring-2 focus:ring-blue-500"
+            className="flex-1 resize-none  pl-10 pr-8 focus:ring-2 focus:ring-blue-500"
             placeholder="Type a message"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
