@@ -46,6 +46,7 @@ export function ChatWindow({ conversation, messages, onBack, onSendMessage }: Ch
   const [file, setFile] = useState<File | null>(null);
   const [filePreview, setFilePreview] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const textareaRef = useRef(null);
 
   const handleEmojiSelect = (emojiData: { emoji: string }) => {
     setMessage((prevMessage) => prevMessage + emojiData.emoji);
@@ -64,6 +65,13 @@ export function ChatWindow({ conversation, messages, onBack, onSendMessage }: Ch
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "auto" });
   }, [messages]);
+
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 5 * 24)}px`;
+    }
+  }, [message]);
 
   const formatMessageContent = (content: string, maxCharsPerLine = 45) => {
     const splitLongSequences = (text: string, maxChars: number) => {
@@ -260,17 +268,19 @@ export function ChatWindow({ conversation, messages, onBack, onSendMessage }: Ch
         <div className="flex relative items-center space-x-2 flex-1">
           <Label
             htmlFor="file"
-            className="flex items-center cursor-pointer text-muted-foreground hover:text-foreground space-x-2"
+            className="absolute left-4 items-center cursor-pointer text-muted-foreground hover:text-foreground space-x-2"
           >
             <Paperclip className="w-6 h-6 text-muted-foreground cursor-pointer" />
           </Label>
           <Input id={"file"} onChange={handleFileChange} className={"w-48"} type={"file"} style={{ display: 'none' }} />
           <Textarea
-            className="flex-1 resize-none h-10 p-2 focus:ring-2 focus:ring-blue-500"
+            ref={textareaRef}
+            className="flex-1 resize-none  pl-10  focus:ring-2 focus:ring-blue-500"
             placeholder="Type a message"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             onKeyDown={handleKeyDown}
+            style={{ maxHeight: "120px" }}
           />
           <button onClick={() => setShowEmojiPicker(!showEmojiPicker)} className="cursor-pointer absolute right-2">
             😊
