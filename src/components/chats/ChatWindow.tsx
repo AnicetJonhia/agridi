@@ -47,10 +47,11 @@ export function ChatWindow({ conversation, messages, onBack, onSendMessage }: Ch
   const [filePreview, setFilePreview] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const textareaRef = useRef(null);
+    const emojiPickerRef = useRef<HTMLDivElement | null>(null);
 
   const handleEmojiSelect = (emojiData: { emoji: string }) => {
     setMessage((prevMessage) => prevMessage + emojiData.emoji);
-    setShowEmojiPicker(false);
+
   };
 
   const handleSendMessage = () => {
@@ -72,6 +73,20 @@ export function ChatWindow({ conversation, messages, onBack, onSendMessage }: Ch
       textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 5 * 24)}px`;
     }
   }, [message]);
+
+
+   useEffect(() => {
+      const handleClickOutside = (event: MouseEvent) => {
+        if (emojiPickerRef.current && !emojiPickerRef.current.contains(event.target as Node)) {
+          setShowEmojiPicker(false);
+        }
+      };
+
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+      };
+    }, []);
 
   const formatMessageContent = (content: string, maxCharsPerLine = 45) => {
     const splitLongSequences = (text: string, maxChars: number) => {
@@ -298,7 +313,7 @@ export function ChatWindow({ conversation, messages, onBack, onSendMessage }: Ch
       </footer>
 
       {showEmojiPicker && (
-        <div className="absolute bottom-20 right-6">
+        <div ref={emojiPickerRef} className="absolute bottom-20 right-6">
           <Picker onEmojiClick={handleEmojiSelect} />
         </div>
       )}
