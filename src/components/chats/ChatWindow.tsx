@@ -1,6 +1,6 @@
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Textarea } from "@/components/ui/textarea";
-import { MoveLeft, Paperclip, Send } from "lucide-react";
+import {BadgeInfo, EllipsisVertical, MoveLeft, Paperclip, Send} from "lucide-react";
 import Picker from "emoji-picker-react";
 import React, { useEffect, useRef, useState } from "react";
 import ImagePreview from "@/components/utils/ImagePreview.tsx";
@@ -169,9 +169,11 @@ export function ChatWindow({ conversation, messages, onBack, onSendMessage }: Ch
     <div className="flex flex-col h-full">
       <header className="flex items-center justify-start space-x-6 px-4 py-2 border-b">
         <div className="lg:hidden">
-          <MoveLeft className="cursor-pointer" onClick={onBack} />
+            <button onClick={onBack} className="p-2 ">
+                <MoveLeft className="w-6 h-6" />
+            </button>
         </div>
-        <div className="flex items-center space-x-1">
+        <div className="flex flex-1 items-center space-x-1">
           <Avatar className="w-10 h-10">
             {displayPhoto ? (
               <img
@@ -184,6 +186,13 @@ export function ChatWindow({ conversation, messages, onBack, onSendMessage }: Ch
           </Avatar>
           <h1 className="text-lg font-semibold">{displayName || "Unknown"}</h1>
         </div>
+        <div >
+            <button  className="p-2 ">
+                <BadgeInfo  className="w-6 h-6" />
+            </button>
+        </div>
+
+
       </header>
       <main className="flex-1 overflow-y-scroll h-auto p-4 space-y-4">
         {messages.reduce((acc, msg, index) => {
@@ -218,7 +227,7 @@ export function ChatWindow({ conversation, messages, onBack, onSendMessage }: Ch
                   )}
                 </Avatar>
               )}
-              <div className="space-y-0.5 ">
+              <div className="space-y-0.5  ">
                 <div className={"flex space-x-2"}>
                   {!isCurrentUserSender && msg.sender && conversation?.group && (
                     <p className="text-xs text-muted-foreground">{msg.sender.username}</p>
@@ -227,25 +236,43 @@ export function ChatWindow({ conversation, messages, onBack, onSendMessage }: Ch
                     {new Date(msg.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                   </span>
                 </div>
+
                 {msg.content && (
-                  <div
-                    className={`p-2 rounded-lg ${
-                      isCurrentUserSender
-                        ? "bg-[#149911] text-white rounded-br-none"
-                        : "bg-muted  rounded-bl-none"
-                    }`}
-                  >
-                    <p className="text-sm whitespace-pre-wrap">{formatMessageContent(msg.content)}</p>
-                  </div>
+                    <div className={"flex "}>
+                        {!isCurrentUserSender && (
+                            <div className="flex items-end space-x-0">
+                              <span className="w-2 h-2 bg-muted rounded-full"></span>
+                              <span className="w-3 h-3 bg-muted rounded-full "></span>
+
+
+                            </div>
+                        )}
+                      <div
+                          className={`p-2 rounded-lg -ml-0.5 -mr-0.5 ${
+                              isCurrentUserSender
+                                  ? "bg-[#149911] text-white rounded-br-none "
+                                  : "bg-muted  rounded-bl-none "
+                          }`}
+                      >
+                        <p className="text-sm whitespace-pre-wrap">{formatMessageContent(msg.content)}</p>
+                      </div>
+
+                      {isCurrentUserSender && (
+                            <div className="flex items-end space-x-0">
+                              <span className="w-3 h-3 bg-[#149911] rounded-full "></span>
+                              <span className="w-2 h-2 bg-[#149911] rounded-full"></span>
+                            </div>
+                        )}
+                    </div>
                 )}
 
                 {msg?.file && (
-                  (() => {
-                    const fileURL = msg.file;
-                    const fileExtension = fileURL?.split('.').pop()?.toLowerCase();
+                    (() => {
+                      const fileURL = msg.file;
+                      const fileExtension = fileURL?.split('.').pop()?.toLowerCase();
 
-                    if (fileExtension && ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'jfif'].includes(fileExtension)) {
-                      return <ImagePreview fileURL={fileURL} />;
+                      if (fileExtension && ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'jfif'].includes(fileExtension)) {
+                        return <ImagePreview fileURL={fileURL} />;
                     } else if (fileExtension && ['mp4', 'webm', 'ogg'].includes(fileExtension)) {
                       return <VideoPreview fileURL={fileURL} />;
                     } else if (fileExtension && ['mp3', 'wav'].includes(fileExtension)) {

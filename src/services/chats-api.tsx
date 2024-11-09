@@ -40,7 +40,7 @@ interface Message {
   timestamp: string;
 }
 
-// Utilitaire pour la gestion des erreurs
+
 const handleRequestError = (error: unknown): void => {
   if (axios.isAxiosError(error)) {
     const axiosError = error as AxiosError;
@@ -62,7 +62,7 @@ export const getGroups = async (token: string): Promise<Group[]> => {
   }
 };
 
-// Créer un groupe
+
 export const createGroup = async (
   name: string,
   members: number[],
