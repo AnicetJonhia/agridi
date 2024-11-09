@@ -1,6 +1,6 @@
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Textarea } from "@/components/ui/textarea";
-import {BadgeInfo, EllipsisVertical, MoveLeft, Paperclip, Send} from "lucide-react";
+import {BadgeInfo, EllipsisVertical, MoveLeft, Paperclip, Send, SmilePlus} from "lucide-react";
 import Picker from "emoji-picker-react";
 import React, { useEffect, useRef, useState } from "react";
 import ImagePreview from "@/components/utils/ImagePreview.tsx";
@@ -50,6 +50,23 @@ export function ChatWindow({ conversation, messages, onBack, onSendMessage }: Ch
   const textareaRef = useRef(null);
     const emojiPickerRef = useRef<HTMLDivElement | null>(null);
   const [showDropdown, setShowDropdown] = useState(null);
+  const [dropdownPosition, setDropdownPosition] = useState<"top" | "bottom">("bottom");
+  const msgContentRef = useRef<HTMLDivElement | null>(null);
+
+
+  useEffect(() => {
+    if (msgContentRef.current) {
+      const rect = msgContentRef.current.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      if (rect.bottom > viewportHeight - 100) {
+        setDropdownPosition("top");
+      } else {
+        setDropdownPosition("bottom");
+      }
+    }
+  }, [showDropdown]);
+
+  const isSmallScreen = window.innerWidth <= 768;
 
 
   const handleEmojiSelect = (emojiData: { emoji: string }) => {
@@ -240,8 +257,11 @@ export function ChatWindow({ conversation, messages, onBack, onSendMessage }: Ch
                   </span>
                 </div>
 
+
+
+
                 {msg.content && (
-                    <div className="flex relative">
+                    <div className="flex relative" ref={msgContentRef}>
                       {!isCurrentUserSender && (
                         <div className="flex items-end space-x-0">
                           <span className="w-2 h-2 bg-muted rounded-full"></span>
@@ -253,7 +273,7 @@ export function ChatWindow({ conversation, messages, onBack, onSendMessage }: Ch
                           isCurrentUserSender
                             ? "bg-gradient-to-br from-primary to-[#149911] text-white"
                             : "bg-gradient-to-r from-muted to-transparent"
-                        }`}
+                        } max-w-full break-words`}
                       >
                         <p
                           className="cursor-pointer text-sm whitespace-pre-wrap"
@@ -269,17 +289,33 @@ export function ChatWindow({ conversation, messages, onBack, onSendMessage }: Ch
                         </div>
                       )}
                       {showDropdown === msg.id && (
-                        <div className="absolute z-10 top-full right-0 mt-2 w-32 bg-white border border-gray-300 rounded shadow-lg">
-                          <button className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                            Modify
-                          </button>
-                          <button className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                            Delete
-                          </button>
+                        <div
+                            className={`absolute z-10 ${
+                              dropdownPosition === "top" ? "bottom-full " : "top-full "
+                            } ${isCurrentUserSender ? "-left-4" : "-right-4"} w-auto bg-muted border rounded shadow-lg`}
+                          >
+
+                          {isCurrentUserSender ? (
+                              <>
+                                <button className="block w-full text-left px-4 py-2 text-sm text-muted-foreground hover:text-foreground">
+                                  Modify
+                                </button>
+                                <button className="block w-full text-left px-4 py-2 text-sm text-muted-foreground hover:text-foreground">
+                                  Delete
+                                </button>
+                              </>
+                            ) : (
+                              <button className="block w-full text-left px-4 py-2 text-sm text-muted-foreground hover:text-foreground">
+                                Share
+                              </button>
+                            )}
+
+
                         </div>
                       )}
                     </div>
-                  )}
+                )}
+
 
                 {msg?.file && (
                     (() => {
@@ -327,7 +363,7 @@ export function ChatWindow({ conversation, messages, onBack, onSendMessage }: Ch
             htmlFor="file"
             className="absolute left-4 items-center cursor-pointer text-muted-foreground hover:text-foreground space-x-2"
           >
-            <Paperclip className="w-6 h-6 text-muted-foreground cursor-pointer" />
+            <Paperclip className="w-6 h-6 text-[#149911] cursor-pointer" />
           </Label>
           <Input id={"file"} onChange={handleFileChange} className={"w-48"} type={"file"} style={{ display: 'none' }} />
           <Textarea
@@ -339,8 +375,8 @@ export function ChatWindow({ conversation, messages, onBack, onSendMessage }: Ch
             onKeyDown={handleKeyDown}
             style={{ maxHeight: "120px" }}
           />
-          <button onClick={() => setShowEmojiPicker(!showEmojiPicker)} className="cursor-pointer absolute right-2">
-            😊
+          <button onClick={() => setShowEmojiPicker(!showEmojiPicker)} className="cursor-pointer  text-[#149911] absolute right-2">
+            <SmilePlus />
           </button>
         </div>
 
