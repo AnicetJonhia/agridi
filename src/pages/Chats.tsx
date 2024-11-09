@@ -162,7 +162,7 @@ export default function Chat() {
       });
 
       setRefreshConversations(true);
-      setChatWindowDialogOpen(false); // Close the dialog after sending the message
+      setChatWindowDialogOpen(false);
     } catch (error) {
       console.error("Erreur lors de l'envoi du message :", error);
     }

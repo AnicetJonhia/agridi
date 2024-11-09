@@ -32,7 +32,7 @@ interface Group {
 
 interface Message {
   id: number;
-  content: string;
+  content?: string;
   file?: string;
   sender: Sender;
   receiver?: Sender;
@@ -121,7 +121,7 @@ export const getChatHistory = async (type: 'group' | 'private', pk: number, toke
 export const sendMessage = async (
   groupId?: number,
   receiverId?: number,
-  content: string,
+  content?: string,
   token: string,
   file?: File | null, // Accepter le fichier
 

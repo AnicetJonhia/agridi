@@ -12,7 +12,7 @@ interface Message {
   id: number;
   sender: { id: number; username: string; profile_picture: string };
   receiver: { id: number; username: string; profile_picture: string } | null;
-  content: string;
+  content: string | null;
   timestamp: string;
   file?: string;
 }
@@ -164,8 +164,6 @@ export function ChatWindow({ conversation, messages, onBack, onSendMessage }: Ch
       </header>
       <main className="flex-1 overflow-y-scroll h-auto p-4 space-y-4">
         {messages.reduce((acc, msg, index) => {
-
-
           const msgDate = formatDate(msg.timestamp);
           const prevDate = index > 0 ? formatDate(messages[index - 1].timestamp) : null;
           const isNewDay = msgDate !== prevDate;
@@ -206,15 +204,17 @@ export function ChatWindow({ conversation, messages, onBack, onSendMessage }: Ch
                     {new Date(msg.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                   </span>
                 </div>
-                <div
-                  className={`p-2 rounded-lg ${
-                    isCurrentUserSender
-                      ? "bg-[#149911] text-white rounded-br-none"
-                      : "bg-muted  rounded-bl-none"
-                  }`}
-                >
-                  <p className="text-sm whitespace-pre-wrap">{formatMessageContent(msg.content)}</p>
-                </div>
+                {msg.content && (
+                  <div
+                    className={`p-2 rounded-lg ${
+                      isCurrentUserSender
+                        ? "bg-[#149911] text-white rounded-br-none"
+                        : "bg-muted  rounded-bl-none"
+                    }`}
+                  >
+                    <p className="text-sm whitespace-pre-wrap">{formatMessageContent(msg.content)}</p>
+                  </div>
+                )}
 
                 {msg?.file && (
                   (() => {
@@ -276,15 +276,15 @@ export function ChatWindow({ conversation, messages, onBack, onSendMessage }: Ch
             😊
           </button>
         </div>
+
+
         <button
-          onClick={handleSendMessage}
-          disabled={!message.trim()}
-          className={`w-6 h-6 cursor-pointer transition-colors ${
-            !message.trim() ? 'text-muted-foreground cursor-not-allowed' : 'text-[#149911] hover:text-primary'
-          }`}
-        >
-          <Send />
-        </button>
+            onClick={handleSendMessage}
+            disabled={!message.trim() && !filePreview}
+            className={`w-6 h-6 cursor-pointer transition-colors  ${!message.trim() && !filePreview ? 'hidden' : 'text-[#149911] hover:text-primary'}`}
+          >
+            <Send />
+          </button>
       </footer>
 
       {showEmojiPicker && (
