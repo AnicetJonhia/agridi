@@ -33,7 +33,7 @@ interface Group {
 interface Message {
   id: number;
   content?: string;
-  file?: string;
+  files?: { id: number; file?: string; uploaded_at: string }[];
   sender: Sender;
   receiver?: Sender;
   group?: Group;
@@ -123,10 +123,9 @@ export const sendMessage = async (
   receiverId?: number,
   content?: string,
   token: string,
-  file?: File | null, // Accepter le fichier
-
+  files?: File[] // Accept multiple files
 ): Promise<Message> => {
-  setAuthToken(token); // S'assurer que le token est bien défini
+  setAuthToken(token); // Ensure the token is set
 
   try {
     const data: any = {
@@ -135,13 +134,11 @@ export const sendMessage = async (
       content,
     };
 
-    // Ajouter le fichier si présent
-    if (file) {
+    if (files && files.length > 0) {
       const formData = new FormData();
       Object.keys(data).forEach((key) => formData.append(key, data[key]));
-      formData.append("file", file); // Ajouter le fichier au FormData
+      files.forEach((file) => formData.append("files", file)); // Append each file to FormData
 
-      // Envoyer la requête avec FormData
       const response = await api.post<Message>("/custom_messages/send_message/", formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -149,7 +146,6 @@ export const sendMessage = async (
       });
       return response.data;
     } else {
-      // Si pas de fichier, envoyer simplement les données
       const response = await api.post<Message>("/custom_messages/send_message/", data, {
         headers: {
           'Content-Type': 'multipart/form-data',

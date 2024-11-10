@@ -102,71 +102,71 @@ export default function Chat() {
   };
 
 
-  const handleSendMessage = async (content, file) => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      console.error("Token not found");
-      return;
-    }
+  const handleSendMessage = async (content, files) => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.error("Token not found");
+        return;
+      }
 
-    const currentUserId = Number(localStorage.getItem("userId"));
-    const isGroupConversation = Boolean(selectedConversation?.group);
-    const receiverId = selectedConversation
-      ? currentUserId === selectedConversation.receiver?.id
-        ? selectedConversation.sender?.id
-        : selectedConversation.receiver?.id  || selectedConversation.group?.id
-      : selectedUserForChat?.id;
+      const currentUserId = Number(localStorage.getItem("userId"));
+      const isGroupConversation = Boolean(selectedConversation?.group);
+      const receiverId = selectedConversation
+        ? currentUserId === selectedConversation.receiver?.id
+          ? selectedConversation.sender?.id
+          : selectedConversation.receiver?.id || selectedConversation.group?.id
+        : selectedUserForChat?.id;
 
-    if (!receiverId) {
-      console.error("Receiver ID not found");
-      return;
-    }
+      if (!receiverId) {
+        console.error("Receiver ID not found");
+        return;
+      }
 
-    try {
-      const groupId = isGroupConversation ? selectedConversation.group?.id : null;
+      try {
+        const groupId = isGroupConversation ? selectedConversation.group?.id : null;
 
-      const newMessage = await sendMessage(
-        groupId,
-        receiverId,
-        content,
-        token,
-        file
-      );
-      setMessages((prevMessages) => [...prevMessages, newMessage]);
+        const newMessage = await sendMessage(
+          groupId,
+          receiverId,
+          content,
+          token,
+          files
+        );
+        setMessages((prevMessages) => [...prevMessages, newMessage]);
 
-      const updatedConversation = selectedConversation
-        ? {
-            ...selectedConversation,
-            lastMessage: newMessage,
-            timestamp: newMessage.timestamp,
-          }
-        : {
-            id: receiverId,
-            receiver: selectedUserForChat,
-            lastMessage: newMessage,
-            timestamp: newMessage.timestamp,
-          };
+        const updatedConversation = selectedConversation
+          ? {
+              ...selectedConversation,
+              lastMessage: newMessage,
+              timestamp: newMessage.timestamp,
+            }
+          : {
+              id: receiverId,
+              receiver: selectedUserForChat,
+              lastMessage: newMessage,
+              timestamp: newMessage.timestamp,
+            };
 
-      setSelectedConversation(updatedConversation);
+        setSelectedConversation(updatedConversation);
 
-      setConversations((prevConversations) => {
-        const updatedConversations = selectedConversation
-          ? prevConversations.map((conv) =>
-              conv.id === (selectedConversation.group?.id || selectedConversation.receiver?.id)
-                ? updatedConversation
-                : conv
-            )
-          : [...prevConversations, updatedConversation];
+        setConversations((prevConversations) => {
+          const updatedConversations = selectedConversation
+            ? prevConversations.map((conv) =>
+                conv.id === (selectedConversation.group?.id || selectedConversation.receiver?.id)
+                  ? updatedConversation
+                  : conv
+              )
+            : [...prevConversations, updatedConversation];
 
-        return updatedConversations.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-      });
+          return updatedConversations.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        });
 
-      setRefreshConversations(true);
-      setChatWindowDialogOpen(false);
-    } catch (error) {
-      console.error("Erreur lors de l'envoi du message :", error);
-    }
-  };
+        setRefreshConversations(true);
+        setChatWindowDialogOpen(false);
+      } catch (error) {
+        console.error("Erreur lors de l'envoi du message :", error);
+      }
+    };
 
   const handleSendMessageToUser = (user) => {
 
