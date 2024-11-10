@@ -306,7 +306,7 @@ export function ChatWindow({ conversation, messages, onBack, onSendMessage }: Ch
                   </div>
                 )}
 
-                {msg?.files && msg.files.map((fileObj) => {
+               {msg?.files && msg.files.map((fileObj) => {
                   const fileURL = fileObj.file;
                   const fileExtension = fileURL?.split('.').pop()?.toLowerCase();
 
@@ -383,8 +383,8 @@ export function ChatWindow({ conversation, messages, onBack, onSendMessage }: Ch
         </div>
       )}
 
-      {filePreviews.length > 0 && (
-        <div className="absolute bg-muted bottom-20 p-2 rounded-lg">
+     {filePreviews.length > 0 && (
+        <div className="absolute bg-muted bottom-20 p-2 rounded-lg flex flex-wrap gap-2">
           <div className="relative inset-0 bg-gray-500 opacity-50 z-10" />
           {files.map((file, index) => {
             const filePreview = filePreviews[index];
@@ -392,45 +392,45 @@ export function ChatWindow({ conversation, messages, onBack, onSendMessage }: Ch
 
             if (fileExtension && ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'jfif'].includes(fileExtension)) {
               return (
-                <div key={index} className="flex relative justify-between text-center">
+                <div key={index} className="relative flex flex-col items-center text-center">
                   <img src={filePreview} alt="uploaded" className="w-20 h-auto rounded-lg" />
-                  <button onClick={() => handleRemoveFile(index)} className="text-red-500 ml-2">
+                  <button onClick={() => handleRemoveFile(index)} className="absolute top-0 right-0 text-red-500">
                     ❌
                   </button>
                 </div>
               );
             } else if (fileExtension && ['mp4', 'webm', 'ogg'].includes(fileExtension)) {
               return (
-                <div key={index} className="flex relative justify-between text-center">
+                <div key={index} className="relative flex flex-col items-center text-center">
                   <video
                     src={filePreview}
                     className="w-28 h-28 cursor-pointer rounded"
                     onClick={(e) => e.stopPropagation()}
                     muted
                   />
-                  <button onClick={() => handleRemoveFile(index)} className="text-red-500 ml-2">
+                  <button onClick={() => handleRemoveFile(index)} className="absolute top-0 right-0 text-red-500">
                     ❌
                   </button>
                 </div>
               );
             } else if (fileExtension && ['mp3', 'wav'].includes(fileExtension)) {
               return (
-                <div key={index} className="flex relative justify-between text-center">
+                <div key={index} className="relative flex flex-col items-center text-center">
                   <audio
                     src={filePreview}
                     controls
                     className="w-full max-w-xs h-auto z-20 relative"
                   />
-                  <button onClick={() => handleRemoveFile(index)} className="text-red-500 ml-2">
+                  <button onClick={() => handleRemoveFile(index)} className="absolute top-0 right-0 text-red-500">
                     ❌
                   </button>
                 </div>
               );
             } else {
               return (
-                <div key={index} className="mt-2 z-20 flex justify-between text-center">
+                <div key={index} className="relative flex flex-col items-center text-center mt-2 z-20">
                   <span className="text-sm">{file.name}</span>
-                  <button onClick={() => handleRemoveFile(index)} className="text-red-500 ml-2">
+                  <button onClick={() => handleRemoveFile(index)} className="absolute top-0 right-0 text-red-500">
                     ❌
                   </button>
                 </div>

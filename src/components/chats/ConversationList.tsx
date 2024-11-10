@@ -6,6 +6,9 @@ export function ConversationList({ conversations, onSelectConversation }) {
     const [selectedConversationId, setSelectedConversationId] = useState(null);
     const currentUserId  = Number(localStorage.getItem("userId"));
 
+    if (!conversations) {
+        return <div>No conversations available</div>;
+    }
 
     const handleSelectConversation = (conversation) => {
         setSelectedConversationId(conversation.id);
@@ -30,6 +33,9 @@ export function ConversationList({ conversations, onSelectConversation }) {
         }
     };
 
+
+
+
     return (
         <div className="w-full lg:w-1/3 border-r p-2 overflow-y-scroll h-full">
              {conversations && conversations.map((conversation) => {
@@ -40,7 +46,7 @@ export function ConversationList({ conversations, onSelectConversation }) {
                     (currentUserId === conversation.receiver?.id ? conversation.sender?.username : conversation.receiver?.username);
 
                 const contentPreview =
-                    conversation.content.length > 30
+                    conversation.content && conversation.content.length > 30
                         ? `${conversation.content.slice(0, 30)}...`
                         : conversation.content;
                 return (
