@@ -105,7 +105,7 @@ export const getConversations = async (token: string): Promise<Message[]> => {
 };
 
 
-// Récupérer l'historique du chat
+
 export const getChatHistory = async (type: 'group' | 'private', pk: number, token: string): Promise<Message[]> => {
   setAuthToken(token);
   try {
@@ -123,7 +123,7 @@ export const sendMessage = async (
   receiverId?: number,
   content?: string,
   token: string,
-  files?: File[] // Accept multiple files
+  files?: File[]
 ): Promise<Message> => {
   setAuthToken(token); // Ensure the token is set
 
@@ -135,6 +135,7 @@ export const sendMessage = async (
     };
 
     if (files && files.length > 0) {
+      console.log("files", files);
       const formData = new FormData();
       Object.keys(data).forEach((key) => formData.append(key, data[key]));
       files.forEach((file) => formData.append("files", file)); // Append each file to FormData
@@ -144,6 +145,8 @@ export const sendMessage = async (
           'Content-Type': 'multipart/form-data',
         },
       });
+
+      console.log("response.data", response.data);
       return response.data;
     } else {
       const response = await api.post<Message>("/custom_messages/send_message/", data, {
@@ -151,6 +154,7 @@ export const sendMessage = async (
           'Content-Type': 'multipart/form-data',
         },
       });
+
       return response.data;
     }
 
