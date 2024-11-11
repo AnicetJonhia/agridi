@@ -1,4 +1,6 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { Provider } from 'react-redux';
+import { store } from './stores';
 import { AuthProvider } from './context/AuthContext';
 import Products from './pages/Products.tsx';
 import Dashboard from "./pages/Dashboard.tsx";
@@ -17,12 +19,11 @@ import Register from "@/pages/auth/Register.tsx";
 import UserProfile from "@/pages/UserProfile";
 import { ThemeProvider } from "@/context/ThemeContext";
 
-
 function App() {
     return (
-        <ThemeProvider>
-            <AuthProvider>
-
+        <Provider store={store}>
+            <ThemeProvider>
+                <AuthProvider>
                     <BrowserRouter>
                         <Routes>
                             <Route element={<AuthLayout />}>
@@ -46,9 +47,9 @@ function App() {
                             </Route>
                         </Routes>
                     </BrowserRouter>
-
-            </AuthProvider>
-        </ThemeProvider>
+                </AuthProvider>
+            </ThemeProvider>
+        </Provider>
     );
 }
 

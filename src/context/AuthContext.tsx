@@ -1,5 +1,7 @@
 import { createContext, useReducer, ReactNode } from 'react';
-import { login, register, logout } from '../services/api';
+import { useDispatch } from 'react-redux';
+import { login, register, logout } from '@/services/api';
+import { loginSuccess, logout as logoutAction, registerSuccess } from '@/stores/authSlice';
 
 // Updated state interface
 interface AuthState {
@@ -62,6 +64,7 @@ interface AuthProviderProps {
 // AuthProvider component
 const AuthProvider = ({ children }: AuthProviderProps) => {
     const [state, dispatch] = useReducer(authReducer, initialState);
+    const reduxDispatch = useDispatch();
 
     const loginUser = async (credentials: Record<string, unknown>): Promise<{ token?: string; user?: Record<string, unknown>; error?: string } | null> => {
         try {
@@ -73,6 +76,7 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
                     type: 'LOGIN_SUCCESS',
                     payload: data
                 });
+                reduxDispatch(loginSuccess({ user: { id: data.user_id, role: data.role }, token: data.token }));
 
                 return { token: data.token, user: { id: data.user_id, role: data.role } };
             } else {
@@ -84,30 +88,29 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
         }
     };
 
-
-
     // Register function
-   const registerUser = async (userData: Record<string, unknown>) => {
-            try {
-                const data = await register(userData);
-                if (data.token) {
-                    localStorage.setItem('token', data.token); // Store token in localStorage
-                    localStorage.setItem('userId', data.user.id);
-                    dispatch({ type: 'REGISTER_SUCCESS', payload: data });
-                }
-                return { token: data.token, user: { id: data.user.id, role: data.user.role } };
-            } catch (error: any) {
-                console.error('Registration failed:', error.response?.data || error);
-                return { error: error.response?.data || { message: 'An unknown error occurred.' } };
+    const registerUser = async (userData: Record<string, unknown>) => {
+        try {
+            const data = await register(userData);
+            if (data.token) {
+                localStorage.setItem('token', data.token); // Store token in localStorage
+                localStorage.setItem('userId', data.user.id);
+                dispatch({ type: 'REGISTER_SUCCESS', payload: data });
+                reduxDispatch(registerSuccess({ user: { id: data.user.id, role: data.user.role }, token: data.token }));
             }
-        };
-
+            return { token: data.token, user: { id: data.user.id, role: data.user.role } };
+        } catch (error: any) {
+            console.error('Registration failed:', error.response?.data || error);
+            return { error: error.response?.data || { message: 'An unknown error occurred.' } };
+        }
+    };
 
     // Logout function
     const logoutUser = async () => {
         try {
             await logout(state.token!);
             dispatch({ type: 'LOGOUT' });
+            reduxDispatch(logoutAction());
             return true;
         } catch (error) {
             console.error('Logout failed:', error);
@@ -121,8 +124,6 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
         </AuthContext.Provider>
     );
 };
-
-
 
 // eslint-disable-next-line react-refresh/only-export-components
 export { AuthContext, AuthProvider };
