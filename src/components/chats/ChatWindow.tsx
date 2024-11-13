@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 
 import VideoPreview from "@/components/utils/VideoPreview.tsx";
 import { Label } from "@/components/ui/label.tsx";
-import { EllipsisVertical } from 'lucide-react';
+import { EllipsisVertical,Share2 } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,7 +18,7 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import {Button} from "@/components/ui/button";
-import {updateMessage} from "@/services/chats-api.tsx";
+
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 
 
@@ -316,18 +316,18 @@ export function ChatWindow({ conversation, messages, onBack, onSendMessage,onDel
                         <DropdownMenu  open={dropdownOpenMessageId === msg.id} onOpenChange={() => toggleDropdown(msg.id)}>
                           <DropdownMenuTrigger asChild>
                             <Button variant="secondary" size="icon" className="rounded-full">
-                              <EllipsisVertical className="h-3 w-3" />
+                              <EllipsisVertical className="h-3 w-3 text-muted-foreground" />
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end" className="animate-slide-down">
                             <DropdownMenuItem asChild onClick={() => { closeDropdown(); startEditingMessage(msg.id, msg.content); }}>
-                              <Button variant="outline" className="w-full mt-2 p-3">
+                              <Button variant="outline" className="cursor-pointer w-full mt-2 p-3">
                                 Modify
                               </Button>
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem asChild onClick={() => { closeDropdown(); onDeleteMessage(msg.id); }}>
-                              <Button variant="outline" className="w-full mt-2 p-3">
+                              <Button variant="outline" className="cursor-pointer w-full mt-2 p-3">
                                 Delete
                               </Button>
                             </DropdownMenuItem>
@@ -358,20 +358,11 @@ export function ChatWindow({ conversation, messages, onBack, onSendMessage,onDel
                         )}
                       </div>
                       {!isCurrentUserSender && (
-                        <DropdownMenu open={dropdownOpenMessageId === msg.id} onOpenChange={() => toggleDropdown(msg.id)}>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="secondary" size="icon" className="rounded-full">
-                              <EllipsisVertical className="h-3 w-3" />
+
+                            <Button variant="gost" size="icon" className="rounded-full">
+                              <Share2 className="h-3 w-3 text-muted-foreground " />
                             </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end" className="animate-slide-down">
-                            <DropdownMenuItem asChild onClick={closeDropdown}>
-                              <Button variant="outline" className="w-full mt-2 p-3">
-                                Share
-                              </Button>
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
+
                       )}
                     </div>
                   )}
