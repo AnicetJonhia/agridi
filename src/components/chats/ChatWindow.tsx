@@ -1,6 +1,6 @@
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Textarea } from "@/components/ui/textarea";
-import {BadgeInfo,  MoveLeft, Paperclip, Send, SmilePlus, UserPlus} from "lucide-react";
+import {BadgeInfo,  MoveLeft, Paperclip, Send, SmilePlus} from "lucide-react";
 import Picker from "emoji-picker-react";
 import React, { useEffect, useRef, useState } from "react";
 import ImagePreview from "@/components/utils/ImagePreview.tsx";
@@ -18,6 +18,8 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import {Button} from "@/components/ui/button";
+import {updateMessage} from "@/services/chats-api.tsx";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 
 
 
@@ -43,6 +45,7 @@ interface ChatWindowProps {
   onBack: () => void;
   onSendMessage: (message: string, files: File[]) => void;
   onDeleteMessage: (messageId: number) => void;
+  onUpdateMessage: (messageId: number, newContent: string) => void;
 }
 
 const formatDate = (date: string) => {
@@ -53,7 +56,7 @@ const formatDate = (date: string) => {
   }).format(new Date(date));
 };
 
-export function ChatWindow({ conversation, messages, onBack, onSendMessage,onDeleteMessage }: ChatWindowProps) {
+export function ChatWindow({ conversation, messages, onBack, onSendMessage,onDeleteMessage,onUpdateMessage }: ChatWindowProps) {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [message, setMessage] = useState("");
   const currentUserId = Number(localStorage.getItem("userId"));
@@ -62,12 +65,36 @@ export function ChatWindow({ conversation, messages, onBack, onSendMessage,onDel
   const [files, setFiles] = useState<File[]>([]);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const textareaRef2 = useRef<HTMLTextAreaElement | null>(null);
   const emojiPickerRef = useRef<HTMLDivElement | null>(null);
 
   const msgContentRef = useRef<HTMLDivElement | null>(null);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
 
   const [dropdownOpenMessageId, setDropdownOpenMessageId] = useState<number | null>(null);
+
+
+  const [editingMessageId, setEditingMessageId] = useState<number | null>(null);
+    const [editedMessageContent, setEditedMessageContent] = useState<string>("");
+
+    const startEditingMessage = (messageId: number, currentContent: string) => {
+      setEditingMessageId(messageId);
+      setEditedMessageContent(currentContent);
+    };
+
+    const handleUpdateMessage = async (messageId: number) => {
+
+      if (editedMessageContent) {
+        try {
+          onUpdateMessage( messageId, editedMessageContent);
+
+          setEditingMessageId(null);
+          setEditedMessageContent("");
+        } catch (error) {
+          console.error("Failed to update message:", error);
+        }
+      }
+    };
 
   const closeDropdown = () => {
     setDropdownOpenMessageId(null);
@@ -83,6 +110,11 @@ export function ChatWindow({ conversation, messages, onBack, onSendMessage,onDel
     setMessage((prevMessage) => prevMessage + emojiData.emoji);
   };
 
+
+
+
+
+
   const handleSendMessage = () => {
     if (message.trim() || files.length > 0) {
       onSendMessage(message, files);
@@ -96,12 +128,17 @@ export function ChatWindow({ conversation, messages, onBack, onSendMessage,onDel
     messagesEndRef.current?.scrollIntoView({ behavior: "auto" });
   }, [messages]);
 
+
   useEffect(() => {
-    if (textareaRef.current) {
-      textareaRef.current.style.height = "auto";
-      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 5 * 24)}px`;
-    }
-  }, [message]);
+      if (textareaRef.current) {
+        textareaRef.current.style.height = "auto";
+        textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 5 * 24)}px`;
+      }
+      if (textareaRef2.current) {
+        textareaRef2.current.style.height = "auto";
+        textareaRef2.current.style.height = `${Math.min(textareaRef2.current.scrollHeight, 5 * 24)}px`;
+      }
+    }, [message]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -274,16 +311,16 @@ export function ChatWindow({ conversation, messages, onBack, onSendMessage,onDel
                   </div>
 
                   {msg.content && (
-                    <div className={"flex space-x-6 "}>
+                    <div className={"flex space-x-6 items-center "}>
                       {isCurrentUserSender && (
-                        <DropdownMenu open={dropdownOpenMessageId === msg.id} onOpenChange={() => toggleDropdown(msg.id)}>
+                        <DropdownMenu  open={dropdownOpenMessageId === msg.id} onOpenChange={() => toggleDropdown(msg.id)}>
                           <DropdownMenuTrigger asChild>
                             <Button variant="secondary" size="icon" className="rounded-full">
                               <EllipsisVertical className="h-3 w-3" />
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end" className="animate-slide-down">
-                            <DropdownMenuItem asChild onClick={closeDropdown}>
+                            <DropdownMenuItem asChild onClick={() => { closeDropdown(); startEditingMessage(msg.id, msg.content); }}>
                               <Button variant="outline" className="w-full mt-2 p-3">
                                 Modify
                               </Button>
@@ -305,9 +342,9 @@ export function ChatWindow({ conversation, messages, onBack, onSendMessage,onDel
                           </div>
                         )}
                         <div
-                          className={`p-2 rounded-lg -ml-0.5 -mr-0.5 ${
+                          className={`p-3 rounded-lg -ml-1 -mr-1 ${
                             isCurrentUserSender
-                              ? "bg-gradient-to-br from-primary to-[#149911] text-white"
+                              ? "bg-gradient-to-r from-primary to-[#149911] text-white"
                               : "bg-gradient-to-r from-muted to-transparent"
                           } max-w-full break-words`}
                         >
@@ -338,6 +375,30 @@ export function ChatWindow({ conversation, messages, onBack, onSendMessage,onDel
                       )}
                     </div>
                   )}
+
+
+
+
+                {editingMessageId === msg.id && (
+                  <Dialog  open={true} onOpenChange={() => setEditingMessageId(null)}>
+
+
+                    <DialogContent>
+                      <div className="flex flex-col space-y-2 mt-4">
+                        <Textarea
+                            ref={textareaRef2}
+                          value={editedMessageContent}
+                          onChange={(e) => setEditedMessageContent(e.target.value)}
+                          className="w-full p-2 border rounded"
+                          style={{ maxHeight: "120px" }}
+                        />
+                        <Button onClick={() => handleUpdateMessage(msg.id)} className="w-full mt-2 p-3">
+                          Validate
+                        </Button>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                )}
 
                <div className={`flex flex-col space-y-2 ${isCurrentUserSender ? 'items-end' : 'items-start'}`}>
                     {msg?.files && msg.files.map((fileObj) => {

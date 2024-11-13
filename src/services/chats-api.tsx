@@ -135,7 +135,7 @@ export const sendMessage = async (
     };
 
     if (files && files.length > 0) {
-      console.log("files", files);
+
       const formData = new FormData();
       Object.keys(data).forEach((key) => formData.append(key, data[key]));
       files.forEach((file) => formData.append("files", file)); // Append each file to FormData
@@ -146,7 +146,7 @@ export const sendMessage = async (
         },
       });
 
-      console.log("response.data", response.data);
+
       return response.data;
     } else {
       const response = await api.post<Message>("/custom_messages/send_message/", data, {
@@ -180,3 +180,20 @@ export const deleteMessage = async (
         throw error;
     }
 }
+
+
+export const updateMessage = async (
+    token: string,
+    messageId: number,
+    content: string,
+): Promise<Message> => {
+    setAuthToken(token);
+    try {
+        const response = await api.patch<Message>(`/custom_messages/${messageId}/`, { content });
+        return response.data;
+    } catch (error) {
+        handleRequestError(error);
+        throw error;
+    }
+}
+

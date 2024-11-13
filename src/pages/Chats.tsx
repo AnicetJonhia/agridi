@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { ConversationList } from "@/components/chats/ConversationList";
 import { ChatWindow } from "@/components/chats/ChatWindow";
-import {getConversations, getChatHistory, sendMessage, deleteMessage} from "@/services/chats-api";
+import {getConversations, getChatHistory, sendMessage, deleteMessage, updateMessage} from "@/services/chats-api";
 import { MessageCirclePlus, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
@@ -208,6 +208,21 @@ export default function Chat() {
       }
     }
 
+    const handleUpdateMessage = async (messageId: number, content: string) => {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            console.error("Token not found");
+            return;
+        }
+
+        try {
+            await updateMessage(token, messageId, content);
+            setRefreshConversations(true);
+        } catch (error) {
+            console.error("Error updating message:", error);
+        }
+    }
+
   return (
     <div className="flex flex-col h-full">
       <header className="flex items-center justify-between border-b p-4">
@@ -259,6 +274,7 @@ export default function Chat() {
                   onBack={handleBack}
                   onSendMessage={handleSendMessage}
                   onDeleteMessage={handleDeleteMessage}
+                  onUpdateMessage={handleUpdateMessage}
                 />
               )}
           </div>
@@ -278,6 +294,7 @@ export default function Chat() {
                       onBack={handleBack}
                       onSendMessage={handleSendMessage}
                       onDeleteMessage={handleDeleteMessage}
+                      onUpdateMessage={handleUpdateMessage}
                   />
               )}
             </div>

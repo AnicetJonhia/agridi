@@ -45,10 +45,16 @@ export function ConversationList({ conversations, onSelectConversation }) {
                     conversation.group?.name ||
                     (currentUserId === conversation.receiver?.id ? conversation.sender?.username : conversation.receiver?.username);
 
-                const contentPreview =
-                    conversation.content && conversation.content.length > 30
-                        ? `${conversation.content.slice(0, 30)}...`
-                        : conversation.content;
+               const contentPreview =
+                  conversation.files && conversation.files.length > 0
+                    ? currentUserId === conversation.sender?.id
+                      ? `you have sent ${conversation.files.length} files`
+                      : `${displayName} has sent ${conversation.files.length} files`
+                    : conversation.content && conversation.content.length > 30
+                    ? `${conversation.content.slice(0, 30)}...`
+                    : conversation.content;
+
+
                 return (
                     <Card
                         key={conversation.id + conversation.timestamp}
