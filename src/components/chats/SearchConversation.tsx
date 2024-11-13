@@ -25,6 +25,10 @@ export function SearchConversation({ conversations, onSelectConversation, onClos
     onClose();
   };
 
+  if(conversations.length === 0) {
+    return <div >No conversations available</div>;
+  }
+
   return (
     <div className={"mt-3"}>
       <Input

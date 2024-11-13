@@ -165,3 +165,18 @@ export const sendMessage = async (
 };
 
 
+
+
+export const deleteMessage = async (
+    token: string,
+    messageId: number,
+): Promise<Message> => {
+    setAuthToken(token);
+    try {
+        const response = await api.delete<Message>(`/custom_messages/${messageId}/`);
+        return response.data;
+    } catch (error) {
+        handleRequestError(error);
+        throw error;
+    }
+}

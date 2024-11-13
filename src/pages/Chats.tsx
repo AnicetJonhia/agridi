@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { ConversationList } from "@/components/chats/ConversationList";
 import { ChatWindow } from "@/components/chats/ChatWindow";
-import { getConversations, getChatHistory, sendMessage } from "@/services/chats-api";
+import {getConversations, getChatHistory, sendMessage, deleteMessage} from "@/services/chats-api";
 import { MessageCirclePlus, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
@@ -46,6 +46,8 @@ export default function Chat() {
     }
   }, [refreshConversations]);
 
+
+
   const fetchConversations = async () => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -65,30 +67,30 @@ export default function Chat() {
   };
 
    useEffect(() => {
-  const fetchChatHistory = async () => {
-    if (selectedConversation) {
-      try {
-        const token = localStorage.getItem("token");
-        const currentUserId = Number(localStorage.getItem("userId"));
-        const isGroupConversation = Boolean(selectedConversation.group);
-        const conversationId = isGroupConversation
-          ? selectedConversation.group?.id
-          : currentUserId === selectedConversation.receiver?.id
-          ? selectedConversation.sender?.id
-          : selectedConversation.receiver?.id;
+      const fetchChatHistory = async () => {
+        if (selectedConversation) {
+          try {
+            const token = localStorage.getItem("token");
+            const currentUserId = Number(localStorage.getItem("userId"));
+            const isGroupConversation = Boolean(selectedConversation.group);
+            const conversationId = isGroupConversation
+              ? selectedConversation.group?.id
+              : currentUserId === selectedConversation.receiver?.id
+              ? selectedConversation.sender?.id
+              : selectedConversation.receiver?.id;
 
-        const type = isGroupConversation ? 'group' : 'private';
+            const type = isGroupConversation ? 'group' : 'private';
 
-        const fetchedMessages = await getChatHistory(type, conversationId, token);
+            const fetchedMessages = await getChatHistory(type, conversationId, token);
 
-        setMessages(fetchedMessages);
-      } catch (error) {
-        console.error("Erreur lors de la récupération de l'historique du chat :", error);
-      }
-    }
-  };
-  fetchChatHistory();
-}, [selectedConversation]);
+            setMessages(fetchedMessages);
+          } catch (error) {
+            console.error("Erreur lors de la récupération de l'historique du chat :", error);
+          }
+        }
+      };
+      fetchChatHistory();
+    }, [selectedConversation]);
 
   const handleSelectConversation = (conversation) => {
     setSelectedConversation(conversation);
@@ -189,6 +191,23 @@ export default function Chat() {
     setChatWindowDialogOpen(true);
   };
 
+
+  const handleDeleteMessage = async (messageId: number) => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.error("Token not found");
+        return;
+      }
+
+      try {
+           await deleteMessage(token, messageId);
+           setRefreshConversations(true);
+
+      } catch (error) {
+        console.error("Error deleting message:", error);
+      }
+    }
+
   return (
     <div className="flex flex-col h-full">
       <header className="flex items-center justify-between border-b p-4">
@@ -233,49 +252,55 @@ export default function Chat() {
       <Dialog open={isChatWindowDialogOpen} onOpenChange={setChatWindowDialogOpen}>
         <DialogContent className="h-[80vh] overflow-hidden">
           <div className="h-full overflow-y-auto">
-            {selectedConversation && (
-              <ChatWindow
-                conversation={selectedConversation}
-                messages={messages}
-                onBack={handleBack}
-                onSendMessage={handleSendMessage}
-              />
-            )}
-            {selectedUserForChat && (
-              <ChatWindow
-                conversation={{ receiver: selectedUserForChat }}
-                messages={messages}
-                onBack={handleBack}
-                onSendMessage={handleSendMessage}
-              />
-            )}
+            {(selectedConversation || selectedUserForChat) && (
+                <ChatWindow
+                  conversation={selectedConversation || { receiver: selectedUserForChat }}
+                  messages={messages}
+                  onBack={handleBack}
+                  onSendMessage={handleSendMessage}
+                  onDeleteMessage={handleDeleteMessage}
+                />
+              )}
           </div>
         </DialogContent>
       </Dialog>
 
-      <div className="flex flex-1 h-full">
-        {showConversationList && (
-          <ConversationList conversations={conversations} onSelectConversation={handleSelectConversation} />
-        )}
-        <div className={`flex flex-col flex-1 ${showConversationList ? 'hidden lg:flex' : 'flex'}`}>
-          {selectedConversation && (
-            <ChatWindow
-              conversation={selectedConversation}
-              messages={messages}
-              onBack={handleBack}
-              onSendMessage={handleSendMessage}
-            />
-          )}
-          {selectedUserForChat && (
-            <ChatWindow
-              conversation={{ receiver: selectedUserForChat }}
-              messages={messages}
-              onBack={handleBack}
-              onSendMessage={handleSendMessage}
-            />
-          )}
-        </div>
-      </div>
+      {conversations.length > 0 ? (
+          <div className="flex flex-1 h-full">
+            {showConversationList && (
+                <ConversationList conversations={conversations} onSelectConversation={handleSelectConversation}/>
+            )}
+            <div className={`flex flex-col flex-1 ${showConversationList ? 'hidden lg:flex' : 'flex'}`}>
+              {(selectedConversation || selectedUserForChat) && (
+                  <ChatWindow
+                      conversation={selectedConversation || {receiver: selectedUserForChat}}
+                      messages={messages}
+                      onBack={handleBack}
+                      onSendMessage={handleSendMessage}
+                      onDeleteMessage={handleDeleteMessage}
+                  />
+              )}
+            </div>
+          </div>
+      ) :(
+          <>
+
+            <div
+                className="flex flex-1 items-center justify-center rounded-lg border border-dashed shadow-sm"
+                x-chunk="dashboard-02-chunk-1"
+            >
+                <div className="flex flex-col items-center gap-1 text-center">
+                    <h3 className="text-2xl font-bold tracking-tight">
+                        You have no conversations
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                        Start a conversation with a user
+                    </p>
+                    <Button onClick={() => setUserDialogOpen(true)} className="mt-4  ">Add Conversations</Button>
+                </div>
+            </div>
+        </>
+      )}
     </div>
   );
 }

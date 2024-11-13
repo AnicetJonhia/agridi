@@ -24,6 +24,10 @@ export function SearchUser({ users, onSelectUser, onClose }) {
     onClose();
   };
 
+  if(users.length === 0) {
+    return <div >No users available</div>;
+  }
+
   return (
     <div className={"mt-3"}>
       <Input
