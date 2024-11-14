@@ -20,11 +20,12 @@ interface ChatWindowProps {
   onDeleteMessage: (messageId: number) => void;
   onUpdateMessage: (messageId: number, newContent: string) => void;
   onShareMessage: (message: Message, user: any) => void;
+  onDeleteFile: (messageId: number, fileId: number) => void;
 }
 
 
 
-export function ChatWindow({ conversation, messages, onBack, onSendMessage,onDeleteMessage,onUpdateMessage,onShareMessage }: ChatWindowProps) {
+export function ChatWindow({ conversation, messages, onBack, onSendMessage,onDeleteMessage,onUpdateMessage,onShareMessage, onDeleteFile }: ChatWindowProps) {
 
 
   const currentUserId = Number(localStorage.getItem("userId"));
@@ -56,6 +57,7 @@ export function ChatWindow({ conversation, messages, onBack, onSendMessage,onDel
         onDeleteMessage={onDeleteMessage}
         onUpdateMessage={onUpdateMessage}
         onShareMessage={onShareMessage}
+        onDeleteFile={onDeleteFile}
       />
       <MessageInput onSendMessage={onSendMessage} />
 

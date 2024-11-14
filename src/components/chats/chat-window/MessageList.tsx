@@ -18,6 +18,7 @@ interface MessageListProps {
   onDeleteMessage: (messageId: number) => void;
   onUpdateMessage: (messageId: number, newContent: string) => void;
   onShareMessage: (message: Message, user: any) => void;
+  onDeleteFile: (messageId: number, fileId: number) => void;
 }
 
 const formatDate = (date: string) => {
@@ -28,7 +29,7 @@ const formatDate = (date: string) => {
   }).format(new Date(date));
 };
 
-const MessageList: React.FC<MessageListProps> = ({ messages, currentUserId, conversation, onDeleteMessage, onUpdateMessage, onShareMessage }) => {
+const MessageList: React.FC<MessageListProps> = ({ messages, currentUserId, conversation, onDeleteMessage, onUpdateMessage, onShareMessage, onDeleteFile }) => {
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const msgContentRef = useRef<HTMLDivElement | null>(null);
@@ -263,8 +264,41 @@ const MessageList: React.FC<MessageListProps> = ({ messages, currentUserId, conv
                   const fileExtension = fileURL?.split('.').pop()?.toLowerCase();
 
                   if (fileExtension && ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'jfif'].includes(fileExtension)) {
-                    return <ImagePreview key={fileObj.id} fileURL={fileURL} />;
-                  } else if (fileExtension && ['mp4', 'webm', 'ogg'].includes(fileExtension)) {
+
+                    return (
+                            <div className={"flex space-x-6 items-center "}>
+                              {isCurrentUserSender && (
+                                <DropdownMenu open={dropdownOpenMessageId === fileObj.id} onOpenChange={() => toggleDropdown(fileObj.id)}>
+                                  <DropdownMenuTrigger asChild>
+                                    <Button variant="secondary" size="icon" className="rounded-full">
+                                      <EllipsisVertical className="h-3 w-3 text-muted-foreground" />
+                                    </Button>
+                                  </DropdownMenuTrigger>
+                                  <DropdownMenuContent align="end" className="animate-slide-down">
+                                    <DropdownMenuItem asChild onClick={() => { closeDropdown(); handleOpenSearchUserForSharingMessage(fileObj instanceof File ? URL.createObjectURL(fileObj) : fileObj ) }}>
+                                      <Button variant="outline" className="cursor-pointer w-full mt-2 p-3">
+                                        Share
+                                      </Button>
+                                    </DropdownMenuItem>
+
+
+
+                                    <DropdownMenuItem asChild onClick={() => { closeDropdown(); onDeleteFile(msg.id, fileObj.id); }}>
+                                      <Button variant="outline" className="cursor-pointer w-full mt-2 p-3">
+                                        Delete
+                                      </Button>
+                                    </DropdownMenuItem>
+                                  </DropdownMenuContent>
+                                </DropdownMenu>
+                              )}
+                              <ImagePreview key={fileObj.id} fileURL={fileURL} />
+                            </div>
+                        )
+                    ;
+
+
+                  }
+                  else if (fileExtension && ['mp4', 'webm', 'ogg'].includes(fileExtension)) {
                     return <VideoPreview key={fileObj.id} fileURL={fileURL} />;
                   } else if (fileExtension && ['mp3', 'wav'].includes(fileExtension)) {
                     return (

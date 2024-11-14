@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { ConversationList } from "@/components/chats/ConversationList";
 import { ChatWindow } from "@/components/chats/ChatWindow";
-import {getConversations, getChatHistory, sendMessage, deleteMessage, updateMessage} from "@/services/chats-api";
+import {getConversations, getChatHistory, sendMessage, deleteMessage, deleteFile, updateMessage} from "@/services/chats-api";
 import { MessageCirclePlus, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
@@ -9,6 +9,8 @@ import { SearchConversation } from "@/components/chats/SearchConversation.tsx";
 import useUserStore from '@/stores/userStore';
 import { SearchUser } from "@/components/chats/SearchUser";
 import SpecificUserDialog from "@/components/chats/SpecifcUserDialog";
+import {Message} from "@/types/chat-type";
+
 
 export default function Chat() {
   const [selectedConversation, setSelectedConversation] = useState(null);
@@ -22,6 +24,7 @@ export default function Chat() {
   const [isSpecificUserDialogOpen, setSpecificUserDialogOpen] = useState(false);
   const [selectedUserForChat, setSelectedUserForChat] = useState(null);
   const [isChatWindowDialogOpen, setChatWindowDialogOpen] = useState(false);
+
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -208,6 +211,23 @@ export default function Chat() {
       }
     }
 
+
+
+    const handleDeleteFile = async (messageId: number, fileId: number) => {
+          const token = localStorage.getItem("token");
+          if (!token) {
+            console.error("Token not found");
+            return;
+          }
+
+          try {
+            await deleteFile(token, messageId, fileId);
+            setRefreshConversations(true);
+          } catch (error) {
+            console.error("Error deleting file:", error);
+          }
+    };
+
     const handleUpdateMessage = async (messageId: number, content: string) => {
         const token = localStorage.getItem("token");
         if (!token) {
@@ -223,14 +243,14 @@ export default function Chat() {
         }
     }
 
+
     const handleShareMessage = async (message: Message, user: any) => {
-      const token = localStorage.getItem("token");
+        const token = localStorage.getItem("token");
       if (!token) {
         console.error("Token not found");
         return;
       }
 
-      const currentUserId = Number(localStorage.getItem("userId"));
       const receiverId = user.id;
 
       if (!receiverId) {
@@ -248,7 +268,7 @@ export default function Chat() {
         );
 
         setMessages((prevMessages) => [...prevMessages, newMessage]);
-
+        console.log("New message:", newMessage);
         const updatedConversation = {
           id: receiverId,
           receiver: user,
@@ -323,6 +343,7 @@ export default function Chat() {
                   onDeleteMessage={handleDeleteMessage}
                   onUpdateMessage={handleUpdateMessage}
                   onShareMessage={handleShareMessage}
+                  onDeleteFile={handleDeleteFile}
                 />
               )}
           </div>
@@ -344,6 +365,7 @@ export default function Chat() {
                       onDeleteMessage={handleDeleteMessage}
                       onUpdateMessage={handleUpdateMessage}
                       onShareMessage={handleShareMessage}
+                      onDeleteFile={handleDeleteFile}
                   />
               )}
             </div>

@@ -128,36 +128,23 @@ export const sendMessage = async (
   setAuthToken(token); // Ensure the token is set
 
   try {
-    const data: any = {
-      ...(groupId && { group: groupId }),
-      ...(receiverId && { receiver: receiverId }),
-      content,
-    };
-
-    if (files && files.length > 0) {
-
-      const formData = new FormData();
-      Object.keys(data).forEach((key) => formData.append(key, data[key]));
-      files.forEach((file) => formData.append("files", file)); // Append each file to FormData
-
-      const response = await api.post<Message>("/custom_messages/send_message/", formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+    const formData = new FormData();
+    if (groupId) formData.append('group', groupId.toString());
+    if (receiverId) formData.append('receiver', receiverId.toString());
+    if (content) formData.append('content', content);
+    if (files) {
+      files.forEach((file) => {
+        formData.append('files', file);
       });
-
-
-      return response.data;
-    } else {
-      const response = await api.post<Message>("/custom_messages/send_message/", data, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-
-      return response.data;
     }
 
+    const response = await api.post<Message>("/custom_messages/send_message/", formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
+    return response.data;
   } catch (error) {
     handleRequestError(error);
     throw error;
@@ -181,6 +168,21 @@ export const deleteMessage = async (
     }
 }
 
+export const deleteFile = async (
+    token: string,
+    messageId: number,
+    fileId: number,
+): Promise<void> => {
+    setAuthToken(token);
+    try {
+        const response = await api.delete(`/custom_messages/${messageId}/remove_file/${fileId}/`);
+        return response.data;
+    }
+    catch (error) {
+        handleRequestError(error);
+        throw error;
+    }
+}
 
 export const updateMessage = async (
     token: string,
