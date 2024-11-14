@@ -223,6 +223,53 @@ export default function Chat() {
         }
     }
 
+    const handleShareMessage = async (message: Message, user: any) => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.error("Token not found");
+        return;
+      }
+
+      const currentUserId = Number(localStorage.getItem("userId"));
+      const receiverId = user.id;
+
+      if (!receiverId) {
+        console.error("Receiver ID not found");
+        return;
+      }
+
+      try {
+        const newMessage = await sendMessage(
+          null,
+          receiverId,
+          message?.content,
+          token,
+          message?.files
+        );
+
+        setMessages((prevMessages) => [...prevMessages, newMessage]);
+
+        const updatedConversation = {
+          id: receiverId,
+          receiver: user,
+          lastMessage: newMessage,
+          timestamp: newMessage.timestamp,
+        };
+
+        setSelectedConversation(updatedConversation);
+
+        setConversations((prevConversations) => {
+          const updatedConversations = [...prevConversations, updatedConversation];
+          return updatedConversations.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        });
+
+        setRefreshConversations(true);
+        setChatWindowDialogOpen(false);
+      } catch (error) {
+        console.error("Error sharing message:", error);
+      }
+    };
+
   return (
     <div className="flex flex-col h-full">
       <header className="flex items-center justify-between border-b p-4">
@@ -275,6 +322,7 @@ export default function Chat() {
                   onSendMessage={handleSendMessage}
                   onDeleteMessage={handleDeleteMessage}
                   onUpdateMessage={handleUpdateMessage}
+                  onShareMessage={handleShareMessage}
                 />
               )}
           </div>
@@ -295,6 +343,7 @@ export default function Chat() {
                       onSendMessage={handleSendMessage}
                       onDeleteMessage={handleDeleteMessage}
                       onUpdateMessage={handleUpdateMessage}
+                      onShareMessage={handleShareMessage}
                   />
               )}
             </div>

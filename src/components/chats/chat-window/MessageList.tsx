@@ -8,6 +8,8 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import ImagePreview from "@/components/utils/ImagePreview";
 import VideoPreview from "@/components/utils/VideoPreview";
+import useUserStore from '@/stores/userStore';
+import { SearchUser } from "@/components/chats/SearchUser";
 
 interface MessageListProps {
   messages: Message[];
@@ -15,6 +17,7 @@ interface MessageListProps {
   conversation: any;
   onDeleteMessage: (messageId: number) => void;
   onUpdateMessage: (messageId: number, newContent: string) => void;
+  onShareMessage: (message: Message, user: any) => void;
 }
 
 const formatDate = (date: string) => {
@@ -25,13 +28,34 @@ const formatDate = (date: string) => {
   }).format(new Date(date));
 };
 
-const MessageList: React.FC<MessageListProps> = ({ messages, currentUserId, conversation, onDeleteMessage, onUpdateMessage }) => {
+const MessageList: React.FC<MessageListProps> = ({ messages, currentUserId, conversation, onDeleteMessage, onUpdateMessage, onShareMessage }) => {
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const msgContentRef = useRef<HTMLDivElement | null>(null);
   const [dropdownOpenMessageId, setDropdownOpenMessageId] = useState<number | null>(null);
   const [editingMessageId, setEditingMessageId] = useState<number | null>(null);
   const [editedMessageContent, setEditedMessageContent] = useState<string>("");
+  const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
+
+  const { users } = useUserStore();
+  const [isSearchUserForSharingMessageOpen, setIsSearchUserForSharingMessageOpen] = useState<boolean>(false);
+
+  const handleOpenSearchUserForSharingMessage = (message: Message) => {
+    setSelectedMessage(message);
+    setIsSearchUserForSharingMessageOpen(true);
+  };
+
+  const handleCloseSearchUserForSharingMessage = () => {
+    setIsSearchUserForSharingMessageOpen(false);
+    setSelectedMessage(null);
+  };
+
+  const handleUserSelection = (user: any) => {
+    if (selectedMessage) {
+      onShareMessage(selectedMessage, user);
+      handleCloseSearchUserForSharingMessage();
+    }
+  };
 
   const startEditingMessage = (messageId: number, currentContent: string) => {
     setEditingMessageId(messageId);
@@ -107,6 +131,7 @@ const MessageList: React.FC<MessageListProps> = ({ messages, currentUserId, conv
     return lines.join("\n");
   };
 
+
   return (
     <main className="flex-1 overflow-y-scroll h-auto p-4 space-y-4">
       {messages.reduce((acc, msg, index) => {
@@ -162,6 +187,12 @@ const MessageList: React.FC<MessageListProps> = ({ messages, currentUserId, conv
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="animate-slide-down">
+                        <DropdownMenuItem asChild onClick={() => { closeDropdown(); handleOpenSearchUserForSharingMessage(msg) }}>
+                          <Button variant="outline" className="cursor-pointer w-full mt-2 p-3">
+                            Share
+                          </Button>
+                        </DropdownMenuItem>
+
                         <DropdownMenuItem asChild onClick={() => { closeDropdown(); startEditingMessage(msg.id, msg.content); }}>
                           <Button variant="outline" className="cursor-pointer w-full mt-2 p-3">
                             Modify
@@ -200,7 +231,7 @@ const MessageList: React.FC<MessageListProps> = ({ messages, currentUserId, conv
                     )}
                   </div>
                   {!isCurrentUserSender && (
-                    <Button variant="ghost" size="icon" className="rounded-full">
+                    <Button variant="ghost" size="icon" className="rounded-full" onClick={() => handleOpenSearchUserForSharingMessage(msg)}>
                       <Share2 className="h-3 w-3 text-muted-foreground " />
                     </Button>
                   )}
@@ -266,6 +297,11 @@ const MessageList: React.FC<MessageListProps> = ({ messages, currentUserId, conv
         return acc;
       }, [])}
       <div ref={messagesEndRef} />
+      <Dialog open={isSearchUserForSharingMessageOpen} onOpenChange={handleCloseSearchUserForSharingMessage}>
+        <DialogContent>
+          <SearchUser users={users} onSelectUser={handleUserSelection} onClose={handleCloseSearchUserForSharingMessage} />
+        </DialogContent>
+      </Dialog>
     </main>
   );
 };

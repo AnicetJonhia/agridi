@@ -1,10 +1,8 @@
-import React, {useEffect, useRef, useState} from "react";
+
 import ChatHeader from "./chat-window/ChatHeader";
 import MessageInput from "./chat-window/MessageInput"
 import MessageList from "./chat-window/MessageList";
-import { Message } from "@/types/chat-type";
-
-
+import {Message} from "@/types/chat-type";
 
 
 interface Conversation {
@@ -21,11 +19,12 @@ interface ChatWindowProps {
   onSendMessage: (message: string, files: File[]) => void;
   onDeleteMessage: (messageId: number) => void;
   onUpdateMessage: (messageId: number, newContent: string) => void;
+  onShareMessage: (message: Message, user: any) => void;
 }
 
 
 
-export function ChatWindow({ conversation, messages, onBack, onSendMessage,onDeleteMessage,onUpdateMessage }: ChatWindowProps) {
+export function ChatWindow({ conversation, messages, onBack, onSendMessage,onDeleteMessage,onUpdateMessage,onShareMessage }: ChatWindowProps) {
 
 
   const currentUserId = Number(localStorage.getItem("userId"));
@@ -56,6 +55,7 @@ export function ChatWindow({ conversation, messages, onBack, onSendMessage,onDel
         conversation={conversation}
         onDeleteMessage={onDeleteMessage}
         onUpdateMessage={onUpdateMessage}
+        onShareMessage={onShareMessage}
       />
       <MessageInput onSendMessage={onSendMessage} />
 
