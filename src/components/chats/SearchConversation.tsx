@@ -13,8 +13,11 @@ export function SearchConversation({ conversations, onSelectConversation, onClos
         (currentUserId === conversation.receiver?.id
             ? conversation.sender?.username
             : conversation.receiver?.username);
+    let messageIncludesSearchTerm
+    if (conversation.content){
+         messageIncludesSearchTerm = conversation.content.toLowerCase().includes(searchTerm.toLowerCase());
+    }
 
-    const messageIncludesSearchTerm = conversation.content.toLowerCase().includes(searchTerm.toLowerCase());
 
     return displayName.toLowerCase().includes(searchTerm.toLowerCase()) || messageIncludesSearchTerm;
 
@@ -54,7 +57,7 @@ export function SearchConversation({ conversations, onSelectConversation, onClos
                   : conversation.receiver?.profile_picture);
 
           const contentPreview =
-                    conversation.content.length > 30
+                    conversation.content && conversation.content.length > 30
                         ? `${conversation.content.slice(0, 30)}...`
                         : conversation.content;
 

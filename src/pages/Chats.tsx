@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { ConversationList } from "@/components/chats/ConversationList";
 import { ChatWindow } from "@/components/chats/ChatWindow";
 import {getConversations, getChatHistory, sendMessage, deleteMessage, deleteFile, updateMessage} from "@/services/chats-api";
-import { MessageCirclePlus, Search } from "lucide-react";
+import { MessageCirclePlus, MessageSquareText, Search, UsersRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { SearchConversation } from "@/components/chats/SearchConversation.tsx";
@@ -10,6 +10,8 @@ import useUserStore from '@/stores/userStore';
 import { SearchUser } from "@/components/chats/SearchUser";
 import SpecificUserDialog from "@/components/chats/SpecifcUserDialog";
 import {Message} from "@/types/chat-type";
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import{Separator} from "@/components/ui/separator";
 
 
 export default function Chat() {
@@ -103,6 +105,7 @@ export default function Chat() {
   };
 
   const handleBack = () => {
+
     setShowConversationList(true);
   };
 
@@ -309,9 +312,23 @@ export default function Chat() {
           <Button className="border-none" variant="outline" onClick={() => setDialogOpen(true)}>
             <Search className="h-5 w-5 text-gray-500 cursor-pointer" aria-hidden="true" />
           </Button>
-          <Button onClick={() => setUserDialogOpen(true)}>
-            <MessageCirclePlus className="text-white" />
-          </Button>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button>
+                  <MessageCirclePlus className="text-white" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem className={"cursor-pointer mt-2"} onClick={() => setUserDialogOpen(true)}>
+                  <MessageSquareText className={"w-4 h-auto"}/> <span className={"ml-2"}>Add Conversation</span>
+                </DropdownMenuItem>
+                  <Separator className={"mt-2"}/>
+                <DropdownMenuItem className={"cursor-pointer mt-2"} onClick={() => {/* Add your create group logic here */}}>
+                    <UsersRound className={"w-4 h-auto"} /> <span className={"ml-2"} >Create Group</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
         </div>
       </header>
 
