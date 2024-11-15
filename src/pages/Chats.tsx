@@ -12,6 +12,7 @@ import SpecificUserDialog from "@/components/chats/SpecifcUserDialog";
 import {Message} from "@/types/chat-type";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import{Separator} from "@/components/ui/separator";
+import CreateGroupDialog from "@/components/chats/CreateGroupDialog";
 
 
 export default function Chat() {
@@ -26,6 +27,8 @@ export default function Chat() {
   const [isSpecificUserDialogOpen, setSpecificUserDialogOpen] = useState(false);
   const [selectedUserForChat, setSelectedUserForChat] = useState(null);
   const [isChatWindowDialogOpen, setChatWindowDialogOpen] = useState(false);
+  const [isCreateGroupDialogOpen, setCreateGroupDialogOpen] = useState(false);
+
 
 
   useEffect(() => {
@@ -324,13 +327,19 @@ export default function Chat() {
                   <MessageSquareText className={"w-4 h-auto"}/> <span className={"ml-2"}>Add Conversation</span>
                 </DropdownMenuItem>
                   <Separator className={"mt-2"}/>
-                <DropdownMenuItem className={"cursor-pointer mt-2"} onClick={() => {/* Add your create group logic here */}}>
-                    <UsersRound className={"w-4 h-auto"} /> <span className={"ml-2"} >Create Group</span>
-                </DropdownMenuItem>
+                <DropdownMenuItem className={"cursor-pointer mt-2"} onClick={() => setCreateGroupDialogOpen(true)}>
+                    <UsersRound className={"w-4 h-auto"} /> <span className={"ml-2"}>Create Group</span>
+                  </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
         </div>
       </header>
+
+        <Dialog open={isCreateGroupDialogOpen} onOpenChange={setCreateGroupDialogOpen}>
+        <DialogContent>
+          <CreateGroupDialog onClose={() => setCreateGroupDialogOpen(false)} />
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={isDialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>

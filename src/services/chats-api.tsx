@@ -16,16 +16,17 @@ const setAuthToken = (token: string) => {
 };
 
 // Types pour les données de l'API
-interface Sender {
+interface User {
   id: number;
   name: string;
-  avatar?: string;
+  email: string;
+  profile_picture?: string;
 }
 
 interface Group {
   id: number;
   name: string;
-  members: number[];
+  members: User[];
   owner: number;
   photo?: string;
 }
@@ -34,8 +35,8 @@ interface Message {
   id: number;
   content?: string;
   files?: { id: number; file?: string; uploaded_at: string }[];
-  sender: Sender;
-  receiver?: Sender;
+  sender: User;
+  receiver?: User;
   group?: Group;
   timestamp: string;
 }
@@ -73,16 +74,26 @@ export const getSpecificGroup = async (token: string, groupId: number): Promise<
     }
 }
 
+
 export const createGroup = async (
   name: string,
-  members: number[],
+  members: User[],
+  photo: File | null,
   token: string
 ): Promise<Group> => {
   setAuthToken(token);
   try {
-    const response = await api.post<Group>("/custom_messages/groups/", {
-      name,
-      members,
+    const formData = new FormData();
+    formData.append('name', name);
+    members.forEach(member => formData.append('members', member.id.toString()));
+    if (photo) {
+      formData.append('photo', photo);
+    }
+
+    const response = await api.post<Group>("/custom_messages/groups/", formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
     });
     return response.data;
   } catch (error) {
@@ -90,6 +101,7 @@ export const createGroup = async (
     throw error;
   }
 };
+
 
 // Quitter un groupe
 export const leaveGroup = async (groupId: number, token: string): Promise<void> => {
