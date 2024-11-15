@@ -62,6 +62,16 @@ export const getGroups = async (token: string): Promise<Group[]> => {
   }
 };
 
+export const getSpecificGroup = async (token: string, groupId: number): Promise<Group> => {
+    setAuthToken(token);
+    try {
+        const response = await api.get<Group>(`/custom_messages/groups/${groupId}/`);
+        return response.data;
+    } catch (error) {
+        handleRequestError(error);
+        throw error;
+    }
+}
 
 export const createGroup = async (
   name: string,

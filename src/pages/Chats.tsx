@@ -244,17 +244,18 @@ export default function Chat() {
     }
 
 
-   const handleShareMessage = async (message: Message, user: any) => {
+   const handleShareMessage = async (message: Message, user: any, group: any) => {
       const token = localStorage.getItem("token");
       if (!token) {
         console.error("Token not found");
         return;
       }
 
-      const receiverId = user.id;
+      const receiverId = user?.id;
+      const groupId = group?.id;
 
-      if (!receiverId) {
-        console.error("Receiver ID not found");
+      if (!receiverId && !groupId) {
+        console.error("Receiver ID or Group ID not found");
         return;
       }
 
@@ -270,8 +271,8 @@ export default function Chat() {
 
       try {
         const newMessage = await sendMessage(
-          null,
-          receiverId,
+          groupId || null,
+          receiverId || null,
           message?.content,
           token,
           [fileToShare]
@@ -280,7 +281,7 @@ export default function Chat() {
         setMessages((prevMessages) => [...prevMessages, newMessage]);
 
         const updatedConversation = {
-          id: receiverId,
+          id: groupId || receiverId,
           receiver: user,
           lastMessage: newMessage,
           timestamp: newMessage.timestamp,

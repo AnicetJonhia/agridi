@@ -20,7 +20,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ displayName, displayPhoto, onBa
         {displayPhoto ? (
           <img src={typeof displayPhoto === "string" ? displayPhoto : URL.createObjectURL(displayPhoto)} alt="A" />
         ) : (
-          <AvatarFallback>{displayName.charAt(0)}</AvatarFallback>
+          <AvatarFallback>{displayName ? displayName.charAt(0) : "U"}</AvatarFallback>
         )}
       </Avatar>
       <h1 className="text-lg font-semibold">{displayName || "Unknown"}</h1>

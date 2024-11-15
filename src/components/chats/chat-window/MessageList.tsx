@@ -9,7 +9,8 @@ import { Textarea } from "@/components/ui/textarea";
 import ImagePreview from "@/components/utils/ImagePreview";
 import VideoPreview from "@/components/utils/VideoPreview";
 import useUserStore from '@/stores/userStore';
-import { SearchUser } from "@/components/chats/SearchUser";
+import useChatStore from "@/stores/chatStore"
+import { SearchUserOrGroup } from "@/components/chats/SearchUserOrGroup";
 
 import CustomDropdownMenu from './message-list/CustomDropdownMenu';
 import ShareButton from './message-list/ShareButton';
@@ -43,7 +44,12 @@ const MessageList: React.FC<MessageListProps> = ({ messages, currentUserId, conv
 
 
   const { users } = useUserStore();
+  const { groups,fetchGroups } = useChatStore();
   const [isSearchUserForSharingMessageOpen, setIsSearchUserForSharingMessageOpen] = useState<boolean>(false);
+
+  useEffect(() => {
+    fetchGroups();
+  }, []);
 
  const handleOpenSearchUserForSharingMessage = async (message: Message) => {
 
@@ -62,10 +68,16 @@ const MessageList: React.FC<MessageListProps> = ({ messages, currentUserId, conv
 
   const handleUserSelection = (user: any) => {
     if (selectedMessage) {
-      onShareMessage(selectedMessage, user);
+      onShareMessage(selectedMessage, user, null);
       handleCloseSearchUserForSharingMessage();
     }
+  };
 
+  const handleGroupSelection = (group: any) => {
+    if (selectedMessage) {
+      onShareMessage(selectedMessage, null, group);
+      handleCloseSearchUserForSharingMessage();
+    }
   };
 
   const startEditingMessage = (messageId: number, currentContent: string) => {
@@ -379,7 +391,13 @@ const MessageList: React.FC<MessageListProps> = ({ messages, currentUserId, conv
       <div ref={messagesEndRef} />
       <Dialog open={isSearchUserForSharingMessageOpen} onOpenChange={handleCloseSearchUserForSharingMessage}>
         <DialogContent>
-          <SearchUser users={users} onSelectUser={handleUserSelection} onClose={handleCloseSearchUserForSharingMessage} />
+              <SearchUserOrGroup
+                users={users}
+                groups={groups}
+                onSelectUser={handleUserSelection}
+                onSelectGroup={handleGroupSelection}
+                onClose={handleCloseSearchUserForSharingMessage}
+              />
         </DialogContent>
       </Dialog>
     </main>

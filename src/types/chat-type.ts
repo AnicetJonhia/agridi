@@ -1,13 +1,14 @@
 export interface User {
   id: number;
   username: string;
+  email: string;
   profile_picture?: string;
 }
 
 export interface Group {
   id: number;
   name: string;
-  members: number[];
+  members: User[];
   owner: number;
   photo?: string;
 }
