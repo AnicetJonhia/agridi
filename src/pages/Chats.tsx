@@ -244,8 +244,8 @@ export default function Chat() {
     }
 
 
-    const handleShareMessage = async (message: Message, user: any) => {
-        const token = localStorage.getItem("token");
+   const handleShareMessage = async (message: Message, user: any) => {
+      const token = localStorage.getItem("token");
       if (!token) {
         console.error("Token not found");
         return;
@@ -258,17 +258,27 @@ export default function Chat() {
         return;
       }
 
+      let fileToShare = message.file;
+
+      if (typeof fileToShare === 'string') {
+        // fileObj is a URL, fetch the file
+        const response = await fetch(fileToShare);
+        const blob = await response.blob();
+        const fileName = fileToShare.split('/').pop() || 'shared_file';
+        fileToShare = new File([blob], fileName, { type: blob.type });
+      }
+
       try {
         const newMessage = await sendMessage(
           null,
           receiverId,
           message?.content,
           token,
-          message?.files
+          [fileToShare]
         );
 
         setMessages((prevMessages) => [...prevMessages, newMessage]);
-        console.log("New message:", newMessage);
+
         const updatedConversation = {
           id: receiverId,
           receiver: user,

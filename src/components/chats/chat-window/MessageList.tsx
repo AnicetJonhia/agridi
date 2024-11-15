@@ -11,6 +11,9 @@ import VideoPreview from "@/components/utils/VideoPreview";
 import useUserStore from '@/stores/userStore';
 import { SearchUser } from "@/components/chats/SearchUser";
 
+import CustomDropdownMenu from './message-list/CustomDropdownMenu';
+import ShareButton from './message-list/ShareButton';
+
 interface MessageListProps {
   messages: Message[];
   currentUserId: number;
@@ -38,24 +41,31 @@ const MessageList: React.FC<MessageListProps> = ({ messages, currentUserId, conv
   const [editedMessageContent, setEditedMessageContent] = useState<string>("");
   const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
 
+
   const { users } = useUserStore();
   const [isSearchUserForSharingMessageOpen, setIsSearchUserForSharingMessageOpen] = useState<boolean>(false);
 
-  const handleOpenSearchUserForSharingMessage = (message: Message) => {
-    setSelectedMessage(message);
-    setIsSearchUserForSharingMessageOpen(true);
-  };
+ const handleOpenSearchUserForSharingMessage = async (message: Message) => {
+
+
+  setSelectedMessage( message);
+
+  setIsSearchUserForSharingMessageOpen(true);
+};
 
   const handleCloseSearchUserForSharingMessage = () => {
     setIsSearchUserForSharingMessageOpen(false);
     setSelectedMessage(null);
+
   };
+
 
   const handleUserSelection = (user: any) => {
     if (selectedMessage) {
       onShareMessage(selectedMessage, user);
       handleCloseSearchUserForSharingMessage();
     }
+
   };
 
   const startEditingMessage = (messageId: number, currentContent: string) => {
@@ -86,6 +96,9 @@ const MessageList: React.FC<MessageListProps> = ({ messages, currentUserId, conv
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "auto" });
   }, [messages]);
+
+
+
 
   const formatMessageContent = (content: string, maxCharsPerLine = 45) => {
     const splitLongSequences = (text: string, maxChars: number) => {
@@ -131,6 +144,8 @@ const MessageList: React.FC<MessageListProps> = ({ messages, currentUserId, conv
 
     return lines.join("\n");
   };
+
+
 
 
   return (
@@ -267,31 +282,19 @@ const MessageList: React.FC<MessageListProps> = ({ messages, currentUserId, conv
 
                     return (
                             <div className={"flex space-x-6 items-center "}>
+
                               {isCurrentUserSender && (
-                                <DropdownMenu open={dropdownOpenMessageId === fileObj.id} onOpenChange={() => toggleDropdown(fileObj.id)}>
-                                  <DropdownMenuTrigger asChild>
-                                    <Button variant="secondary" size="icon" className="rounded-full">
-                                      <EllipsisVertical className="h-3 w-3 text-muted-foreground" />
-                                    </Button>
-                                  </DropdownMenuTrigger>
-                                  <DropdownMenuContent align="end" className="animate-slide-down">
-                                    <DropdownMenuItem asChild onClick={() => { closeDropdown(); handleOpenSearchUserForSharingMessage(fileObj instanceof File ? URL.createObjectURL(fileObj) : fileObj ) }}>
-                                      <Button variant="outline" className="cursor-pointer w-full mt-2 p-3">
-                                        Share
-                                      </Button>
-                                    </DropdownMenuItem>
-
-
-
-                                    <DropdownMenuItem asChild onClick={() => { closeDropdown(); onDeleteFile(msg.id, fileObj.id); }}>
-                                      <Button variant="outline" className="cursor-pointer w-full mt-2 p-3">
-                                        Delete
-                                      </Button>
-                                    </DropdownMenuItem>
-                                  </DropdownMenuContent>
-                                </DropdownMenu>
+                                <CustomDropdownMenu
+                                  isOpen={dropdownOpenMessageId === fileObj.id}
+                                  onOpenChange={() => toggleDropdown(fileObj.id)}
+                                  onShare={() => { closeDropdown(); handleOpenSearchUserForSharingMessage(fileObj); }}
+                                  onDelete={() => { closeDropdown(); onDeleteFile(msg.id, fileObj.id); }}
+                                />
                               )}
                               <ImagePreview key={fileObj.id} fileURL={fileURL} />
+                              {!isCurrentUserSender && (
+                                <ShareButton onClick={() => handleOpenSearchUserForSharingMessage(fileObj)} />
+                              )}
                             </div>
                         )
                     ;
@@ -299,28 +302,71 @@ const MessageList: React.FC<MessageListProps> = ({ messages, currentUserId, conv
 
                   }
                   else if (fileExtension && ['mp4', 'webm', 'ogg'].includes(fileExtension)) {
-                    return <VideoPreview key={fileObj.id} fileURL={fileURL} />;
+                    return (
+                          <div className={"flex space-x-6 items-center "}>
+                            {isCurrentUserSender && (
+                              <CustomDropdownMenu
+                                isOpen={dropdownOpenMessageId === fileObj.id}
+                                onOpenChange={() => toggleDropdown(fileObj.id)}
+                                onShare={() => { closeDropdown(); handleOpenSearchUserForSharingMessage(fileObj); }}
+                                onDelete={() => { closeDropdown(); onDeleteFile(msg.id, fileObj.id); }}
+                              />
+                            )}
+                            <VideoPreview key={fileObj.id} fileURL={fileURL} />
+                            {!isCurrentUserSender && (
+                              <ShareButton onClick={() => handleOpenSearchUserForSharingMessage(fileObj)} />
+                            )}
+                          </div>
+                        );
+
                   } else if (fileExtension && ['mp3', 'wav'].includes(fileExtension)) {
-                    return (
-                      <audio
-                        key={fileObj.id}
-                        src={fileURL}
-                        controls
-                        className="w-20 h-20"
-                      />
-                    );
-                  } else {
-                    return (
-                      <div key={fileObj.id} className="mt-2">
-                        <a
-                          href={fileURL}
-                          download
-                          className="text-sm border-2 border-t-0 border-dashed border-bg-muted font-semibold text-foreground hover:text-muted-foreground no-underline bg-transparent px-2 py-1 rounded-lg shadow-sm hover:shadow-md transition duration-200 ease-in-out"
-                        >
-                          {fileURL?.split('/').pop()}
-                        </a>
+                   return (
+                      <div className={"flex space-x-6 items-center "}>
+                        {isCurrentUserSender && (
+                          <CustomDropdownMenu
+                            isOpen={dropdownOpenMessageId === fileObj.id}
+                            onOpenChange={() => toggleDropdown(fileObj.id)}
+                            onShare={() => { closeDropdown(); handleOpenSearchUserForSharingMessage(fileObj); }}
+                            onDelete={() => { closeDropdown(); onDeleteFile(msg.id, fileObj.id); }}
+                          />
+                        )}
+                        <audio
+                          key={fileObj.id}
+                          src={fileURL}
+                          controls
+                          className="w-20 h-20"
+                        />
+                        {!isCurrentUserSender && (
+                          <ShareButton onClick={() => handleOpenSearchUserForSharingMessage(fileObj)} />
+                        )}
                       </div>
                     );
+                  } else {
+
+                    return (
+                        <div className={"flex space-x-6 items-center "}>
+                          {isCurrentUserSender && (
+                            <CustomDropdownMenu
+                              isOpen={dropdownOpenMessageId === fileObj.id}
+                              onOpenChange={() => toggleDropdown(fileObj.id)}
+                              onShare={() => { closeDropdown(); handleOpenSearchUserForSharingMessage(fileObj); }}
+                              onDelete={() => { closeDropdown(); onDeleteFile(msg.id, fileObj.id); }}
+                            />
+                          )}
+                          <div key={fileObj.id} className="mt-2">
+                            <a
+                              href={fileURL}
+                              download
+                              className="text-sm border-2 border-t-0 border-dashed border-bg-muted font-semibold text-foreground hover:text-muted-foreground no-underline bg-transparent px-2 py-1 rounded-lg shadow-sm hover:shadow-md transition duration-200 ease-in-out"
+                            >
+                              {fileURL?.split('/').pop()}
+                            </a>
+                          </div>
+                          {!isCurrentUserSender && (
+                            <ShareButton onClick={() => handleOpenSearchUserForSharingMessage(fileObj)} />
+                          )}
+                        </div>
+                      );
                   }
                 })}
               </div>
