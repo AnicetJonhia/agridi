@@ -1,15 +1,15 @@
-import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { createGroup } from "@/services/chats-api";
+import {useEffect, useState} from "react";
+import {Button} from "@/components/ui/button";
+import {Input} from "@/components/ui/input";
+import {Label} from "@/components/ui/label";
+import {createGroup} from "@/services/chats-api";
 import useUserStore from "@/stores/userStore";
-import { Badge } from "@/components/ui/badge";
-import { X } from "lucide-react";
-import { User } from "@/types/chat-type.ts";
-import {Images } from "lucide-react";
-import AltGroupPhoto from "@/assets/images/chats/alt_group_phot.png"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {Badge} from "@/components/ui/badge";
+import {Images, X} from "lucide-react";
+import {User} from "@/types/chat-type.ts";
+import {Avatar, AvatarFallback} from "@/components/ui/avatar";
+import { useToast } from "@/hooks/use-toast.ts";
+import {Toaster} from "@/components/ui/toaster.tsx";
 
 
 interface CreateGroupDialogProps {
@@ -23,7 +23,7 @@ export default function CreateGroupDialog({ onClose }: CreateGroupDialogProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { users, fetchAllUsers } = useUserStore();
-
+  const { toast } = useToast();
 
 
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -34,24 +34,40 @@ export default function CreateGroupDialog({ onClose }: CreateGroupDialogProps) {
     fetchAllUsers();
   }, [fetchAllUsers]);
 
+
   const handleCreateGroup = async () => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      setIsLoading(true);
-      try {
-        const selectedUsers = selectedMembers.map(id => users.find(user => user.id === id)).filter(user => user !== undefined) as User[];
-        await createGroup(groupName, selectedUsers, photo, token);
-        onClose();
-        setGroupName("");
-        setSelectedMembers([]);
-        setPhoto(null);
-      } catch (error) {
-        console.error("Error creating group:", error);
-      } finally {
-        setIsLoading(false);
-      }
+  if (selectedMembers.length < 2) {
+    toast({
+      description: "Group must have at least 2 members",
+      variant: "destructive",
+    });
+    return;
+  }
+
+  const token = localStorage.getItem("token");
+  if (token) {
+    setIsLoading(true);
+    try {
+      const selectedUsers = selectedMembers
+        .map(id => users.find(user => user.id === id))
+        .filter(user => user !== undefined) as User[];
+      await createGroup(groupName, selectedUsers, photo, token);
+      toast({
+        description: "Group created successfully",
+        variant: "success",
+      });
+
+      onClose();
+      setGroupName("");
+      setSelectedMembers([]);
+      setPhoto(null);
+    } catch (error) {
+      console.error("Error creating group:", error);
+    } finally {
+      setIsLoading(false);
     }
-  };
+  }
+};
 
   const filteredUsers = users.filter(user =>
     user?.username?.toLowerCase().includes(searchTerm.toLowerCase())
@@ -181,6 +197,7 @@ export default function CreateGroupDialog({ onClose }: CreateGroupDialogProps) {
             {isLoading ? "Creating..." : "Create"}
           </Button>
         </div>
+        <Toaster/>
       </div>
   );
 }

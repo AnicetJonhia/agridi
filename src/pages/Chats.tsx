@@ -13,6 +13,7 @@ import {Message} from "@/types/chat-type";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import{Separator} from "@/components/ui/separator";
 import CreateGroupDialog from "@/components/chats/CreateGroupDialog";
+import {Toaster} from "@/components/ui/toaster.tsx";
 
 
 export default function Chat() {
@@ -309,6 +310,7 @@ export default function Chat() {
 
   return (
     <div className="flex flex-col h-full">
+        <Toaster />
       <header className="flex items-center justify-between border-b p-4">
         <h1 className="text-lg font-semibold flex-shrink-0">Chats</h1>
         <div className="ml-auto flex items-center space-x-4">
