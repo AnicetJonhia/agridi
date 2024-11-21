@@ -128,7 +128,7 @@ export default function Chat() {
           : selectedConversation.receiver?.id || selectedConversation.group?.id
         : selectedUserForChat?.id;
 
-      if (!receiverId) {
+      if (!receiverId && !isGroupConversation) {
         console.error("Receiver ID not found");
         return;
       }
@@ -138,7 +138,7 @@ export default function Chat() {
 
         const newMessage = await sendMessage(
           groupId,
-          receiverId,
+          isGroupConversation ? null : receiverId,
           content,
           token,
           files
