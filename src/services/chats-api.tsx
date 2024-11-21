@@ -18,7 +18,7 @@ const setAuthToken = (token: string) => {
 // Types pour les données de l'API
 interface User {
   id: number;
-  name: string;
+  username: string;
   email: string;
   profile_picture?: string;
 }
@@ -75,6 +75,9 @@ export const getSpecificGroup = async (token: string, groupId: number): Promise<
 }
 
 
+
+
+
 export const createGroup = async (
   name: string,
   members: User[],
@@ -85,7 +88,11 @@ export const createGroup = async (
   try {
     const formData = new FormData();
     formData.append('name', name);
-    members.forEach(member => formData.append('members', member.id.toString()));
+    members.forEach(member => {
+      if (member.id !== undefined) {
+        formData.append('members', member.id.toString());
+      }
+    });
     if (photo) {
       formData.append('photo', photo);
     }
@@ -97,11 +104,10 @@ export const createGroup = async (
     });
     return response.data;
   } catch (error) {
-    handleRequestError(error);
+    console.error("Error creating group:", error);
     throw error;
   }
 };
-
 
 // Quitter un groupe
 export const leaveGroup = async (groupId: number, token: string): Promise<void> => {
@@ -169,7 +175,7 @@ export const sendMessage = async (
     });
 
 
-    console.log("response.data", response.data);
+
     return response.data;
   } catch (error) {
     handleRequestError(error);
