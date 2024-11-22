@@ -47,14 +47,13 @@ const MessageList: React.FC<MessageListProps> = ({ messages, currentUserId, conv
   const { groups,fetchGroups } = useChatStore();
   const [isSearchUserForSharingMessageOpen, setIsSearchUserForSharingMessageOpen] = useState<boolean>(false);
 
-  useEffect(() => {
-    fetchGroups();
-  }, []);
+
 
  const handleOpenSearchUserForSharingMessage = async (message: Message) => {
 
 
   setSelectedMessage( message);
+  await fetchGroups();
 
   setIsSearchUserForSharingMessageOpen(true);
 };

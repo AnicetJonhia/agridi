@@ -22,6 +22,7 @@ const useChatStore = create<ChatStoreState>((set, get) => ({
     try {
       const groups = await getGroups(token);
       set({ groups });
+      return groups;
     } catch (error) {
       console.error('Failed to fetch groups:', error);
     }
