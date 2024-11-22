@@ -1,15 +1,24 @@
-import { useState } from "react";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {Dialog, DialogContent} from "@/components/ui/dialog";
+import {Avatar, AvatarFallback} from "@/components/ui/avatar";
 import {ChevronRight, ScanSearch, UserRoundPlus, Users} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import {Button} from "@/components/ui/button";
+import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
 import {Separator} from "@/components/ui/separator.tsx";
-
+import {leaveGroup} from "@/services/chats-api.tsx";
 
 const SpecificGroupProfile = ({ group, open, onClose }) => {
   if (!group) return null;
 
+  const handleLeaveGroup = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+    try {
+      await leaveGroup( group.id, token);
+      onClose();
+    } catch (error) {
+      console.error('Failed to leave group:', error);
+    }
+  }
   return (
     <>
       <Dialog open={open} onOpenChange={onClose}>
@@ -46,7 +55,7 @@ const SpecificGroupProfile = ({ group, open, onClose }) => {
                   <DropdownMenuTrigger asChild>
                     <div className="flex items-center text-gray-500 cursor-pointer">
                       <ScanSearch className="mr-2 h-4 w-4" />
-                      All members
+                      View all members
                     </div>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent >
@@ -88,7 +97,7 @@ const SpecificGroupProfile = ({ group, open, onClose }) => {
                   </DropdownMenuContent>
                 </DropdownMenu>
               )}
-              <Button variant={"outline"}>
+              <Button variant={"destructive"} onClick={handleLeaveGroup}>
                 <span>Leave group</span><ChevronRight className={"ml-2 w-4"} />
               </Button>
             </div>
