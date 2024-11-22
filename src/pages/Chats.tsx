@@ -349,7 +349,7 @@ export default function Chat() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button>
-                  <MessageCirclePlus className="text-white" />
+                  <MessageCirclePlus className="text-white popup-animation" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>

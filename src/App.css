@@ -2,7 +2,20 @@
   display: none;
 }
 
+@keyframes popup {
+  0% {
+    transform: scale(0.7);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
 
+.popup-animation {
+  animation: popup 4s ease-in-out infinite;
+}
 
 
 

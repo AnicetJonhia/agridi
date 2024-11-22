@@ -56,7 +56,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ displayName, displayPhoto, user
             <MoveLeft className="w-6 h-6" />
           </button>
         </div>
-        <div className="flex flex-1 items-center space-x-1" onClick={userId ? handleOpenUserDialog : handleOpenGroupDialog}>
+        <div className=" cursor-pointer flex flex-1 items-center space-x-1" onClick={userId ? handleOpenUserDialog : handleOpenGroupDialog}>
           <Avatar className="w-10 h-10">
             {displayPhoto ? (
               <img src={typeof displayPhoto === "string" ? displayPhoto : URL.createObjectURL(displayPhoto)} alt="A" />
