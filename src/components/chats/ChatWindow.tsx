@@ -42,13 +42,17 @@ export function ChatWindow({ conversation, messages, onBack, onSendMessage,onDel
       ? conversation.sender?.profile_picture
       : conversation.receiver?.profile_picture);
 
-
+  const displayId =
+    conversation.group?.id ||
+    (currentUserId === conversation.receiver?.id
+      ? conversation.sender?.id
+      : conversation.receiver?.id);
 
 
 
   return (
     <div className="flex flex-col h-full">
-      <ChatHeader displayName={displayName} displayPhoto={displayPhoto} onBack={onBack} />
+      <ChatHeader displayName={displayName} displayPhoto={displayPhoto} userId={conversation.group ? undefined : displayId} groupId={conversation.group ? displayId : undefined} onBack={onBack} />
 
        <MessageList
         messages={messages}
