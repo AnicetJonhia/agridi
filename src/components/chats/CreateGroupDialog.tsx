@@ -14,59 +14,27 @@ import {Toaster} from "@/components/ui/toaster.tsx";
 
 interface CreateGroupDialogProps {
   onClose: () => void;
+  onCreateGroup: (groupName: string, selectedMembers: number[], photo: File | null) => void;
+  users: User[];
 }
 
-export default function CreateGroupDialog({ onClose }: CreateGroupDialogProps) {
+
+export default function CreateGroupDialog({ onClose, onCreateGroup, users }: CreateGroupDialogProps) {
   const [groupName, setGroupName] = useState("");
   const [selectedMembers, setSelectedMembers] = useState<number[]>([]);
   const [photo, setPhoto] = useState<File | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const { users, fetchAllUsers } = useUserStore();
-  const { toast } = useToast();
 
 
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPhoto(e.target.files ? e.target.files[0] : null);
   };
 
-  useEffect(() => {
-    fetchAllUsers();
-  }, [fetchAllUsers]);
+
 
 
   const handleCreateGroup = async () => {
-  if (selectedMembers.length < 2) {
-    toast({
-      description: "Group must have at least 2 members",
-      variant: "destructive",
-    });
-    return;
-  }
-
-  const token = localStorage.getItem("token");
-  if (token) {
-    setIsLoading(true);
-    try {
-      const selectedUsers = selectedMembers
-        .map(id => users.find(user => user.id === id))
-        .filter(user => user !== undefined) as User[];
-      await createGroup(groupName, selectedUsers, photo, token);
-      toast({
-        description: "Group created successfully",
-        variant: "success",
-      });
-
-      onClose();
-      setGroupName("");
-      setSelectedMembers([]);
-      setPhoto(null);
-    } catch (error) {
-      console.error("Error creating group:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  }
+    onCreateGroup(groupName, selectedMembers, photo);
 };
 
   const filteredUsers = users.filter(user =>
@@ -193,8 +161,8 @@ export default function CreateGroupDialog({ onClose }: CreateGroupDialogProps) {
         <div className="mt-auto flex justify-end items-end space-x-1">
           <Button variant="outline" onClick={onClose}>Cancel</Button>
 
-          <Button onClick={handleCreateGroup} disabled={isLoading}>
-            {isLoading ? "Creating..." : "Create"}
+          <Button onClick={handleCreateGroup} >
+            Create
           </Button>
         </div>
         <Toaster/>

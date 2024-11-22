@@ -74,8 +74,8 @@ export default function Login() {
   };
 
   return (
-    <>
-      <form className={"mt-10"} onSubmit={handleSubmit}>
+    <div className={"flex justify-center items-center h-full"}>
+      <form  onSubmit={handleSubmit}>
         <Card className="mx-auto max-w-sm">
           <CardHeader>
             <CardTitle className="text-2xl">Login</CardTitle>
@@ -152,6 +152,6 @@ export default function Login() {
 
         </DialogContent>
       </Dialog>
-    </>
+    </div>
   );
 }

@@ -94,7 +94,7 @@ export default function Register() {
   };
 
   return (
-    <>
+    <div className={"flex justify-center items-center h-full"}>
       {/* Success Dialog */}
       <Dialog open={isSuccessDialogOpen} onOpenChange={setIsSuccessDialogOpen}>
         <DialogContent>
@@ -117,7 +117,7 @@ export default function Register() {
         </DialogContent>
       </Dialog>
 
-      <form className={"mt-10"} onSubmit={handleSubmit}>
+      <form  onSubmit={handleSubmit}>
         <Card className="mx-auto max-w-sm">
           <CardHeader>
             <CardTitle className="text-xl">Sign Up</CardTitle>
@@ -208,6 +208,6 @@ export default function Register() {
           </CardContent>
         </Card>
       </form>
-    </>
+    </div>
   );
 }

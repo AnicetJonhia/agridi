@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { ConversationList } from "@/components/chats/ConversationList";
 import { ChatWindow } from "@/components/chats/ChatWindow";
-import {getConversations, getChatHistory, sendMessage, deleteMessage, deleteFile, updateMessage} from "@/services/chats-api";
+import {createGroup,getConversations, getChatHistory, sendMessage, deleteMessage, deleteFile, updateMessage} from "@/services/chats-api";
 import { MessageCirclePlus, MessageSquareText, Search, UsersRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
@@ -9,12 +9,12 @@ import { SearchConversation } from "@/components/chats/SearchConversation.tsx";
 import useUserStore from '@/stores/userStore';
 import { SearchUser } from "@/components/chats/SearchUser";
 import SpecificUserDialog from "@/components/chats/SpecifcUserDialog";
-import {Message} from "@/types/chat-type";
+import {Message, User} from "@/types/chat-type";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import{Separator} from "@/components/ui/separator";
 import CreateGroupDialog from "@/components/chats/CreateGroupDialog";
 import {Toaster} from "@/components/ui/toaster.tsx";
-
+import { useToast } from "@/hooks/use-toast.ts";
 
 export default function Chat() {
   const [selectedConversation, setSelectedConversation] = useState(null);
@@ -29,7 +29,7 @@ export default function Chat() {
   const [selectedUserForChat, setSelectedUserForChat] = useState(null);
   const [isChatWindowDialogOpen, setChatWindowDialogOpen] = useState(false);
   const [isCreateGroupDialogOpen, setCreateGroupDialogOpen] = useState(false);
-
+    const { toast } = useToast();
 
 
   useEffect(() => {
@@ -56,6 +56,33 @@ export default function Chat() {
   }, [refreshConversations]);
 
 
+   const handleCreateGroup = async (groupName: string, selectedMembers: number[], photo: File | null) => {
+    if (selectedMembers.length < 2) {
+      toast({
+        description: "Group must have at least 2 members",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const token = localStorage.getItem("token");
+    if (token) {
+      try {
+        const selectedUsers = selectedMembers
+          .map(id => users.find(user => user.id === id))
+          .filter(user => user !== undefined) as User[];
+        await createGroup(groupName, selectedUsers, photo, token);
+        toast({
+          description: "Group created successfully",
+          variant: "success",
+        });
+        setCreateGroupDialogOpen(false);
+        setRefreshConversations(true);
+      } catch (error) {
+        console.error("Error creating group:", error);
+      }
+    }
+  };
 
   const fetchConversations = async () => {
     const token = localStorage.getItem("token");
@@ -339,7 +366,7 @@ export default function Chat() {
 
         <Dialog open={isCreateGroupDialogOpen} onOpenChange={setCreateGroupDialogOpen}>
         <DialogContent>
-          <CreateGroupDialog onClose={() => setCreateGroupDialogOpen(false)} />
+          <CreateGroupDialog onClose={() => setCreateGroupDialogOpen(false)} onCreateGroup={handleCreateGroup} users={users} />
         </DialogContent>
       </Dialog>
 
