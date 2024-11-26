@@ -404,6 +404,7 @@ export default function Chat() {
           <div className="h-full overflow-y-auto">
             {(selectedConversation || selectedUserForChat) && (
                 <ChatWindow
+
                   conversation={selectedConversation || { receiver: selectedUserForChat }}
                   messages={messages}
                   onBack={handleBack}
@@ -412,6 +413,8 @@ export default function Chat() {
                   onUpdateMessage={handleUpdateMessage}
                   onShareMessage={handleShareMessage}
                   onDeleteFile={handleDeleteFile}
+                  refreshConversations={refreshConversations}
+  setRefreshConversations={setRefreshConversations}
                 />
               )}
           </div>
@@ -434,6 +437,8 @@ export default function Chat() {
                       onUpdateMessage={handleUpdateMessage}
                       onShareMessage={handleShareMessage}
                       onDeleteFile={handleDeleteFile}
+                      refreshConversations={refreshConversations}
+                    setRefreshConversations={setRefreshConversations}
                   />
               )}
             </div>

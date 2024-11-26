@@ -21,11 +21,14 @@ interface ChatWindowProps {
   onUpdateMessage: (messageId: number, newContent: string) => void;
   onShareMessage: (message: Message, user: any) => void;
   onDeleteFile: (messageId: number, fileId: number) => void;
+   refreshConversations : boolean;
+   setRefreshConversations : (refreshConversations : boolean) => void;
 }
 
 
 
-export function ChatWindow({ conversation, messages, onBack, onSendMessage,onDeleteMessage,onUpdateMessage,onShareMessage, onDeleteFile }: ChatWindowProps) {
+export function ChatWindow({ conversation, messages, onBack, onSendMessage,onDeleteMessage,onUpdateMessage,onShareMessage, onDeleteFile,  refreshConversations,
+  setRefreshConversations, }: ChatWindowProps) {
 
 
   const currentUserId = Number(localStorage.getItem("userId"));
@@ -52,7 +55,10 @@ export function ChatWindow({ conversation, messages, onBack, onSendMessage,onDel
 
   return (
     <div className="flex flex-col h-full">
-      <ChatHeader displayName={displayName} displayPhoto={displayPhoto} userId={conversation.group ? undefined : displayId} groupId={conversation.group ? displayId : undefined} onBack={onBack} />
+      <ChatHeader displayName={displayName} displayPhoto={displayPhoto} userId={conversation.group ? undefined : displayId} groupId={conversation.group ? displayId : undefined} onBack={onBack}
+            refreshConversations={refreshConversations}
+        setRefreshConversations={setRefreshConversations}
+      />
 
        <MessageList
         messages={messages}

@@ -4,9 +4,10 @@ import { ChevronRight, ScanSearch, UserRoundPlus, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator.tsx";
-import { leaveGroup, deleteConversation } from "@/services/chats-api.tsx";
+import { leaveGroup, getConversations, deleteConversation } from "@/services/chats-api.tsx";
+import { useEffect } from "react";
 
-const SpecificGroupProfile = ({ group, open, onClose }) => {
+const SpecificGroupProfile = ({ group, open, onClose, refreshConversations, setRefreshConversations }) => {
   if (!group) return null;
 
   const handleLeaveGroup = async () => {
@@ -16,14 +17,26 @@ const SpecificGroupProfile = ({ group, open, onClose }) => {
       const deleteConversation = await handleDeleteConversation();
       if (deleteConversation) {
         await leaveGroup(group.id, token);
-
+        setRefreshConversations(true);
         onClose();
-
       }
     } catch (error) {
       console.error('Failed to leave group:', error);
     }
   };
+
+  useEffect(() => {
+    const fetchConversations = async () => {
+      if (refreshConversations) {
+        const token = localStorage.getItem('token');
+        if (token) {
+          await getConversations(token);
+          setRefreshConversations(false);
+        }
+      }
+    };
+    fetchConversations();
+  }, [refreshConversations, setRefreshConversations]);
 
   const handleDeleteConversation = async () => {
     const token = localStorage.getItem('token');
@@ -31,6 +44,7 @@ const SpecificGroupProfile = ({ group, open, onClose }) => {
     if (!token) return;
     try {
       await deleteConversation(type, group.id, token);
+      setRefreshConversations(true);
       onClose();
       return true;
     } catch (error) {

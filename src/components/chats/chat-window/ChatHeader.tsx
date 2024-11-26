@@ -12,9 +12,13 @@ interface ChatHeaderProps {
   userId?: number;
   groupId?: number;
   onBack: () => void;
+    refreshConversations: boolean;
+    setRefreshConversations: (refreshConversations: boolean) => void;
+
 }
 
-const ChatHeader: React.FC<ChatHeaderProps> = ({ displayName, displayPhoto, userId, groupId, onBack }) => {
+const ChatHeader: React.FC<ChatHeaderProps> = ({ displayName, displayPhoto, userId, groupId, onBack, refreshConversations,
+  setRefreshConversations }) => {
   const [isUserDialogOpen, setUserDialogOpen] = useState(false);
   const [isGroupDialogOpen, setGroupDialogOpen] = useState(false);
   const { specificUser, fetchSpecificUser } = useUserStore();
@@ -84,6 +88,8 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ displayName, displayPhoto, user
         group={specificGroup}
         open={isGroupDialogOpen}
         onClose={handleCloseGroupDialog}
+              refreshConversations={refreshConversations}
+        setRefreshConversations={setRefreshConversations}
 
       />
     </>
