@@ -132,7 +132,16 @@ export const getConversations = async (token: string): Promise<Message[]> => {
   }
 };
 
-
+export const deleteConversation = async(type: 'group'| 'private', pk:number,token :string): Promise<void> => {
+    setAuthToken(token);
+    try {
+        const response = await api.delete(`/custom_messages/${type}/${pk}/delete_conversation/`);
+        return response.data;
+    } catch (error) {
+        handleRequestError(error);
+        throw error;
+    }
+}
 
 export const getChatHistory = async (type: 'group' | 'private', pk: number, token: string): Promise<Message[]> => {
 

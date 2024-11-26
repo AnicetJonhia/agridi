@@ -20,6 +20,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ displayName, displayPhoto, user
   const { specificUser, fetchSpecificUser } = useUserStore();
   const { specificGroup, fetchSpecificGroup } = useChatStore();
 
+
   useEffect(() => {
     if (displayName === "Unknown") {
       onBack();
@@ -83,6 +84,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ displayName, displayPhoto, user
         group={specificGroup}
         open={isGroupDialogOpen}
         onClose={handleCloseGroupDialog}
+
       />
     </>
   );

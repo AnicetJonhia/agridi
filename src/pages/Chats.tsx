@@ -79,6 +79,7 @@ export default function Chat() {
         });
         setCreateGroupDialogOpen(false);
         setRefreshConversations(true);
+        setSelectedConversation(null);
       } catch (error) {
         console.error("Error creating group:", error);
       }
