@@ -42,6 +42,7 @@ const MessageList: React.FC<MessageListProps> = ({ messages, currentUserId, conv
   const [editedMessageContent, setEditedMessageContent] = useState<string>("");
   const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
 
+  const [triggerFetchGroups, setTriggerFetchGroups] = useState<boolean>(false);
 
   const { users } = useUserStore();
   const { groups,fetchGroups } = useChatStore();
@@ -49,14 +50,26 @@ const MessageList: React.FC<MessageListProps> = ({ messages, currentUserId, conv
 
 
 
- const handleOpenSearchUserForSharingMessage = async (message: Message) => {
+   const handleOpenSearchUserForSharingMessage = async (message: Message) => {
+
+    setTriggerFetchGroups(true);
+    setSelectedMessage( message);
 
 
-  setSelectedMessage( message);
-  await fetchGroups();
+    setIsSearchUserForSharingMessageOpen(true);
 
-  setIsSearchUserForSharingMessageOpen(true);
-};
+
+  };
+
+   useEffect(() => {
+    if (triggerFetchGroups) {
+      const fetchGroupsData = async () => {
+        await fetchGroups();
+        setTriggerFetchGroups(false);
+      };
+      fetchGroupsData();
+    }
+  }, [triggerFetchGroups]);
 
   const handleCloseSearchUserForSharingMessage = () => {
     setIsSearchUserForSharingMessageOpen(false);

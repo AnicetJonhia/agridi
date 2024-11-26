@@ -1,9 +1,13 @@
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Mail, MapPin, Phone, Linkedin, Globe, Info } from "lucide-react";
+import {Mail, MapPin, Phone, Linkedin, Globe, Info, ChevronRight} from "lucide-react";
+import {getConversations, deleteConversation} from "@/services/chats-api.tsx";
+import {useEffect} from "react";
 
-const SpecificUserProfile = ({ user, open, onClose }) => {
+import Swal from 'sweetalert2';
+
+const SpecificUserProfile = ({ user, open, onClose, refreshConversations, setRefreshConversations }) => {
   if (!user) return null;
 
   const roleMap = {
@@ -11,6 +15,36 @@ const SpecificUserProfile = ({ user, open, onClose }) => {
     Col: "Collector",
     Con: "Consumer",
   };
+
+
+
+  useEffect(() => {
+      const fetchConversations = async () => {
+        if (refreshConversations) {
+          const token = localStorage.getItem('token');
+          if (token) {
+            await getConversations(token);
+            setRefreshConversations(false);
+          }
+        }
+      };
+      fetchConversations();
+    }, [refreshConversations, setRefreshConversations]);
+
+    const handleDeleteConversation = async () => {
+      const token = localStorage.getItem('token');
+      const type = "private";
+      if (!token) return;
+      try {
+        await deleteConversation(type, user.id, token);
+        setRefreshConversations(true);
+        onClose();
+        return true;
+      } catch (error) {
+        console.error('Failed to delete conversation:', error);
+        return false;
+      }
+    };
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -76,6 +110,9 @@ const SpecificUserProfile = ({ user, open, onClose }) => {
                 {user.bio}
               </div>
             )}
+            <Button variant={"destructive"} onClick={handleDeleteConversation}>
+              <span>Delete Conversation</span><ChevronRight className={"ml-2 w-4"} />
+            </Button>
           </div>
         </div>
       </DialogContent>

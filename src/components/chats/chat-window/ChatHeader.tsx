@@ -82,6 +82,9 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ displayName, displayPhoto, user
         user={specificUser}
         open={isUserDialogOpen}
         onClose={handleCloseUserDialog}
+                refreshConversations={refreshConversations}
+        setRefreshConversations={setRefreshConversations}
+
       />
 
       <SpecificGroupProfile
