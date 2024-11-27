@@ -1,13 +1,18 @@
-import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import {Mail, MapPin, Phone, Linkedin, Globe, Info, ChevronRight} from "lucide-react";
-import {getConversations, deleteConversation} from "@/services/chats-api.tsx";
-import {useEffect} from "react";
+import { Mail, MapPin, Phone, Linkedin, Globe, Info, ChevronRight } from "lucide-react";
+import { getConversations, deleteConversation } from "@/services/chats-api.tsx";
+import { useEffect } from "react";
+import Swal from "sweetalert2";
 
-import Swal from 'sweetalert2';
-
-const SpecificUserProfile = ({ user, open, onClose, refreshConversations, setRefreshConversations }) => {
+const SpecificUserProfile = ({
+  user,
+  open,
+  onClose,
+  refreshConversations,
+  setRefreshConversations,
+}) => {
   if (!user) return null;
 
   const roleMap = {
@@ -16,35 +21,80 @@ const SpecificUserProfile = ({ user, open, onClose, refreshConversations, setRef
     Con: "Consumer",
   };
 
-
-
   useEffect(() => {
-      const fetchConversations = async () => {
-        if (refreshConversations) {
-          const token = localStorage.getItem('token');
-          if (token) {
-            await getConversations(token);
-            setRefreshConversations(false);
-          }
+    const fetchConversations = async () => {
+      if (refreshConversations) {
+        const token = localStorage.getItem("token");
+        if (token) {
+          await getConversations(token);
+          setRefreshConversations(false);
         }
-      };
-      fetchConversations();
-    }, [refreshConversations, setRefreshConversations]);
-
-    const handleDeleteConversation = async () => {
-      const token = localStorage.getItem('token');
-      const type = "private";
-      if (!token) return;
-      try {
-        await deleteConversation(type, user.id, token);
-        setRefreshConversations(true);
-        onClose();
-        return true;
-      } catch (error) {
-        console.error('Failed to delete conversation:', error);
-        return false;
       }
     };
+    fetchConversations();
+  }, [refreshConversations, setRefreshConversations]);
+
+  const handleDeleteConversation = async () => {
+  const token = localStorage.getItem("token");
+  const type = "private";
+  if (!token) return;
+
+  onClose();
+
+  const result = await Swal.fire({
+    title: "Are you sure?",
+    text: "You won't be able to revert this!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText: "Yes, delete it!",
+    cancelButtonText: "Cancel",
+    customClass: {
+      popup: "bg-muted text-muted-foreground rounded-lg",
+      title: "text-foreground",
+      content: "text-muted-foreground",
+      confirmButton: "bg-primary text-primary-foreground rounded",
+      cancelButton: "bg-destructive text-destructive-foreground rounded",
+    },
+  });
+
+  if (result.isConfirmed) {
+    try {
+      await deleteConversation(type, user.id, token);
+      setRefreshConversations(true);
+      await Swal.fire({
+        title: "Deleted!",
+        text: "Your conversation has been deleted.",
+        icon: "success",
+        confirmButtonText: "OK",
+        customClass: {
+          popup: "bg-muted text-muted-foreground rounded-lg",
+          title: "text-foreground",
+          content: "text-muted-foreground",
+          confirmButton: "bg-primary text-primary-foreground rounded",
+        },
+      });
+      return true;
+    } catch (error) {
+      console.error("Failed to delete conversation:", error);
+      await Swal.fire({
+        title: "Error!",
+        text: "Failed to delete conversation.",
+        icon: "error",
+        confirmButtonText: "Try Again",
+        customClass: {
+          popup: "bg-muted text-muted-foreground rounded-lg",
+          title: "text-foreground",
+          content: "text-muted-foreground",
+          confirmButton: "bg-primary text-primary-foreground rounded",
+        },
+      });
+      return false;
+    }
+  } else {
+
+    onClose();
+  }
+};
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -70,7 +120,6 @@ const SpecificUserProfile = ({ user, open, onClose, refreshConversations, setRef
             <div className="mt-4 md:ml-4 flex flex-col items-center md:items-start">
               <h2 className="text-lg font-semibold">{user.username}</h2>
               <p className="text-muted-foreground">{roleMap[user.role] || user.role}</p>
-
             </div>
           </div>
           <div className="mt-6 p-4 bg-muted rounded-bl-lg rounded-br-lg border-t space-y-2">
@@ -111,7 +160,8 @@ const SpecificUserProfile = ({ user, open, onClose, refreshConversations, setRef
               </div>
             )}
             <Button variant={"destructive"} onClick={handleDeleteConversation}>
-              <span>Delete Conversation</span><ChevronRight className={"ml-2 w-4"} />
+              <span>Delete Conversation</span>
+              <ChevronRight className={"ml-2 w-4"} />
             </Button>
           </div>
         </div>

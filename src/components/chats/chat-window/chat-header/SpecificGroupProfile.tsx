@@ -6,24 +6,12 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Separator } from "@/components/ui/separator.tsx";
 import { leaveGroup, getConversations, deleteConversation } from "@/services/chats-api.tsx";
 import { useEffect } from "react";
+import Swal from "sweetalert2";
 
 const SpecificGroupProfile = ({ group, open, onClose, refreshConversations, setRefreshConversations }) => {
   if (!group) return null;
 
-  const handleLeaveGroup = async () => {
-    const token = localStorage.getItem('token');
-    if (!token) return;
-    try {
-      const deleteConversation = await handleDeleteConversation();
-      if (deleteConversation) {
-        await leaveGroup(group.id, token);
-        setRefreshConversations(true);
-        onClose();
-      }
-    } catch (error) {
-      console.error('Failed to leave group:', error);
-    }
-  };
+
 
   useEffect(() => {
     const fetchConversations = async () => {
@@ -38,20 +26,127 @@ const SpecificGroupProfile = ({ group, open, onClose, refreshConversations, setR
     fetchConversations();
   }, [refreshConversations, setRefreshConversations]);
 
-  const handleDeleteConversation = async () => {
-    const token = localStorage.getItem('token');
-    const type = "group";
-    if (!token) return;
+ const handleLeaveGroup = async () => {
+  const token = localStorage.getItem("token");
+  if (!token) return;
+
+  // Ferme le Dialog avant d'afficher Swal
+  onClose();
+
+  const result = await Swal.fire({
+    title: "Are you sure?",
+    text: "You are about to leave the group. This action cannot be undone.",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText: "Yes, leave!",
+    cancelButtonText: "Cancel",
+    customClass: {
+      popup: "bg-muted text-muted-foreground rounded-lg",
+      title: "text-foreground",
+      content: "text-muted-foreground",
+      confirmButton: "bg-primary text-primary-foreground rounded",
+      cancelButton: "bg-destructive text-destructive-foreground rounded",
+    },
+  });
+
+  if (result.isConfirmed) {
     try {
-      await deleteConversation(type, group.id, token);
-      setRefreshConversations(true);
-      onClose();
-      return true;
+        await deleteConversation("group", group.id, token);
+
+        await leaveGroup(group.id, token);
+        setRefreshConversations(true);
+
+        await Swal.fire({
+          title: "Left Group",
+          text: "You have successfully left the group.",
+          icon: "success",
+          confirmButtonText: "OK",
+          customClass: {
+            popup: "bg-muted text-muted-foreground rounded-lg",
+            title: "text-foreground",
+            content: "text-muted-foreground",
+            confirmButton: "bg-primary text-primary-foreground rounded",
+          },
+        });
+
     } catch (error) {
-      console.error('Failed to delete conversation:', error);
-      return false;
+      console.error("Failed to leave group:", error);
+
+      await Swal.fire({
+        title: "Error!",
+        text: "An error occurred while leaving the group.",
+        icon: "error",
+        confirmButtonText: "Try Again",
+        customClass: {
+          popup: "bg-muted text-muted-foreground rounded-lg",
+          title: "text-foreground",
+          content: "text-muted-foreground",
+          confirmButton: "bg-primary text-primary-foreground rounded",
+        },
+      });
     }
-  };
+  }
+};
+
+
+  const handleDeleteConversation = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+       onClose();
+      const result = await Swal.fire({
+        title: "Are you sure?",
+        text: "Deleting this conversation will permanently remove it.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Yes, delete!",
+        cancelButtonText: "Cancel",
+        customClass: {
+          popup: "bg-muted text-muted-foreground rounded-lg",
+          title: "text-foreground",
+          content: "text-muted-foreground",
+          confirmButton: "bg-primary text-primary-foreground rounded",
+          cancelButton: "bg-destructive text-destructive-foreground rounded",
+        },
+      });
+
+      if (result.isConfirmed) {
+        try {
+          await deleteConversation("group", group.id, token);
+          setRefreshConversations(true);
+          await Swal.fire({
+            title: "Deleted!",
+            text: "The conversation has been deleted successfully.",
+            icon: "success",
+            confirmButtonText: "OK",
+            customClass: {
+              popup: "bg-muted text-muted-foreground rounded-lg",
+              title: "text-foreground",
+              content: "text-muted-foreground",
+              confirmButton: "bg-primary text-primary-foreground rounded",
+            },
+          });
+          onClose();
+          return true;
+        } catch (error) {
+          console.error("Failed to delete conversation:", error);
+          await Swal.fire({
+            title: "Error!",
+            text: "An error occurred while deleting the conversation.",
+            icon: "error",
+            confirmButtonText: "Try Again",
+            customClass: {
+              popup: "bg-muted text-muted-foreground rounded-lg",
+              title: "text-foreground",
+              content: "text-muted-foreground",
+              confirmButton: "bg-primary text-primary-foreground rounded",
+            },
+          });
+          return false;
+        }
+      }
+    };
+
+
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -126,9 +221,14 @@ const SpecificGroupProfile = ({ group, open, onClose, refreshConversations, setR
                 </DropdownMenuContent>
               </DropdownMenu>
             )}
+            <div className={"flex space-x-2"}>
+              <Button variant={"outline"} onClick={handleDeleteConversation}>
+                <span>Delete Conversation</span>
+            </Button>
             <Button variant={"destructive"} onClick={handleLeaveGroup}>
               <span>Leave group</span><ChevronRight className={"ml-2 w-4"} />
             </Button>
+            </div>
           </div>
         </div>
       </DialogContent>
