@@ -4,14 +4,15 @@ import { ChevronRight, ScanSearch, UserRoundPlus, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator.tsx";
-import { leaveGroup, getConversations, deleteConversation } from "@/services/chats-api.tsx";
+import {updateGroup, leaveGroup, getConversations, deleteConversation } from "@/services/chats-api.tsx";
 import { useEffect } from "react";
 import Swal from "sweetalert2";
 
 const SpecificGroupProfile = ({ group, open, onClose, refreshConversations, setRefreshConversations }) => {
+  const currentUserId = Number(localStorage.getItem("userId"));
+
   if (!group) return null;
-
-
+ const isGroupOwner: boolean = group?.owner === currentUserId;
 
   useEffect(() => {
     const fetchConversations = async () => {
@@ -25,6 +26,8 @@ const SpecificGroupProfile = ({ group, open, onClose, refreshConversations, setR
     };
     fetchConversations();
   }, [refreshConversations, setRefreshConversations]);
+
+
 
  const handleLeaveGroup = async () => {
   const token = localStorage.getItem("token");
@@ -189,12 +192,16 @@ const SpecificGroupProfile = ({ group, open, onClose, refreshConversations, setR
                 <DropdownMenuContent>
                   <DropdownMenuItem className="flex space-x-2 justify-between items-center">
                     <span>{group.name} members</span>
-                    <Button variant={"outline"}>
+                    {isGroupOwner && (
+                      <Button variant={"outline"}>
                       <UserRoundPlus className="popup-animation" />
                     </Button>
+                    )
+                    }
                   </DropdownMenuItem>
                   <Separator />
-                  {group.members.map((member, index) => (
+                  <div className={"max-h-96  overflow-y-scroll"}>
+                    {group.members.map((member, index) => (
                     <DropdownMenuItem className={"mt-2"} key={index}>
                       <div className="flex items-center">
                         <Avatar className="w-8 h-8 mr-2">
@@ -218,6 +225,7 @@ const SpecificGroupProfile = ({ group, open, onClose, refreshConversations, setR
                       </div>
                     </DropdownMenuItem>
                   ))}
+                  </div>
                 </DropdownMenuContent>
               </DropdownMenu>
             )}

@@ -33,14 +33,17 @@ const Welcome: React.FC = () => {
 
         <div className="flex flex-col md:flex-row space-x-0 md:space-x-4 w-full">
         <Link to="/login" className="w-full md:w-auto">
-          <Button className="w-full px-4 py-2 mb-2 md:mb-0">
-            <span>Sign In Now</span>
-            <CornerRightUp />
-          </Button>
+            <Button className="w-full px-4 py-2 mb-2 md:mb-0">
+                <span>Sign In Now</span>
+                <span
+                    className="absolute inset-0 w-0 h-full bg-teal-400 transition-all duration-300 group-hover:w-full group-hover:bg-teal-500 rounded-full"></span>
+
+                <CornerRightUp/>
+            </Button>
         </Link>
-        <Button variant="outline" className="md:w-auto w-full px-4 py-2" onClick={handleLearnMoreClick}>
-          <span>Learn more</span>
-          <ChevronRight />
+            <Button variant="outline" className="md:w-auto w-full px-4 py-2" onClick={handleLearnMoreClick}>
+                <span>Learn more</span>
+                <ChevronRight />
         </Button>
       </div>
 

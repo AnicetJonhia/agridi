@@ -109,6 +109,40 @@ export const createGroup = async (
   }
 };
 
+export const updateGroup = async (
+    groupId: number,
+    updatedData: Partial<{ name: string; members: User[]; photo: File | null }>,
+    token: string
+): Promise<Group> => {
+    setAuthToken(token);
+    try {
+        const formData = new FormData();
+        if (updatedData.name) {
+            formData.append('name', updatedData.name);
+        }
+        if (updatedData.members) {
+            updatedData.members.forEach(member => {
+                if (member.id !== undefined) {
+                    formData.append('members', member.id.toString());
+                }
+            });
+        }
+        if (updatedData.photo) {
+            formData.append('photo', updatedData.photo);
+        }
+
+        const response = await api.patch<Group>(`/custom_messages/groups/${groupId}/`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Error updating group:", error);
+        throw error;
+    }
+}
+
 // Quitter un groupe
 export const leaveGroup = async (groupId: number, token: string): Promise<void> => {
   setAuthToken(token);

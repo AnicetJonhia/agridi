@@ -1,7 +1,7 @@
 import { NavLink } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 
-// @ts-ignore
+
 export default function SidebarNavItem({ to, icon: Icon, label, badgeCount }) {
   return (
     <NavLink
