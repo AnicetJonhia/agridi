@@ -9,7 +9,7 @@ function HeaderNavItem({ to, icon: Icon, label, badgeCount, onClick }) {
       onClick={onClick} // Appeler la fonction onClick lors du clic
       className={({ isActive }) =>
         `mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 transition-all ${
-          isActive ? "bg-[#149911] text-white" : "text-muted-foreground hover:text-primary"
+          isActive ? "bg-primary text-white" : "text-muted-foreground hover:text-primary"
         }`
       }
     >
