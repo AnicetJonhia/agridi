@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { getGroups, getSpecificGroup } from '@/services/chats-api';
-import { Group, User } from '@/types/chat-type';
+import { Group } from '@/types/chat-type';
 
 interface ChatStoreState {
   token: string | null;
