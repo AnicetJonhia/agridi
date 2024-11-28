@@ -1,6 +1,15 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { ChevronRight, CloudDownload, Pocket, ScanSearch, UserRoundPlus, Users } from "lucide-react";
+import {
+  ChevronRight,
+  CircleCheckBig,
+  CloudDownload,
+  MoveLeft, PencilLine,
+  Pocket,
+  ScanSearch,
+  UserRoundPlus,
+  Users
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator.tsx";
@@ -10,6 +19,7 @@ import Swal from "sweetalert2";
 import { Label } from "@/components/ui/label.tsx";
 import { Input } from "@/components/ui/input.tsx";
 import useChatStore from "@/stores/chatStore.ts";
+
 
 
 const SpecificGroupProfile = ({ group, open, onClose, refreshConversations, setRefreshConversations }) => {
@@ -26,21 +36,28 @@ const SpecificGroupProfile = ({ group, open, onClose, refreshConversations, setR
   });
 
   const currentUserId = Number(localStorage.getItem("userId"));
+  const [isEditing, setIsEditing] = useState(false);
+  const [groupName, setGroupName] = useState(group?.name);
 
-    useEffect(() => {
-    if (group && group.id) {
-      const getSpecificGroup = async () => {
-        await fetchSpecificGroup(group.id);
-      };
-      getSpecificGroup();
-    }
-  }, [fetchSpecificGroup, group]);
+
+
+
+
+  useEffect(() => {
+
+
+        const getSpecificGroup = async () => {
+          await fetchSpecificGroup(group.id);
+        };
+        getSpecificGroup();
+
+      }, [fetchSpecificGroup]);
 
 
   useEffect(() => {
     if (specificGroup) {
       setFormData({ ...specificGroup });
-      console.log(specificGroup);
+
     }
   }, [specificGroup]);
 
@@ -64,6 +81,62 @@ const SpecificGroupProfile = ({ group, open, onClose, refreshConversations, setR
     };
     fetchConversations();
   }, [refreshConversations, setRefreshConversations]);
+
+
+  const handleEditClick = () => {
+    setIsEditing(true);
+  };
+
+  const handleCancelClick = () => {
+    setIsEditing(false);
+  };
+
+  const handleUpdateGroupName = () => {
+    if (!groupName) return;
+    const token = localStorage.getItem("token");
+    if (!token) return;
+    try{
+      const updatedGroupName = { name: groupName };
+      updateGroup(group.id, updatedGroupName, token);
+      setFormData({ ...formData, name: groupName });
+      useChatStore.setState({ specificGroup: updatedGroup });
+
+      onClose();
+        Swal.fire({
+            title: "Updated!",
+            text: "The group name has been updated successfully.",
+            icon: "success",
+            confirmButtonText: "OK",
+            customClass: {
+            popup: "bg-muted text-muted-foreground rounded-lg shadow-lg",
+            title: "text-foreground font-semibold",
+            content: "text-muted-foreground text-sm",
+            confirmButton: "bg-primary text-primary-foreground rounded px-4 py-2 hover:bg-primary/90",
+            },
+            buttonsStyling: false,
+        });
+    }
+    catch (error) {
+        console.error("Failed to update group name:", error);
+        onClose();
+        Swal.fire({
+            title: "Error!",
+            text: "An error occurred while updating the group name.",
+            icon: "error",
+            confirmButtonText: "Try Again",
+            customClass: {
+            popup: "bg-muted text-muted-foreground rounded-lg shadow-lg",
+            title: "text-foreground font-semibold",
+            content: "text-muted-foreground text-sm",
+            confirmButton: "bg-primary text-primary-foreground rounded px-4 py-2 hover:bg-primary/90",
+            },
+            buttonsStyling: false,
+        });
+    }
+
+
+    setIsEditing(false);
+  };
 
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -264,8 +337,39 @@ const SpecificGroupProfile = ({ group, open, onClose, refreshConversations, setR
               </Avatar>
             )}
             <div className="mt-4 md:ml-4 flex flex-col items-center md:items-start">
-              <h2 className="text-lg font-semibold">{group.name}</h2>
-              <div className="flex items-center text-gray-500">
+                  {!isEditing ? (
+                      <div className={"flex space-x-4 items-center"}>
+                        <h2 className=" text-lg font-semibold" >
+                          {group.name}
+                        </h2>
+                        <button onClick={handleEditClick} className="p-2">
+                          <PencilLine className="w-full h-4" />
+                        </button>
+                      </div>
+                  ) : (
+
+                      <div className={"flex"}>
+                        <div className="flex  items-center space-x-2 flex-1">
+
+                       <button onClick={handleCancelClick} >
+                         <MoveLeft className="w-6 h-6 "/>
+                       </button>
+                       <Input
+                           type="text"
+                           value={groupName}
+                           onChange={(e) => setGroupName(e.target.value)}
+                           className="border p-2  rounded w-full"
+                       />
+
+
+                     </div>
+                        <Button onClick={handleUpdateGroupName} className="ml-2 p-2  text-white rounded">
+                          <CircleCheckBig />
+                      </Button>
+                        </div>
+                  )}
+
+           <div className="flex items-center text-gray-500">
                 <Users className="mr-2 h-4 w-4" />
                 {group.members.length} members
               </div>
