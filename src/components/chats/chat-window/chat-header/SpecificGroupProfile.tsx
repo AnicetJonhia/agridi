@@ -99,7 +99,7 @@ const SpecificGroupProfile = ({ group, open, onClose, refreshConversations, setR
       const updatedGroupName = { name: groupName };
       updateGroup(group.id, updatedGroupName, token);
       setFormData({ ...formData, name: groupName });
-      useChatStore.setState({ specificGroup: updatedGroup });
+      useChatStore.setState({ specificGroup: updatedGroupName });
 
       onClose();
         Swal.fire({
@@ -153,10 +153,10 @@ const SpecificGroupProfile = ({ group, open, onClose, refreshConversations, setR
       updatedGroupPhotoData.append('photo', temporaryGroupPhoto);
 
       try {
-        const updatedGroup = await updateGroup(group.id, { photo: temporaryGroupPhoto }, token);
-        setFormData({ ...formData, photo: updatedGroup.photo });
+        const updatedGroupPhoto = await updateGroup(group.id, { photo: temporaryGroupPhoto }, token);
+        setFormData({ ...formData, photo: updatedGroupPhoto.photo });
         setIsGroupPhotoDialogOpen(false);
-        useChatStore.setState({ specificGroup: updatedGroup });
+        useChatStore.setState({ specificGroup: updatedGroupPhoto });
 
         onClose();
         await Swal.fire({
@@ -371,7 +371,7 @@ const SpecificGroupProfile = ({ group, open, onClose, refreshConversations, setR
 
            <div className="flex items-center text-gray-500">
                 <Users className="mr-2 h-4 w-4" />
-                {group.members.length} members
+                {group?.members?.length} members
               </div>
             </div>
           </div>
