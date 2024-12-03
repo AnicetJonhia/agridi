@@ -54,7 +54,7 @@ export function ChatWindow({ conversation, messages, onBack, onSendMessage,onDel
 
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full ">
       <ChatHeader displayName={displayName} displayPhoto={displayPhoto} userId={conversation.group ? undefined : displayId} groupId={conversation.group ? displayId : undefined} onBack={onBack}
             refreshConversations={refreshConversations}
         setRefreshConversations={setRefreshConversations}

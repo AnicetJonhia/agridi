@@ -67,7 +67,7 @@ const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage }) => {
   }, []);
 
   return (
-    <footer className="flex items-center space-x-2 p-2 border-b border-t">
+    <footer className="flex items-center space-x-2 p-2 border-b border-t slide-in-right">
       <div className="flex relative items-center space-x-2 flex-1">
         <Label htmlFor="file" className="absolute left-4 items-center cursor-pointer text-muted-foreground hover:text-foreground space-x-2">
           <Paperclip className="w-6 h-6 text-[#149911] cursor-pointer" />
@@ -82,14 +82,14 @@ const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage }) => {
           onKeyDown={handleKeyDown}
           style={{ maxHeight: "120px" }}
         />
-        <button onClick={() => setShowEmojiPicker(!showEmojiPicker)} className="cursor-pointer text-[#149911] absolute right-2">
+        <button onClick={() => setShowEmojiPicker(!showEmojiPicker)} className="cursor-pointer text-[#149911]  absolute right-2">
           <SmilePlus />
         </button>
       </div>
       <button
         onClick={handleSendMessage}
         disabled={!message.trim() && !filePreviews.length}
-        className={`w-6 h-6 cursor-pointer transition-colors ${!message.trim() && !filePreviews.length ? 'hidden' : 'text-[#149911] hover:text-primary'}`}
+        className={`w-6 h-6 cursor-pointer transition-colors ${!message.trim() && !filePreviews.length ? 'hidden' : 'text-[#149911] swing hover:text-primary'}`}
       >
         <Send />
       </button>

@@ -55,7 +55,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ displayName, displayPhoto, user
 
   return (
     <>
-      <header className="flex items-center justify-start space-x-6 px-4 py-2 border-b">
+      <header className="flex slide-in-right items-center justify-start space-x-6 px-4 py-2 border-b">
         <div className="lg:hidden">
           <button onClick={onBack} className="p-2">
             <MoveLeft className="w-6 h-6" />

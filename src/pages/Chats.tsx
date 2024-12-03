@@ -338,7 +338,7 @@ export default function Chat() {
     };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full  ">
         <Toaster />
       <header className="flex items-center justify-between border-b p-4">
         <h1 className="text-lg font-semibold flex-shrink-0">Chats</h1>
@@ -349,8 +349,8 @@ export default function Chat() {
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button>
-                  <MessageCirclePlus className="text-white popup-animation" />
+                <Button className={" btn-hover-rotate"}>
+                  <MessageCirclePlus className="text-white  popup-animation" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>

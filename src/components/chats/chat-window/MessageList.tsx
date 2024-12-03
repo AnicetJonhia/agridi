@@ -173,7 +173,7 @@ const MessageList: React.FC<MessageListProps> = ({ messages, currentUserId, conv
 
 
   return (
-    <main className="flex-1 overflow-y-scroll h-auto p-4 space-y-4">
+    <main className="flex-1 overflow-y-scroll h-auto p-4 space-y-4 ">
       {messages.reduce((acc, msg, index) => {
         const msgDate = formatDate(msg.timestamp);
         const prevDate = index > 0 ? formatDate(messages[index - 1].timestamp) : null;

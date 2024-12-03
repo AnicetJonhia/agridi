@@ -6,7 +6,7 @@ import {
   CloudDownload,
   MoveLeft, PencilLine,
   Pocket,
-  ScanSearch, Trash,
+  ScanSearch, Trash, UserIcon,
   UserRoundPlus,
   Users
 } from "lucide-react";
@@ -29,7 +29,8 @@ import Swal from "sweetalert2";
 import { Label } from "@/components/ui/label.tsx";
 import { Input } from "@/components/ui/input.tsx";
 import useChatStore from "@/stores/chatStore.ts";
-
+import {Card} from "@/components/ui/card.tsx";
+import {Checkbox} from "@/components/ui/checkbox.tsx";
 
 
 const SpecificGroupProfile = ({ group, open, onClose, refreshConversations, setRefreshConversations }) => {
@@ -395,7 +396,7 @@ const SpecificGroupProfile = ({ group, open, onClose, refreshConversations, setR
             ✕
           </Button>
         </DrawerClose>
-        <div className="mt-4 border mx-auto w-full max-w-lg rounded-lg">
+        <div className="mt-4 border mx-auto w-full max-w-lg rounded-lg rotate-with-origin">
           <div className="flex p-4 flex-col items-center md:flex-row md:items-start">
             {group.photo ? (
               <Avatar onClick={() => setIsGroupPhotoDialogOpen(true)} className="w-32 h-32 cursor-pointer rounded-full">
@@ -462,19 +463,19 @@ const SpecificGroupProfile = ({ group, open, onClose, refreshConversations, setR
                   </div>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent >
-                  <DropdownMenuItem className="flex space-x-2 justify-between items-center">
+                  <DropdownMenuItem className="flex  space-x-2 justify-between items-center">
                     <span>{group.name} members</span>
                     {isGroupOwner && (
-                      <Button variant={"outline"}>
-                        <UserRoundPlus className="popup-animation" />
-                      </Button>
+                            <Button variant={"outline"}>
+                              <UserRoundPlus className="popup-animation" />
+                            </Button>
                     )}
                   </DropdownMenuItem>
                   <Separator />
-                  <div className={"max-h-96 overflow-y-scroll"}>
+                  <div className={"max-h-96 overflow-y-scroll "}>
                     {group.members.map((member, index) => (
                         <DropdownMenuItem className={"mt-2 "} key={index}>
-                          <div className="flex mr-5 items-center justify-center space-x-2">
+                          <div className="flex mr-5 items-center pulse justify-center space-x-2">
                             <Avatar className="w-8 h-8 mr-2">
                               {member.profile_picture ? (
                                   <img

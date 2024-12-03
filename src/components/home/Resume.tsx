@@ -34,7 +34,7 @@ export default function Resume() {
 
   return (
     <div
-      className="relative md:h-[600px] flex  max-w-md w-full items-center justify-center overflow-hidden   p-10  "
+      className="swing relative md:h-[600px] flex  max-w-md w-full items-center justify-center overflow-hidden   p-10  "
       ref={containerRef}
     >
 

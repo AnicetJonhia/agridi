@@ -80,12 +80,23 @@ export default {
           '100%': {
             transform: 'translateY(0)'
           }
+        },
+        scaleIn: {
+          '0%': {
+            transform: 'scale(0)',
+            opacity: 0
+          },
+          '100%': {
+            transform: 'scale(1)',
+            opacity: 1
+          }
         }
       },
       animation: {
         marquee: 'marquee var(--duration) infinite linear',
         'marquee-vertical': 'marquee-vertical var(--duration) linear infinite',
-        grid: 'grid 15s linear infinite'
+        grid: 'grid 15s linear infinite',
+        scaleIn:"scaleIn 2s cubic-bezier(0.250, 0.460, 0.450, 0.940) both",
       }
     }
   },

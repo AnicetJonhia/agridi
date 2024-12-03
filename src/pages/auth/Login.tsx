@@ -74,7 +74,7 @@ export default function Login() {
   };
 
   return (
-    <div className={"flex justify-center items-center h-full"}>
+    <div className={"flex justify-center items-center h-full rotate-with-origin"}>
       <form  onSubmit={handleSubmit}>
         <Card className="mx-auto max-w-sm">
           <CardHeader>

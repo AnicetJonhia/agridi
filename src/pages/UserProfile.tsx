@@ -181,13 +181,13 @@ const UserProfile: React.FC<UserProfileProps> = ({isOpen, onClose}) => {
                           <img
                               src={formData.profile_picture instanceof File ? URL.createObjectURL(formData.profile_picture) : formData.profile_picture}
                               alt="you"
-                              className="w-24 h-24 border rounded-full object-cover cursor-pointer"
+                              className=" scale-with-origin w-24 h-24 border rounded-full object-cover cursor-pointer"
                           />
                       ) : (
                           <UserRound className="w-24 h-24 border rounded-full"/>
                       )}
                       <div className="space-y-1.5">
-                        <h1 className="text-2xl font-bold">
+                        <h1 className="popup-animation text-2xl font-bold">
                           {formData.username || "You"}
                         </h1>
                         <p className="text-muted-foreground">
@@ -196,7 +196,7 @@ const UserProfile: React.FC<UserProfileProps> = ({isOpen, onClose}) => {
                       </div>
                     </div>
 
-                    <Button variant={"outline"} onClick={handleEditToggle} className="space-x-4">
+                    <Button variant={"outline"} onClick={handleEditToggle} className=" bounce space-x-4 transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110  duration-300">
                       <span>Edit Profile</span> <Pencil className={"w-4 "}/>
                     </Button>
                   </div>
@@ -207,43 +207,43 @@ const UserProfile: React.FC<UserProfileProps> = ({isOpen, onClose}) => {
 
 
                 {(formData.email || formData.alternate_email) && (
-                    <div className="flex items-center text-gray-500">
+                    <div className="flex items-center text-gray-500 animate-scaleIn">
                       <Mail className="mr-2 h-4 w-4"/>
                       {formData.email} <span className={"mr-4 ml-4"}>|</span> {formData.alternate_email}
                     </div>
                 )}
                 {(formData.first_name || formData.last_name) && (
-                    <div className="flex items-center text-gray-500">
+                    <div className="flex items-center text-gray-500 animate-scaleIn ">
                       <Omega className="mr-2 h-4 w-4"/>
                       {formData.first_name} {formData.last_name}
                     </div>
                 )}
                 {formData.address && (
-                    <div className="flex items-center text-gray-500">
+                    <div className="flex items-center text-gray-500 animate-scaleIn">
                       <MapPin className="mr-2 h-4 w-4"/>
                       {formData.address}
                     </div>
                 )}
                 {formData.phone_number && (
-                    <div className="flex items-center text-gray-500">
+                    <div className="flex items-center text-gray-500 animate-scaleIn">
                       <Phone className="mr-2 h-4 w-4"/>
                       {formData.phone_number}
                     </div>
                 )}
                 {formData.linkedin && (
-                    <div className="flex items-center text-gray-500">
+                    <div className="flex items-center text-gray-500 animate-scaleIn">
                       <Linkedin className="mr-2 h-4 w-4"/>
                       {formData.linkedin}
                     </div>
                 )}
                 {formData.website && (
-                    <div className="flex items-center text-gray-500">
+                    <div className="flex items-center text-gray-500 animate-scaleIn">
                       <Globe className="mr-2 h-4 w-4"/>
                       {formData.website}
                     </div>
                 )}
                 {formData.bio && (
-                    <div className="flex items-center text-gray-500">
+                    <div className="flex items-center text-gray-500 animate-scaleIn">
                       <Info className="mr-2 h-4 w-4"/>
                       {formData.bio}
                     </div>
@@ -259,13 +259,13 @@ const UserProfile: React.FC<UserProfileProps> = ({isOpen, onClose}) => {
                         <img
                             src={formData.profile_picture instanceof File ? URL.createObjectURL(formData.profile_picture) : formData.profile_picture}
                             alt="you"
-                            className="w-24 h-24 border rounded-full object-cover cursor-pointer"
+                            className="bounce w-24 h-24 border rounded-full object-cover cursor-pointer"
                         />
                     ) : (
                         <UserRound className="w-24 h-24 border rounded-full"/>
                     )}
                     <div className="space-y-1.5">
-                      <h1 className="text-2xl font-bold">
+                      <h1 className="text-2xl font-bold popup-animation">
                         {formData.username || "You"}
                       </h1>
                       <p className="text-muted-foreground">
@@ -279,8 +279,8 @@ const UserProfile: React.FC<UserProfileProps> = ({isOpen, onClose}) => {
                 <div className="space-y-6">
                   <div className="space-y-2">
                     <h2 className="text-lg font-semibold">Personal Information</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6  ">
+                      <div className={"animate-scaleIn"}>
                         <Label htmlFor="username">Username</Label>
                         <Input
                             id="username"
@@ -290,7 +290,7 @@ const UserProfile: React.FC<UserProfileProps> = ({isOpen, onClose}) => {
 
                         />
                       </div>
-                      <div>
+                      <div className={"animate-scaleIn"}>
                         <Label htmlFor="email">Email</Label>
                         <Input
                             id="email"
@@ -300,7 +300,7 @@ const UserProfile: React.FC<UserProfileProps> = ({isOpen, onClose}) => {
 
                         />
                       </div>
-                      <div>
+                      <div className={"animate-scaleIn"}>
                         <Label htmlFor="first_name">First Name</Label>
                         <Input
                             id="first_name"
@@ -309,8 +309,8 @@ const UserProfile: React.FC<UserProfileProps> = ({isOpen, onClose}) => {
                             onChange={handleChange}
 
                         />
-                      </div>
-                      <div>
+                      </div >
+                      <div className={"animate-scaleIn"}>
                         <Label htmlFor="last_name">Last Name</Label>
                         <Input
                             id="last_name"
@@ -320,7 +320,7 @@ const UserProfile: React.FC<UserProfileProps> = ({isOpen, onClose}) => {
 
                     />
                   </div>
-                  <div>
+                  <div className={"animate-scaleIn"}>
                     <Label htmlFor="phone_number">Phone</Label>
                     <Input
                       id="phone_number"
@@ -330,7 +330,7 @@ const UserProfile: React.FC<UserProfileProps> = ({isOpen, onClose}) => {
 
                     />
                   </div>
-                  <div>
+                  <div className={"animate-scaleIn"}>
                     <Label htmlFor="address">Address</Label>
                     <Input
                       id="address"
@@ -340,7 +340,7 @@ const UserProfile: React.FC<UserProfileProps> = ({isOpen, onClose}) => {
 
                     />
                   </div>
-                  <div>
+                  <div className={"animate-scaleIn"}>
                     <Label htmlFor="role">Role</Label>
                     <Select value={formData.role} onValueChange={(value) => setFormData({...formData, role: value})}
                             >
@@ -354,7 +354,7 @@ const UserProfile: React.FC<UserProfileProps> = ({isOpen, onClose}) => {
                       </SelectContent>
                     </Select>
                   </div>
-                  <div>
+                  <div className={"animate-scaleIn"}>
                     <Label htmlFor="date_of_birth">Date of Birth</Label>
                     <Input
                       id="date_of_birth"
@@ -364,7 +364,7 @@ const UserProfile: React.FC<UserProfileProps> = ({isOpen, onClose}) => {
 
                     />
                   </div>
-                  <div>
+                  <div className={"animate-scaleIn"}>
                     <Label htmlFor="alternate_email">Alternate Email</Label>
                     <Input
                       id="alternate_email"
@@ -374,7 +374,7 @@ const UserProfile: React.FC<UserProfileProps> = ({isOpen, onClose}) => {
 
                     />
                   </div>
-                  <div>
+                  <div className={"animate-scaleIn"}>
                     <Label htmlFor="linkedin">LinkedIn</Label>
                     <Input
                       id="linkedin"
@@ -387,7 +387,7 @@ const UserProfile: React.FC<UserProfileProps> = ({isOpen, onClose}) => {
                 </div>
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-2 animate-scaleIn">
                 <h2 className="text-lg font-semibold">Bio and Website</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
@@ -421,7 +421,7 @@ const UserProfile: React.FC<UserProfileProps> = ({isOpen, onClose}) => {
                   <Button variant="destructive" onClick={handleEditToggle}>
                     <X/>
                   </Button>
-                  <Button onClick={handleSave}>
+                  <Button className={"btn"} onClick={handleSave}>
                     <span className="mr-2">Save</span>
                     <Pocket/>
                   </Button>

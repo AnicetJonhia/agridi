@@ -94,7 +94,7 @@ export default function Register() {
   };
 
   return (
-    <div className={"flex justify-center items-center h-full"}>
+    <div className={"flex justify-center items-center h-full rotate-with-origin"}>
       {/* Success Dialog */}
       <Dialog open={isSuccessDialogOpen} onOpenChange={setIsSuccessDialogOpen}>
         <DialogContent>

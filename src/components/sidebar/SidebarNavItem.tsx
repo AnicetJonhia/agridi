@@ -8,7 +8,7 @@ export default function SidebarNavItem({ to, icon: Icon, label, badgeCount }) {
       to={to}
       className={({ isActive }) =>
         `flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
-          isActive ? "bg-primary text-white" : "text-muted-foreground hover:text-primary"
+          isActive ? "bg-primary text-white rotate-with-origin" : "text-muted-foreground hover:text-primary"
         }`
       }
     >

@@ -58,11 +58,11 @@ export function ConversationList({ conversations, onSelectConversation }) {
                 return (
                     <Card
                         key={conversation.id + conversation.timestamp}
-                        className={`flex flex-col p-4 cursor-pointer hover:bg-muted mb-2 ${selectedConversationId === conversation.id ? 'bg-muted' : ''}`}
+                        className={` fade-slide-up flex flex-col p-4 cursor-pointer hover:bg-muted mb-2 ${selectedConversationId === conversation.id ? 'bg-muted' : ''}`}
                         onClick={() => handleSelectConversation(conversation)}
                     >
                         {conversation.id && (
-                            <div className="flex items-center">
+                            <div className="flex items-center ">
                                 <Avatar className="w-10 h-10">
 
                                         {conversation.group?.photo ? (

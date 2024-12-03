@@ -99,7 +99,7 @@ const SpecificUserProfile = ({
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent>
-        <div className="mt-4 border rounded-lg">
+        <div className="mt-4 border rounded-lg rotate-with-origin">
           <div className="flex p-4 flex-col items-center md:flex-row md:items-start">
             {user.profile_picture ? (
               <Avatar className="w-32 h-32 rounded-full">
