@@ -6,14 +6,24 @@ import {
   CloudDownload,
   MoveLeft, PencilLine,
   Pocket,
-  ScanSearch,
+  ScanSearch, Trash,
   UserRoundPlus,
   Users
 } from "lucide-react";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator.tsx";
-import { updateGroup, leaveGroup, getConversations, deleteConversation } from "@/services/chats-api.tsx";
+import { updateGroup, addMembersToGroup, removeMemberFromGroup, leaveGroup, getConversations, deleteConversation } from "@/services/chats-api.tsx";
 import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { Label } from "@/components/ui/label.tsx";
@@ -311,13 +321,71 @@ const SpecificGroupProfile = ({ group, open, onClose, refreshConversations, setR
     }
   };
 
+
+  const handleRemoveMemberFromGroup = async (memberId: number) => {
+  const token = localStorage.getItem("token");
+  if (!token) return;
+
+  const result = await Swal.fire({
+    title: "Are you sure?",
+    text: "You are about to remove this member from the group. This action cannot be undone.",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText: "Yes, remove!",
+    cancelButtonText: "Cancel",
+    customClass: {
+      popup: "bg-muted text-muted-foreground rounded-lg",
+      title: "text-foreground",
+      content: "text-muted-foreground",
+      confirmButton: "bg-primary text-primary-foreground rounded",
+      cancelButton: "bg-destructive text-destructive-foreground rounded",
+    },
+  });
+
+  if (result.isConfirmed) {
+    try {
+      await removeMemberFromGroup(group.id, memberId, token);
+      setRefreshConversations(true);
+
+      await Swal.fire({
+        title: "Removed!",
+        text: "The member has been removed from the group.",
+        icon: "success",
+        confirmButtonText: "OK",
+        customClass: {
+          popup: "bg-muted text-muted-foreground rounded-lg",
+          title: "text-foreground",
+          content: "text-muted-foreground",
+          confirmButton: "bg-primary text-primary-foreground rounded",
+        },
+      });
+    } catch (error) {
+      console.error("Failed to remove member from group:", error);
+
+      await Swal.fire({
+        title: "Error!",
+        text: "An error occurred while removing the member from the group.",
+        icon: "error",
+        confirmButtonText: "Try Again",
+        customClass: {
+          popup: "bg-muted text-muted-foreground rounded-lg",
+          title: "text-foreground",
+          content: "text-muted-foreground",
+          confirmButton: "bg-primary text-primary-foreground rounded",
+        },
+      });
+    }
+  }
+
+  onClose();
+};
   if (!group) return null;
 
   const isGroupOwner: boolean = group?.owner === currentUserId;
 
   return (
-    <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent>
+    <Drawer open={open} onOpenChange={onClose}>
+      <DrawerContent>
         <div className="mt-4 border rounded-lg">
           <div className="flex p-4 flex-col items-center md:flex-row md:items-start">
             {group.photo ? (
@@ -384,7 +452,7 @@ const SpecificGroupProfile = ({ group, open, onClose, refreshConversations, setR
                     View all members
                   </div>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent>
+                <DropdownMenuContent >
                   <DropdownMenuItem className="flex space-x-2 justify-between items-center">
                     <span>{group.name} members</span>
                     {isGroupOwner && (
@@ -396,28 +464,34 @@ const SpecificGroupProfile = ({ group, open, onClose, refreshConversations, setR
                   <Separator />
                   <div className={"max-h-96 overflow-y-scroll"}>
                     {group.members.map((member, index) => (
-                      <DropdownMenuItem className={"mt-2"} key={index}>
-                        <div className="flex items-center">
-                          <Avatar className="w-8 h-8 mr-2">
-                            {member.profile_picture ? (
-                              <img
-                                src={
-                                  member.profile_picture instanceof File
-                                    ? URL.createObjectURL(member.profile_picture)
-                                    : member.profile_picture
-                                }
-                                alt={member.username}
-                              />
-                            ) : (
-                              <AvatarFallback>{member.username.charAt(0)}</AvatarFallback>
-                            )}
-                          </Avatar>
-                          <div className={"flex flex-col space-y-2"}>
-                            <span>{member.username}</span>
-                            <span className={"text-muted-foreground text-sm"}>{member.email}</span>
+                        <DropdownMenuItem className={"mt-2 "} key={index}>
+                          <div className="flex mr-5 items-center justify-center space-x-2">
+                            <Avatar className="w-8 h-8 mr-2">
+                              {member.profile_picture ? (
+                                  <img
+                                      src={
+                                        member.profile_picture instanceof File
+                                            ? URL.createObjectURL(member.profile_picture)
+                                            : member.profile_picture
+                                      }
+                                      alt={member.username}
+                                  />
+                              ) : (
+                                  <AvatarFallback>{member.username.charAt(0)}</AvatarFallback>
+                              )}
+                            </Avatar>
+                            <div className={"flex  flex-1 flex-col space-y-2"}>
+                              <span>{member.username}</span>
+                              <span className={"text-muted-foreground text-sm"}>{member.email}</span>
+                            </div>
+
                           </div>
-                        </div>
-                      </DropdownMenuItem>
+                          {isGroupOwner && (
+                              <Button onClick={() => handleRemoveMemberFromGroup(member.id)} variant={"ghost"} className={"ml-auto"}>
+                                <Trash className={"w-4"}/>
+                              </Button>
+                          )}
+                        </DropdownMenuItem>
                     ))}
                   </div>
                 </DropdownMenuContent>
@@ -471,8 +545,8 @@ const SpecificGroupProfile = ({ group, open, onClose, refreshConversations, setR
             </div>
           </DialogContent>
         </Dialog>
-      </DialogContent>
-    </Dialog>
+      </DrawerContent>
+    </Drawer>
   );
 };
 

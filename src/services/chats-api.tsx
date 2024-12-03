@@ -143,6 +143,44 @@ export const updateGroup = async (
     }
 }
 
+
+export const addMembersToGroup = async (groupId: number, memberIds: number[], token: string): Promise<void> => {
+  setAuthToken(token);
+  try {
+    const formData = new FormData();
+    memberIds.forEach(id => formData.append('member_id', id.toString()));
+
+    const response = await api.post(`/custom_messages/groups/${groupId}/add_member/`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    handleRequestError(error);
+    throw error;
+  }
+};
+
+export const removeMemberFromGroup = async (groupId: number, memberId: number, token: string): Promise<void> => {
+  setAuthToken(token);
+  try {
+    const formData = new FormData();
+    formData.append('member_id', memberId.toString());
+
+    const response = await api.post(`/custom_messages/groups/${groupId}/remove_member/`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    handleRequestError(error);
+    throw error;
+  }
+};
+
+
 // Quitter un groupe
 export const leaveGroup = async (groupId: number, token: string): Promise<void> => {
   setAuthToken(token);
