@@ -37,6 +37,8 @@ const SpecificGroupProfile = ({ group, open, onClose, refreshConversations, setR
   const [isGroupPhotoDialogOpen, setIsGroupPhotoDialogOpen] = useState(false);
   const [temporaryGroupPhoto, setTemporaryGroupPhoto] = useState<File | null>(null);
   const {specificGroup, fetchSpecificGroup} = useChatStore();
+  const [isAddingMembersDialogOpen, setIsAddingMembersDialogOpen] = useState(false);
+
 
   const [formData, setFormData] = useState({
     id: "",
@@ -466,7 +468,7 @@ const SpecificGroupProfile = ({ group, open, onClose, refreshConversations, setR
                   <DropdownMenuItem className="flex  space-x-2 justify-between items-center">
                     <span>{group.name} members</span>
                     {isGroupOwner && (
-                            <Button variant={"outline"}>
+                            <Button variant={"outline"} onClick={() => setIsAddingMembersDialogOpen(true)}>
                               <UserRoundPlus className="popup-animation" />
                             </Button>
                     )}
@@ -555,7 +557,39 @@ const SpecificGroupProfile = ({ group, open, onClose, refreshConversations, setR
             </div>
           </DialogContent>
         </Dialog>
+
+        <Dialog open={isAddingMembersDialogOpen} onOpenChange={() => setIsAddingMembersDialogOpen(false)}>
+        <DialogContent>
+            <DialogHeader>
+                <DialogTitle>Add members to {group.name}</DialogTitle>
+            </DialogHeader>
+            <div className="flex flex-col space-y-4">
+                <Input
+                type="text"
+                placeholder="Search for a user"
+                className="border p-2 rounded"
+                />
+                <Card>
+                <div className="flex items-center space-x-2">
+                    <Avatar className="w-8 h-8">
+                    <AvatarFallback>U</AvatarFallback>
+                    </Avatar>
+                    <div className="flex flex-col">
+                    <span className="font-semibold">User Name</span>
+                    <span className="text-muted-foreground">
+
+                    </span>
+                    </div>
+                    <Checkbox />
+                </div>
+                </Card>
+            </div>
+        </DialogContent>
+      </Dialog>
       </DrawerContent>
+
+
+
     </Drawer>
   );
 };
