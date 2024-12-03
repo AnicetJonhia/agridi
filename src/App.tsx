@@ -1,7 +1,7 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { Provider } from 'react-redux';
-import { store } from './stores';
-import { AuthProvider } from './context/AuthContext';
+import {BrowserRouter, Route, Routes} from 'react-router-dom';
+import {Provider} from 'react-redux';
+import {store} from './stores';
+import {AuthProvider} from './context/AuthContext';
 import Products from './pages/Products.tsx';
 import Dashboard from "./pages/Dashboard.tsx";
 import Blogs from "./pages/Blogs.tsx";
@@ -16,8 +16,7 @@ import AuthLayout from "@/layout/AuthLayout.tsx";
 import Home from '@/pages/auth/Home.tsx';
 import Login from "@/pages/auth/Login.tsx"
 import Register from "@/pages/auth/Register.tsx";
-import UserProfile from "@/pages/UserProfile";
-import { ThemeProvider } from "@/context/ThemeContext";
+import {ThemeProvider} from "@/context/ThemeContext";
 
 function App() {
     return (
@@ -43,8 +42,7 @@ function App() {
                                 <Route path="/orders" element={<Orders />} />
                                 <Route path="/seasons" element={<Seasons />} />
                                 <Route path="/chats" element={<Chats />} />
-                                <Route path="/profile" element={<UserProfile />} />
-                            </Route>
+                         </Route>
                         </Routes>
                     </BrowserRouter>
                 </AuthProvider>

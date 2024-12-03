@@ -14,6 +14,7 @@ import LanguageSwitcher  from "@/components/LanguageSwitcher.tsx";
 import Logout from "@/components/Logout.tsx";
 
 import userStore from "@/stores/userStore.ts";
+import UserProfile from "@/pages/UserProfile.tsx";
 
 
 export default function Header() {
@@ -22,6 +23,7 @@ export default function Header() {
   const logoutButtonRef = useRef(null);
   const [userProfilePicture, setUserProfilePicture] = useState(null);
   const {user} = userStore();
+  const [isDrawerOpen, setIsDrawerOpen] = React.useState(false)
 
 
   useEffect(() => {
@@ -108,8 +110,8 @@ export default function Header() {
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>My Account</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem className={"cursor-pointer"} onClick={closeDropdown}>
-            <Link to={"/profile"} >Profile</Link>
+          <DropdownMenuItem className={"cursor-pointer"} onClick={() =>{closeDropdown(); setIsDrawerOpen(true);}}>
+            Profile
           </DropdownMenuItem>
           <DropdownMenuItem onClick={closeDropdown}>Settings</DropdownMenuItem>
           <DropdownMenuSeparator />
@@ -118,6 +120,11 @@ export default function Header() {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+
+        <UserProfile
+            isOpen={isDrawerOpen}
+            onClose={() => setIsDrawerOpen(false)}
+        />
     </header>
   );
 }

@@ -325,7 +325,7 @@ const SpecificGroupProfile = ({ group, open, onClose, refreshConversations, setR
   const handleRemoveMemberFromGroup = async (memberId: number) => {
   const token = localStorage.getItem("token");
   if (!token) return;
-
+  onClose();
   const result = await Swal.fire({
     title: "Are you sure?",
     text: "You are about to remove this member from the group. This action cannot be undone.",
@@ -377,7 +377,7 @@ const SpecificGroupProfile = ({ group, open, onClose, refreshConversations, setR
     }
   }
 
-  onClose();
+
 };
   if (!group) return null;
 
@@ -385,8 +385,17 @@ const SpecificGroupProfile = ({ group, open, onClose, refreshConversations, setR
 
   return (
     <Drawer open={open} onOpenChange={onClose}>
+
       <DrawerContent>
-        <div className="mt-4 border rounded-lg">
+        <DrawerClose asChild>
+          <Button variant={"outline"}
+            className="absolute top-2 right-2  h-8 w-8 rounded-full   "
+            aria-label="Close"
+          >
+            ✕
+          </Button>
+        </DrawerClose>
+        <div className="mt-4 border mx-auto w-full max-w-lg rounded-lg">
           <div className="flex p-4 flex-col items-center md:flex-row md:items-start">
             {group.photo ? (
               <Avatar onClick={() => setIsGroupPhotoDialogOpen(true)} className="w-32 h-32 cursor-pointer rounded-full">

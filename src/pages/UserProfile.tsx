@@ -10,10 +10,14 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { useToast } from "@/hooks/use-toast.ts";
 import {Toaster} from "@/components/ui/toaster.tsx";
 import {CloudDownload} from "lucide-react";
+import {Drawer, DrawerClose, DrawerContent, DrawerHeader, DrawerTitle} from "@/components/ui/drawer.tsx";
 
+interface UserProfileProps {
+    isOpen: boolean;
+    onClose: () => void;
+}
 
-
-const UserProfile: React.FC = () => {
+const UserProfile: React.FC<UserProfileProps> = ({isOpen, onClose}) => {
   const { user, fetchUserProfile, updateUserProfile } = useUserStore();
   const [isEditing, setIsEditing] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -143,189 +147,200 @@ const UserProfile: React.FC = () => {
 
 
   return (
-    <div>
-      <div className="px-4 space-y-6 md:px-6 mt-2 mb-2">
-        <header className="space-y-1.5">
-          <div className="flex items-center space-x-4" onClick={() => setIsDialogOpen(true)}>
-            {formData.profile_picture ? (
-              <img
-                src={formData.profile_picture instanceof File ? URL.createObjectURL(formData.profile_picture) : formData.profile_picture}
-                alt="you"
-                className="w-24 h-24 border rounded-full object-cover cursor-pointer"
-              />
-            ) : (
-              <UserRound className="w-24 h-24 border rounded-full" />
-            )}
-            <div className="space-y-1.5">
-              <h1 className="text-2xl font-bold">
-                {formData.username || "You"}
-              </h1>
-            </div>
-          </div>
-        </header>
+      <Drawer open={isOpen} onOpenChange={onClose}>
 
-        <div className="space-y-6">
-          <div className="space-y-2">
-            <h2 className="text-lg font-semibold">Personal Information</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <Label htmlFor="username">Username</Label>
-                <Input
-                  id="username"
-                  type="text"
-                  value={formData.username}
-                  onChange={handleChange}
-                  disabled={!isEditing}
-                />
-              </div>
-              <div>
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  disabled={!isEditing}
-                />
-              </div>
-              <div>
-                <Label htmlFor="first_name">First Name</Label>
-                <Input
-                  id="first_name"
-                  type="text"
-                  value={formData.first_name}
-                  onChange={handleChange}
-                  disabled={!isEditing}
-                />
-              </div>
-              <div>
-                <Label htmlFor="last_name">Last Name</Label>
-                <Input
-                  id="last_name"
-                  type="text"
-                  value={formData.last_name}
-                  onChange={handleChange}
-                  disabled={!isEditing}
-                />
-              </div>
-              <div>
-                <Label htmlFor="phone_number">Phone</Label>
-                <Input
-                  id="phone_number"
-                  type="tel"
-                  value={formData.phone_number}
-                  onChange={handleChange}
-                  disabled={!isEditing}
-                />
-              </div>
-              <div>
-                <Label htmlFor="address">Address</Label>
-                <Input
-                  id="address"
-                  type="text"
-                  value={formData.address}
-                  onChange={handleChange}
-                  disabled={!isEditing}
-                />
-              </div>
-              <div>
-                <Label htmlFor="role">Role</Label>
-                <Select value={formData.role} onValueChange={(value) => setFormData({ ...formData, role: value })} disabled={!isEditing}>
-                  <SelectTrigger className="w-full mt-2">
-                    <SelectValue placeholder="Select role" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Pro">Producer</SelectItem>
-                    <SelectItem value="Col">Collector</SelectItem>
-                    <SelectItem value="Con">Consumer</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label htmlFor="date_of_birth">Date of Birth</Label>
-                <Input
-                  id="date_of_birth"
-                  type="date"
-                  value={formData.date_of_birth}
-                  onChange={handleChange}
-                  disabled={!isEditing}
-                />
-              </div>
-              <div>
-                <Label htmlFor="alternate_email">Alternate Email</Label>
-                <Input
-                  id="alternate_email"
-                  type="email"
-                  value={formData.alternate_email}
-                  onChange={handleChange}
-                  disabled={!isEditing}
-                />
-              </div>
-              <div>
-                <Label htmlFor="linkedin">LinkedIn</Label>
-                <Input
-                  id="linkedin"
-                  type="url"
-                  value={formData.linkedin}
-                  onChange={handleChange}
-                  disabled={!isEditing}
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <h2 className="text-lg font-semibold">Bio and Website</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <Label htmlFor="bio">Bio</Label>
-                <Textarea
-                  id="bio"
-                  className="resize-none p-2 border rounded"
-                  rows={3}
-                  value={formData.bio}
-                  onChange={handleChange}
-                  disabled={!isEditing}
-                />
-              </div>
-              <div>
-                <Label htmlFor="website">Website</Label>
-                <Input
-                  id="website"
-                  type="text"
-                  value={formData.website}
-                  onChange={handleChange}
-                  disabled={!isEditing}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-8  space-x-4">
-          {isEditing ? (
-              <div className="flex justify-end items-center space-x-4">
-                <Button variant="destructive" onClick={handleEditToggle}>
-                  <X/>
+        <DrawerContent className=" mx-auto my-auto h-5/6 max-h-full max-w-full rounded-lg  shadow-lg">
+          <DrawerClose asChild>
+                <Button variant={"outline"}
+                  className="absolute top-2 right-2  h-8 w-8 rounded-full   "
+                  aria-label="Close"
+                >
+                  ✕
                 </Button>
-                <Button onClick={handleSave}>
-                  <span className="mr-2">Save</span>
-                  <Pocket/>
-                </Button>
+              </DrawerClose>
+          <div className="h-full overflow-y-auto px-6 py-4 space-y-6">
+            <header className="space-y-1.5">
+              <div className="flex items-center space-x-4" onClick={() => setIsDialogOpen(true)}>
+                {formData.profile_picture ? (
+                  <img
+                    src={formData.profile_picture instanceof File ? URL.createObjectURL(formData.profile_picture) : formData.profile_picture}
+                    alt="you"
+                    className="w-24 h-24 border rounded-full object-cover cursor-pointer"
+                  />
+                ) : (
+                  <UserRound className="w-24 h-24 border rounded-full"/>
+                )}
+                <div className="space-y-1.5">
+                  <h1 className="text-2xl font-bold">
+                    {formData.username || "You"}
+                  </h1>
+                </div>
               </div>
-          ) : (
-              <div className={"flex justify-end"}>
-                <Button size="lg" onClick={handleEditToggle} className={"space-x-2  "}>
-                <span>Edit</span> <Pencil/>
-              </Button>
-              </div>
-          )}
-        </div>
-      </div>
+            </header>
 
-      <Dialog open={isDialogOpen} onOpenChange={(open) => {
-        if (!open) {
-            // When the dialog is closed, do not reset the profile picture
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <h2 className="text-lg font-semibold">Personal Information</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <Label htmlFor="username">Username</Label>
+                    <Input
+                      id="username"
+                      type="text"
+                      value={formData.username}
+                      onChange={handleChange}
+                      disabled={!isEditing}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="email">Email</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      disabled={!isEditing}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="first_name">First Name</Label>
+                    <Input
+                      id="first_name"
+                      type="text"
+                      value={formData.first_name}
+                      onChange={handleChange}
+                      disabled={!isEditing}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="last_name">Last Name</Label>
+                    <Input
+                      id="last_name"
+                      type="text"
+                      value={formData.last_name}
+                      onChange={handleChange}
+                      disabled={!isEditing}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="phone_number">Phone</Label>
+                    <Input
+                      id="phone_number"
+                      type="tel"
+                      value={formData.phone_number}
+                      onChange={handleChange}
+                      disabled={!isEditing}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="address">Address</Label>
+                    <Input
+                      id="address"
+                      type="text"
+                      value={formData.address}
+                      onChange={handleChange}
+                      disabled={!isEditing}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="role">Role</Label>
+                    <Select value={formData.role} onValueChange={(value) => setFormData({...formData, role: value})}
+                            disabled={!isEditing}>
+                      <SelectTrigger className="w-full mt-2">
+                        <SelectValue placeholder="Select role"/>
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Pro">Producer</SelectItem>
+                        <SelectItem value="Col">Collector</SelectItem>
+                        <SelectItem value="Con">Consumer</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="date_of_birth">Date of Birth</Label>
+                    <Input
+                      id="date_of_birth"
+                      type="date"
+                      value={formData.date_of_birth}
+                      onChange={handleChange}
+                      disabled={!isEditing}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="alternate_email">Alternate Email</Label>
+                    <Input
+                      id="alternate_email"
+                      type="email"
+                      value={formData.alternate_email}
+                      onChange={handleChange}
+                      disabled={!isEditing}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="linkedin">LinkedIn</Label>
+                    <Input
+                      id="linkedin"
+                      type="url"
+                      value={formData.linkedin}
+                      onChange={handleChange}
+                      disabled={!isEditing}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <h2 className="text-lg font-semibold">Bio and Website</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <Label htmlFor="bio">Bio</Label>
+                    <Textarea
+                      id="bio"
+                      className="resize-none p-2 border rounded"
+                      rows={3}
+                      value={formData.bio}
+                      onChange={handleChange}
+                      disabled={!isEditing}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="website">Website</Label>
+                    <Input
+                      id="website"
+                      type="text"
+                      value={formData.website}
+                      onChange={handleChange}
+                      disabled={!isEditing}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-8 space-x-4">
+              {isEditing ? (
+                <div className="flex justify-end items-center space-x-4">
+                  <Button variant="destructive" onClick={handleEditToggle}>
+                    <X/>
+                  </Button>
+                  <Button onClick={handleSave}>
+                    <span className="mr-2">Save</span>
+                    <Pocket/>
+                  </Button>
+                </div>
+              ) : (
+                <div className="flex justify-end">
+                  <Button size="lg" onClick={handleEditToggle} className="space-x-2">
+                    <span>Edit</span> <Pencil/>
+                  </Button>
+                </div>
+              )}
+            </div>
+          </div>
+        </DrawerContent>
+
+        <Dialog open={isDialogOpen} onOpenChange={(open) => {
+          if (!open) {
             setTempProfilePicture(formData.profile_picture instanceof File ? formData.profile_picture : null);
           }
           setIsDialogOpen(open);
@@ -348,7 +363,7 @@ const UserProfile: React.FC = () => {
                 htmlFor="profile_picture"
                 className="flex items-center cursor-pointer text-muted-foreground hover:text-foreground space-x-2"
               >
-                <CloudDownload />
+                <CloudDownload/>
                 <span>Choose a new profile picture</span>
               </Label>
               <Input
@@ -356,21 +371,20 @@ const UserProfile: React.FC = () => {
                 type="file"
                 onChange={handleFileChange}
                 accept="image/*"
-                style={{ display: 'none' }}
+                style={{display: 'none'}}
               />
             </div>
             <div className="flex w-full justify-end mt-4">
               {tempProfilePicture && (
-                  <Button onClick={handleFileSave} className={"space-x-2"}><span>Save</span> <Pocket /></Button>
+                <Button onClick={handleFileSave} className="space-x-2"><span>Save</span> <Pocket/></Button>
               )}
             </div>
           </DialogContent>
         </Dialog>
 
-
-      <Toaster/>
-    </div>
-  );
+        <Toaster/>
+      </Drawer>
+ );
 };
 
 export default UserProfile;
