@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import {Pencil, Pocket, UserRound, X} from "lucide-react";
+import {Globe, Info, Linkedin, Mail, MapPin, Omega, Pencil, Phone, Pocket, UserRound, X} from "lucide-react";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import useUserStore from "@/stores/userStore.ts";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -22,6 +22,14 @@ const UserProfile: React.FC<UserProfileProps> = ({isOpen, onClose}) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { toast } = useToast();
+
+
+  const roleMap = {
+    Pro: "Productor",
+    Col: "Collector",
+    Con: "Consumer",
+  };
+
 
   const [formData, setFormData] = useState({
     id:"",
@@ -149,7 +157,11 @@ const UserProfile: React.FC<UserProfileProps> = ({isOpen, onClose}) => {
   return (
       <Drawer open={isOpen} onOpenChange={onClose}>
 
-        <DrawerContent className=" mx-auto my-auto h-5/6 max-h-full max-w-full rounded-lg  shadow-lg">
+        <DrawerContent
+         className={`mx-auto my-auto  max-h-full rounded-lg shadow-lg ${
+            isEditing ? "h-5/6" : "h-auto"
+          }`}
+        >
           <DrawerClose asChild>
                 <Button variant={"outline"}
                   className="absolute top-2 right-2  h-8 w-8 rounded-full   "
@@ -158,68 +170,154 @@ const UserProfile: React.FC<UserProfileProps> = ({isOpen, onClose}) => {
                   ✕
                 </Button>
               </DrawerClose>
-          <div className="h-full overflow-y-auto px-6 py-4 space-y-6">
-            <header className="space-y-1.5">
-              <div className="flex items-center space-x-4" onClick={() => setIsDialogOpen(true)}>
-                {formData.profile_picture ? (
-                  <img
-                    src={formData.profile_picture instanceof File ? URL.createObjectURL(formData.profile_picture) : formData.profile_picture}
-                    alt="you"
-                    className="w-24 h-24 border rounded-full object-cover cursor-pointer"
-                  />
-                ) : (
-                  <UserRound className="w-24 h-24 border rounded-full"/>
-                )}
-                <div className="space-y-1.5">
-                  <h1 className="text-2xl font-bold">
-                    {formData.username || "You"}
-                  </h1>
-                </div>
-              </div>
-            </header>
+          {!isEditing ? (
+              <div
+                  className="h-full overflow-y-auto px-6 py-4 space-y-6 space-x-4 flex md:flex-row flex-col items-center justify-center">
+                <header
+                    className="w-full flex flex-col  items-center md:flex-row md:items-center md:justify-end md:space-x-4 space-y-4 md:space-y-0">
+                  <div>
+                    <div className="flex items-center  space-x-4 mb-3" onClick={() => setIsDialogOpen(true)}>
+                      {formData.profile_picture ? (
+                          <img
+                              src={formData.profile_picture instanceof File ? URL.createObjectURL(formData.profile_picture) : formData.profile_picture}
+                              alt="you"
+                              className="w-24 h-24 border rounded-full object-cover cursor-pointer"
+                          />
+                      ) : (
+                          <UserRound className="w-24 h-24 border rounded-full"/>
+                      )}
+                      <div className="space-y-1.5">
+                        <h1 className="text-2xl font-bold">
+                          {formData.username || "You"}
+                        </h1>
+                        <p className="text-muted-foreground">
+                          {roleMap[formData.role] || formData.role}
+                        </p>
+                      </div>
+                    </div>
 
-            <div className="space-y-6">
-              <div className="space-y-2">
-                <h2 className="text-lg font-semibold">Personal Information</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <Label htmlFor="username">Username</Label>
-                    <Input
-                      id="username"
-                      type="text"
-                      value={formData.username}
-                      onChange={handleChange}
-                      disabled={!isEditing}
-                    />
+                    <Button variant={"outline"} onClick={handleEditToggle} className="space-x-4">
+                      <span>Edit Profile</span> <Pencil className={"w-4 "}/>
+                    </Button>
                   </div>
-                  <div>
-                    <Label htmlFor="email">Email</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      disabled={!isEditing}
-                    />
+                </header>
+
+                <div
+                    className="mt-6 p-4 bg-gradient-to-r from-muted  to-transparent rounded-lg space-y-2 w-full">
+
+
+                {(formData.email || formData.alternate_email) && (
+                    <div className="flex items-center text-gray-500">
+                      <Mail className="mr-2 h-4 w-4"/>
+                      {formData.email} <span className={"mr-4 ml-4"}>|</span> {formData.alternate_email}
+                    </div>
+                )}
+                {(formData.first_name || formData.last_name) && (
+                    <div className="flex items-center text-gray-500">
+                      <Omega className="mr-2 h-4 w-4"/>
+                      {formData.first_name} {formData.last_name}
+                    </div>
+                )}
+                {formData.address && (
+                    <div className="flex items-center text-gray-500">
+                      <MapPin className="mr-2 h-4 w-4"/>
+                      {formData.address}
+                    </div>
+                )}
+                {formData.phone_number && (
+                    <div className="flex items-center text-gray-500">
+                      <Phone className="mr-2 h-4 w-4"/>
+                      {formData.phone_number}
+                    </div>
+                )}
+                {formData.linkedin && (
+                    <div className="flex items-center text-gray-500">
+                      <Linkedin className="mr-2 h-4 w-4"/>
+                      {formData.linkedin}
+                    </div>
+                )}
+                {formData.website && (
+                    <div className="flex items-center text-gray-500">
+                      <Globe className="mr-2 h-4 w-4"/>
+                      {formData.website}
+                    </div>
+                )}
+                {formData.bio && (
+                    <div className="flex items-center text-gray-500">
+                      <Info className="mr-2 h-4 w-4"/>
+                      {formData.bio}
+                    </div>
+                )}
+              </div>
+            </div>
+
+            ) : (
+            <div className="h-full overflow-y-auto px-6 py-4 space-y-6">
+            <header className="space-y-1.5">
+                  <div className="flex items-center space-x-4" onClick={() => setIsDialogOpen(true)}>
+                    {formData.profile_picture ? (
+                        <img
+                            src={formData.profile_picture instanceof File ? URL.createObjectURL(formData.profile_picture) : formData.profile_picture}
+                            alt="you"
+                            className="w-24 h-24 border rounded-full object-cover cursor-pointer"
+                        />
+                    ) : (
+                        <UserRound className="w-24 h-24 border rounded-full"/>
+                    )}
+                    <div className="space-y-1.5">
+                      <h1 className="text-2xl font-bold">
+                        {formData.username || "You"}
+                      </h1>
+                      <p className="text-muted-foreground">
+                        {roleMap[formData.role] || formData.role}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <Label htmlFor="first_name">First Name</Label>
-                    <Input
-                      id="first_name"
-                      type="text"
-                      value={formData.first_name}
-                      onChange={handleChange}
-                      disabled={!isEditing}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="last_name">Last Name</Label>
-                    <Input
-                      id="last_name"
-                      type="text"
-                      value={formData.last_name}
-                      onChange={handleChange}
-                      disabled={!isEditing}
+
+                </header>
+
+                <div className="space-y-6">
+                  <div className="space-y-2">
+                    <h2 className="text-lg font-semibold">Personal Information</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <Label htmlFor="username">Username</Label>
+                        <Input
+                            id="username"
+                            type="text"
+                            value={formData.username}
+                            onChange={handleChange}
+
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="email">Email</Label>
+                        <Input
+                            id="email"
+                            type="email"
+                            value={formData.email}
+                            onChange={handleChange}
+
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="first_name">First Name</Label>
+                        <Input
+                            id="first_name"
+                            type="text"
+                            value={formData.first_name}
+                            onChange={handleChange}
+
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="last_name">Last Name</Label>
+                        <Input
+                            id="last_name"
+                            type="text"
+                            value={formData.last_name}
+                            onChange={handleChange}
+
                     />
                   </div>
                   <div>
@@ -229,7 +327,7 @@ const UserProfile: React.FC<UserProfileProps> = ({isOpen, onClose}) => {
                       type="tel"
                       value={formData.phone_number}
                       onChange={handleChange}
-                      disabled={!isEditing}
+
                     />
                   </div>
                   <div>
@@ -239,13 +337,13 @@ const UserProfile: React.FC<UserProfileProps> = ({isOpen, onClose}) => {
                       type="text"
                       value={formData.address}
                       onChange={handleChange}
-                      disabled={!isEditing}
+
                     />
                   </div>
                   <div>
                     <Label htmlFor="role">Role</Label>
                     <Select value={formData.role} onValueChange={(value) => setFormData({...formData, role: value})}
-                            disabled={!isEditing}>
+                            >
                       <SelectTrigger className="w-full mt-2">
                         <SelectValue placeholder="Select role"/>
                       </SelectTrigger>
@@ -263,7 +361,7 @@ const UserProfile: React.FC<UserProfileProps> = ({isOpen, onClose}) => {
                       type="date"
                       value={formData.date_of_birth}
                       onChange={handleChange}
-                      disabled={!isEditing}
+
                     />
                   </div>
                   <div>
@@ -273,7 +371,7 @@ const UserProfile: React.FC<UserProfileProps> = ({isOpen, onClose}) => {
                       type="email"
                       value={formData.alternate_email}
                       onChange={handleChange}
-                      disabled={!isEditing}
+
                     />
                   </div>
                   <div>
@@ -283,7 +381,7 @@ const UserProfile: React.FC<UserProfileProps> = ({isOpen, onClose}) => {
                       type="url"
                       value={formData.linkedin}
                       onChange={handleChange}
-                      disabled={!isEditing}
+
                     />
                   </div>
                 </div>
@@ -300,7 +398,7 @@ const UserProfile: React.FC<UserProfileProps> = ({isOpen, onClose}) => {
                       rows={3}
                       value={formData.bio}
                       onChange={handleChange}
-                      disabled={!isEditing}
+
                     />
                   </div>
                   <div>
@@ -310,7 +408,7 @@ const UserProfile: React.FC<UserProfileProps> = ({isOpen, onClose}) => {
                       type="text"
                       value={formData.website}
                       onChange={handleChange}
-                      disabled={!isEditing}
+
                     />
                   </div>
                 </div>
@@ -318,7 +416,7 @@ const UserProfile: React.FC<UserProfileProps> = ({isOpen, onClose}) => {
             </div>
 
             <div className="mt-8 space-x-4">
-              {isEditing ? (
+              {isEditing && (
                 <div className="flex justify-end items-center space-x-4">
                   <Button variant="destructive" onClick={handleEditToggle}>
                     <X/>
@@ -328,15 +426,14 @@ const UserProfile: React.FC<UserProfileProps> = ({isOpen, onClose}) => {
                     <Pocket/>
                   </Button>
                 </div>
-              ) : (
-                <div className="flex justify-end">
-                  <Button size="lg" onClick={handleEditToggle} className="space-x-2">
-                    <span>Edit</span> <Pencil/>
-                  </Button>
-                </div>
-              )}
+              ) }
             </div>
           </div>
+          )
+
+          }
+
+
         </DrawerContent>
 
         <Dialog open={isDialogOpen} onOpenChange={(open) => {
