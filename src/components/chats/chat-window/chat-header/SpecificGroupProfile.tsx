@@ -31,14 +31,27 @@ import { Input } from "@/components/ui/input.tsx";
 import useChatStore from "@/stores/chatStore.ts";
 import {Card} from "@/components/ui/card.tsx";
 import {Checkbox} from "@/components/ui/checkbox.tsx";
-
+import useUserStore from "@/stores/userStore.ts";
 
 const SpecificGroupProfile = ({ group, open, onClose, refreshConversations, setRefreshConversations }) => {
   const [isGroupPhotoDialogOpen, setIsGroupPhotoDialogOpen] = useState(false);
   const [temporaryGroupPhoto, setTemporaryGroupPhoto] = useState<File | null>(null);
   const {specificGroup, fetchSpecificGroup} = useChatStore();
   const [isAddingMembersDialogOpen, setIsAddingMembersDialogOpen] = useState(false);
+  const {users} = useUserStore();
+  const [searchTerm, setSearchTerm] = useState("");
 
+  const filteredUsers = users.filter(user =>
+    user.username.toLowerCase().includes(searchTerm.toLowerCase()) &&
+    user.role !== "Admin" &&
+    user.role
+  );
+
+  const roleMap = {
+    Pro: "Productor",
+    Col: "Collector",
+    Con: "Consumer",
+  };
 
   const [formData, setFormData] = useState({
     id: "",
@@ -564,25 +577,48 @@ const SpecificGroupProfile = ({ group, open, onClose, refreshConversations, setR
                 <DialogTitle>Add members to {group.name}</DialogTitle>
             </DialogHeader>
             <div className="flex flex-col space-y-4">
-                <Input
-                type="text"
-                placeholder="Search for a user"
-                className="border p-2 rounded"
-                />
-                <Card>
-                <div className="flex items-center space-x-2">
-                    <Avatar className="w-8 h-8">
-                    <AvatarFallback>U</AvatarFallback>
-                    </Avatar>
-                    <div className="flex flex-col">
-                    <span className="font-semibold">User Name</span>
-                    <span className="text-muted-foreground">
+                 <Input
+                    type="text"
+                    placeholder="Search for users ..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="mb-4"
+                  />
+                    <div className="overflow-y-scroll h-64">
+                        {filteredUsers.map(user => (
+                        <Card
+                            key={user.id}
+                            className="flex items-center p-4  hover:bg-muted mb-2"
 
-                    </span>
+                        >
+                            <Avatar className="w-10 h-10">
+                            {user.profile_picture ? (
+                                <img
+                                src={user.profile_picture instanceof File ? URL.createObjectURL(user.profile_picture) : user.profile_picture}
+                                alt={user.username}
+                                />
+                            ) : (
+                                <AvatarFallback>{user.username.charAt(0)}</AvatarFallback>
+                            )}
+                            </Avatar>
+                          <div className="ml-4 space-x-4 flex flex-1">
+                            <div>
+                              <div className="font-semibold">{user.username}</div>
+                              <div className="text-sm text-gray-500">{user.email}</div>
+
+                            </div>
+                            <div className={"flex items-center justify-center"}>
+                              <span className="text-sm items-center justify-center text-gray-400">{roleMap[user.role] || user.role}</span>
+
+                            </div>
+                          </div>
+                          <div className="ml-auto">
+                            <Checkbox/>
+                            </div>
+                        </Card>
+                        ))}
+
                     </div>
-                    <Checkbox />
-                </div>
-                </Card>
             </div>
         </DialogContent>
       </Dialog>
