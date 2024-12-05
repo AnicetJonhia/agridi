@@ -1,7 +1,7 @@
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Mail, MapPin, Phone, Linkedin, Globe, Info, ChevronRight } from "lucide-react";
+import {Mail, MapPin, Phone, Linkedin, Globe, Info, ChevronRight, MessageCircleOff} from "lucide-react";
 import { getConversations, deleteConversation } from "@/services/chats-api.tsx";
 import { useEffect } from "react";
 import Swal from "sweetalert2";
@@ -161,7 +161,7 @@ const SpecificUserProfile = ({
             )}
             <Button variant={"destructive"} onClick={handleDeleteConversation}>
               <span>Delete Conversation</span>
-              <ChevronRight className={"ml-2 w-4"} />
+              <MessageCircleOff  className={"ml-2 w-4"} />
             </Button>
           </div>
         </div>

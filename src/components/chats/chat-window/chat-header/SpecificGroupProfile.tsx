@@ -3,7 +3,7 @@ import {Avatar, AvatarFallback} from "@/components/ui/avatar";
 import {
   ChevronRight,
   CircleCheckBig,
-  CloudDownload,
+  CloudDownload, MessageCircleOff,
   MoveLeft,
   PencilLine,
   Pocket,
@@ -32,8 +32,7 @@ import useChatStore from "@/stores/chatStore.ts";
 import {Card} from "@/components/ui/card.tsx";
 import {Checkbox} from "@/components/ui/checkbox.tsx";
 import useUserStore from "@/stores/userStore.ts";
-import {Toaster} from "@/components/ui/toaster.tsx";
-import {useToast} from "@/hooks/use-toast.ts";
+
 
 const SpecificGroupProfile = ({ group, open, onClose, refreshConversations, setRefreshConversations }) => {
   const [isGroupPhotoDialogOpen, setIsGroupPhotoDialogOpen] = useState(false);
@@ -44,7 +43,7 @@ const SpecificGroupProfile = ({ group, open, onClose, refreshConversations, setR
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedMembers, setSelectedMembers] = useState<number[]>([]);
 
-    const { toast } = useToast();
+
 
     const handleSelectUser = (userId) => {
     setSelectedMembers((prevSelected) => {
@@ -586,6 +585,7 @@ const SpecificGroupProfile = ({ group, open, onClose, refreshConversations, setR
             <div className={"flex space-x-2"}>
               <Button variant={"outline"} onClick={handleDeleteConversation}>
                 <span>Delete Conversation</span>
+                <MessageCircleOff  className={"ml-2 w-4"} />
               </Button>
               <Button variant={"destructive"} onClick={handleLeaveGroup}>
                 <span>Leave group</span><ChevronRight className={"ml-2 w-4"} />
@@ -727,7 +727,7 @@ const SpecificGroupProfile = ({ group, open, onClose, refreshConversations, setR
 
       </DrawerContent>
 
-      <Toaster/>
+
     </Drawer>
   );
 };

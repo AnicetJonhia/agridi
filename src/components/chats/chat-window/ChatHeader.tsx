@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { MoveLeft, BadgeInfo } from "lucide-react";
+import {MoveLeft, BadgeInfo, MessageCircleOff} from "lucide-react";
 import useUserStore from "@/stores/userStore.ts";
 import useChatStore from "@/stores/chatStore.ts";
 import SpecificUserProfile from "@/components/chats/chat-window/chat-header/SpecificUserProfile.tsx";
 import SpecificGroupProfile from "@/components/chats/chat-window/chat-header/SpecificGroupProfile.tsx";
+import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
+import Swal from "sweetalert2";
+import { deleteConversation } from "@/services/chats-api.tsx";
 
 interface ChatHeaderProps {
   displayName: string;
@@ -24,6 +27,67 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ displayName, displayPhoto, user
   const { specificUser, fetchSpecificUser } = useUserStore();
   const { specificGroup, fetchSpecificGroup } = useChatStore();
 
+
+  const handleDeleteConversation = async () => {
+  const token = localStorage.getItem("token");
+  if (!token) return;
+
+
+
+  const result = await Swal.fire({
+    title: "Are you sure?",
+    text: "Deleting this conversation will permanently remove it.",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText: "Yes, delete!",
+    cancelButtonText: "Cancel",
+    customClass: {
+      popup: "bg-muted text-muted-foreground rounded-lg",
+      title: "text-foreground",
+      content: "text-muted-foreground",
+      confirmButton: "bg-primary text-primary-foreground rounded",
+      cancelButton: "bg-destructive text-destructive-foreground rounded",
+    },
+  });
+
+  if (result.isConfirmed) {
+    try {
+      const type = specificUser ? "private" : "group";
+      const id = specificUser ? specificUser?.id : specificGroup?.id;
+      await deleteConversation(type, id, token);
+      setRefreshConversations(true);
+      await Swal.fire({
+        title: "Deleted!",
+        text: "The conversation has been deleted successfully.",
+        icon: "success",
+        confirmButtonText: "OK",
+        customClass: {
+          popup: "bg-muted text-muted-foreground rounded-lg",
+          title: "text-foreground",
+          content: "text-muted-foreground",
+          confirmButton: "bg-primary text-primary-foreground rounded",
+        },
+      });
+
+      return true;
+    } catch (error) {
+      console.error("Failed to delete conversation:", error);
+      await Swal.fire({
+        title: "Error!",
+        text: "An error occurred while deleting the conversation.",
+        icon: "error",
+        confirmButtonText: "Try Again",
+        customClass: {
+          popup: "bg-muted text-muted-foreground rounded-lg",
+          title: "text-foreground",
+          content: "text-muted-foreground",
+          confirmButton: "bg-primary text-primary-foreground rounded",
+        },
+      });
+      return false;
+    }
+  }
+};
 
   useEffect(() => {
     if (displayName === "Unknown") {
@@ -72,9 +136,18 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ displayName, displayPhoto, user
           <h1 className="text-lg font-semibold">{displayName ? displayName : "Unknown"}</h1>
         </div>
         <div>
-          <button className="p-2" onClick={groupId ? handleOpenGroupDialog : handleOpenUserDialog}>
-            <BadgeInfo className="w-6 h-6" />
-          </button>
+            <DropdownMenu>
+                <DropdownMenuTrigger>
+                <button className="p-2">
+                    <BadgeInfo className="w-6 h-6" />
+                </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+              <DropdownMenuItem  className={"cursor-pointer"} onClick={handleDeleteConversation}>
+                <span>Delete conversation</span> <MessageCircleOff  className={"ml-2 w-4"} />
+              </DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
         </div>
       </header>
 
