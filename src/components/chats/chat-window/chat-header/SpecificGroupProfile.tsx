@@ -423,10 +423,7 @@ const SpecificGroupProfile = ({ group, open, onClose, refreshConversations, setR
       if (!Array.isArray(memberIds)) {
       memberIds = Array.isArray(selectedMembers) ? selectedMembers : [];
     }
-      console.log("members", memberIds);
-      console.log("type of members ", typeof memberIds);
-      console.log("selected members", selectedMembers);
-      console.log("type of selected members", typeof selectedMembers);
+
       await addMembersToGroup(group.id, memberIds, token);
       setRefreshConversations(true);
 
@@ -461,7 +458,7 @@ const SpecificGroupProfile = ({ group, open, onClose, refreshConversations, setR
   }
   if (!group) return null;
 
-  const isGroupOwner: boolean = group?.owner === currentUserId;
+  const isGroupOwner: boolean = group?.owner?.id === currentUserId;
 
   return (
     <Drawer open={open} onOpenChange={onClose}>
