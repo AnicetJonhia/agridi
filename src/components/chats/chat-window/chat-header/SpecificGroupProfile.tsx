@@ -1,37 +1,39 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {Dialog, DialogContent, DialogHeader, DialogTitle} from "@/components/ui/dialog";
+import {Avatar, AvatarFallback} from "@/components/ui/avatar";
 import {
   ChevronRight,
   CircleCheckBig,
   CloudDownload,
-  MoveLeft, PencilLine,
+  MoveLeft,
+  PencilLine,
   Pocket,
-  ScanSearch, Trash, UserIcon,
+  ScanSearch,
+  Trash,
   UserRoundPlus,
   Users
 } from "lucide-react";
+import {Drawer, DrawerClose, DrawerContent,} from "@/components/ui/drawer";
+import {Button} from "@/components/ui/button";
+import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
+import {Separator} from "@/components/ui/separator.tsx";
 import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from "@/components/ui/drawer";
-import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Separator } from "@/components/ui/separator.tsx";
-import { updateGroup, addMembersToGroup, removeMemberFromGroup, leaveGroup, getConversations, deleteConversation } from "@/services/chats-api.tsx";
-import React, { useEffect, useState } from "react";
+  addMembersToGroup,
+  deleteConversation,
+  getConversations,
+  leaveGroup,
+  removeMemberFromGroup,
+  updateGroup
+} from "@/services/chats-api.tsx";
+import React, {useEffect, useState} from "react";
 import Swal from "sweetalert2";
-import { Label } from "@/components/ui/label.tsx";
-import { Input } from "@/components/ui/input.tsx";
+import {Label} from "@/components/ui/label.tsx";
+import {Input} from "@/components/ui/input.tsx";
 import useChatStore from "@/stores/chatStore.ts";
 import {Card} from "@/components/ui/card.tsx";
 import {Checkbox} from "@/components/ui/checkbox.tsx";
 import useUserStore from "@/stores/userStore.ts";
+import {Toaster} from "@/components/ui/toaster.tsx";
+import {useToast} from "@/hooks/use-toast.ts";
 
 const SpecificGroupProfile = ({ group, open, onClose, refreshConversations, setRefreshConversations }) => {
   const [isGroupPhotoDialogOpen, setIsGroupPhotoDialogOpen] = useState(false);
@@ -40,12 +42,29 @@ const SpecificGroupProfile = ({ group, open, onClose, refreshConversations, setR
   const [isAddingMembersDialogOpen, setIsAddingMembersDialogOpen] = useState(false);
   const {users} = useUserStore();
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedMembers, setSelectedMembers] = useState<number[]>([]);
+
+    const { toast } = useToast();
+
+    const handleSelectUser = (userId) => {
+    setSelectedMembers((prevSelected) => {
+      if (prevSelected.includes(userId)) {
+        return prevSelected.filter(id => id !== userId); // Désélectionner
+      } else {
+        return [...prevSelected, userId]; // Sélectionner
+      }
+    });
+  };
+
+
+
 
   const filteredUsers = users.filter(user =>
     user.username.toLowerCase().includes(searchTerm.toLowerCase()) &&
     user.role !== "Admin" &&
     user.role
   );
+
 
   const roleMap = {
     Pro: "Productor",
@@ -395,6 +414,51 @@ const SpecificGroupProfile = ({ group, open, onClose, refreshConversations, setR
 
 
 };
+
+  const handleAddMembers = async (memberIds: number[] = selectedMembers) => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+    onClose();
+    try {
+      if (!Array.isArray(memberIds)) {
+      memberIds = Array.isArray(selectedMembers) ? selectedMembers : [];
+    }
+      console.log("members", memberIds);
+      console.log("type of members ", typeof memberIds);
+      console.log("selected members", selectedMembers);
+      console.log("type of selected members", typeof selectedMembers);
+      await addMembersToGroup(group.id, memberIds, token);
+      setRefreshConversations(true);
+
+      await Swal.fire({
+        title: "Added!",
+        text: "The selected members have been added to the group.",
+        icon: "success",
+        confirmButtonText: "OK",
+        customClass: {
+          popup: "bg-muted text-muted-foreground rounded-lg",
+          title: "text-foreground",
+          content: "text-muted-foreground",
+          confirmButton: "bg-primary text-primary-foreground rounded",
+        },
+      });
+    } catch (error) {
+      console.error("Failed to add members to group:", error);
+
+      await Swal.fire({
+        title: "Error!",
+        text: "An error occurred while adding the members to the group.",
+        icon: "error",
+        confirmButtonText: "Try Again",
+        customClass: {
+          popup: "bg-muted text-muted-foreground rounded-lg",
+          title: "text-foreground",
+          content: "text-muted-foreground",
+          confirmButton: "bg-primary text-primary-foreground rounded",
+        },
+      });
+    }
+  }
   if (!group) return null;
 
   const isGroupOwner: boolean = group?.owner === currentUserId;
@@ -576,56 +640,97 @@ const SpecificGroupProfile = ({ group, open, onClose, refreshConversations, setR
             <DialogHeader>
                 <DialogTitle>Add members to {group.name}</DialogTitle>
             </DialogHeader>
-            <div className="flex flex-col space-y-4">
-                 <Input
-                    type="text"
-                    placeholder="Search for users ..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="mb-4"
-                  />
-                    <div className="overflow-y-scroll h-64">
-                        {filteredUsers.map(user => (
-                        <Card
-                            key={user.id}
-                            className="flex items-center p-4  hover:bg-muted mb-2"
+          <div className="flex flex-col space-y-4 max-h-[80vh]">
+            <Input
+                type="text"
+                placeholder="Search for users ..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="mb-4"
+            />
+            <div className="overflow-y-scroll flex-1 ">
+              {filteredUsers.map(user => (
+                  <Card
+                      key={user.id}
+                      className="flex items-center p-4  hover:bg-muted mb-2"
 
-                        >
-                            <Avatar className="w-10 h-10">
+                  >
+                    <Avatar className="w-10 h-10">
+                      {user.profile_picture ? (
+                          <img
+                              src={user.profile_picture instanceof File ? URL.createObjectURL(user.profile_picture) : user.profile_picture}
+                              alt={user.username}
+                          />
+                      ) : (
+                          <AvatarFallback>{user.username.charAt(0)}</AvatarFallback>
+                      )}
+                    </Avatar>
+                    <div className="ml-4 space-x-4 flex flex-1">
+                      <div>
+                        <div className="font-semibold">{user.username}</div>
+                        <div className="text-sm text-gray-500">{user.email}</div>
+
+                      </div>
+                      <div className={"flex items-center justify-center"}>
+                          <span
+                              className="text-sm items-center justify-center text-gray-400">{roleMap[user.role] || user.role}</span>
+
+                      </div>
+                    </div>
+                    <div className="ml-auto">
+                       <Checkbox
+                          checked={selectedMembers.includes(user.id)}  // Vérifie si l'ID est sélectionné
+                          onCheckedChange={(checked) => handleSelectUser(user.id)}   // Gère la sélection/désélection
+                        />
+
+                    </div>
+                  </Card>
+              ))}
+
+
+            </div>
+            <div className="items-center space-x-2 flex flex-row  overflow-x-auto w-full justify-start gap-4">
+
+                {users
+                    .filter(user => selectedMembers.includes(user.id)) // Filtrer les utilisateurs sélectionnés
+                    .map(user => (
+                        <div key={user.id} className="flex flex-col  items-center justify-center space-y-0.5">
+                          <Avatar className="w-8 h-8">
                             {user.profile_picture ? (
                                 <img
-                                src={user.profile_picture instanceof File ? URL.createObjectURL(user.profile_picture) : user.profile_picture}
-                                alt={user.username}
+                                    src={user.profile_picture instanceof File ? URL.createObjectURL(user.profile_picture) : user.profile_picture}
+                                    alt={user.username}
                                 />
                             ) : (
                                 <AvatarFallback>{user.username.charAt(0)}</AvatarFallback>
                             )}
-                            </Avatar>
-                          <div className="ml-4 space-x-4 flex flex-1">
-                            <div>
-                              <div className="font-semibold">{user.username}</div>
-                              <div className="text-sm text-gray-500">{user.email}</div>
+                          </Avatar>
+                          <p>{user.username}</p>
+                        </div>
+                    ))}
 
-                            </div>
-                            <div className={"flex items-center justify-center"}>
-                              <span className="text-sm items-center justify-center text-gray-400">{roleMap[user.role] || user.role}</span>
-
-                            </div>
-                          </div>
-                          <div className="ml-auto">
-                            <Checkbox/>
-                            </div>
-                        </Card>
-                        ))}
-
-                    </div>
             </div>
+              {selectedMembers.length > 0 && (
+              <div className="flex items-center justify-end space-x-2">
+                <span className="text-sm text-gray-500 flex-grow text-end ">
+                  {`You have selected ${selectedMembers.length} member${selectedMembers.length > 1 ? 's' : ''}.`}
+                </span>
+
+                <Button onClick={handleAddMembers} className="mt-4 flex items-center space-x-2">
+                  <UserRoundPlus className="w-4 h-4" />
+                  <span>{selectedMembers.length === 1 ? 'Add 1 member' : `Add ${selectedMembers.length} members`}</span>
+                </Button>
+              </div>
+            )}
+
+
+             </div>
         </DialogContent>
-      </Dialog>
+        </Dialog>
+
       </DrawerContent>
 
-
-
+      <Toaster/>
     </Drawer>
   );
 };

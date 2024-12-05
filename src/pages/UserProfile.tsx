@@ -1,16 +1,28 @@
-import React, { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import {Globe, Info, Linkedin, Mail, MapPin, Omega, Pencil, Phone, Pocket, UserRound, X} from "lucide-react";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import React, {useEffect, useState} from "react";
+import {Button} from "@/components/ui/button";
+import {Input} from "@/components/ui/input";
+import {Label} from "@/components/ui/label";
+import {Textarea} from "@/components/ui/textarea";
+import {
+  CloudDownload,
+  Globe,
+  Info,
+  Linkedin,
+  Mail,
+  MapPin,
+  Omega,
+  Pencil,
+  Phone,
+  Pocket,
+  UserRound,
+  X
+} from "lucide-react";
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import useUserStore from "@/stores/userStore.ts";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { useToast } from "@/hooks/use-toast.ts";
+import {Dialog, DialogContent, DialogHeader, DialogTitle} from "@/components/ui/dialog";
+import {useToast} from "@/hooks/use-toast.ts";
 import {Toaster} from "@/components/ui/toaster.tsx";
-import {CloudDownload} from "lucide-react";
-import {Drawer, DrawerClose, DrawerContent, DrawerHeader, DrawerTitle} from "@/components/ui/drawer.tsx";
+import {Drawer, DrawerClose, DrawerContent} from "@/components/ui/drawer.tsx";
 
 interface UserProfileProps {
     isOpen: boolean;
