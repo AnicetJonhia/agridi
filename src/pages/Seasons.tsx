@@ -1,9 +1,17 @@
-import CalendarInfo from "@/components/CalendarInfo";
+import { useSelector } from 'react-redux';
+import { RootState } from '@/stores';
 
 const Seasons = () => {
-    return (
-        <CalendarInfo/>
-    );
+  const user = useSelector((state: RootState) => state.auth.user);
+  const token = useSelector((state: RootState) => state.auth.token);
+
+  return (
+    <div>
+      <p>User ID: {user?.id}</p>
+      <p>User Role: {user?.role}</p>
+      <p>Token: {token}</p>
+    </div>
+  );
 };
 
 export default Seasons;
