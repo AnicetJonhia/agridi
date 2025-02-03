@@ -1,6 +1,7 @@
 import {BrowserRouter, Route, Routes} from 'react-router-dom';
 import {Provider} from 'react-redux';
-import {store} from './stores';
+import {store, persistor} from './stores';
+import { PersistGate } from 'redux-persist/integration/react';
 import {AuthProvider} from './context/AuthContext';
 import Products from './pages/Products.tsx';
 import Dashboard from "./pages/Dashboard.tsx";
@@ -21,6 +22,7 @@ import {ThemeProvider} from "@/context/ThemeContext";
 function App() {
     return (
         <Provider store={store}>
+            <PersistGate loading={null} persistor={persistor}>
             <ThemeProvider>
                 <AuthProvider>
                     <BrowserRouter>
@@ -47,6 +49,7 @@ function App() {
                     </BrowserRouter>
                 </AuthProvider>
             </ThemeProvider>
+            </PersistGate>
         </Provider>
     );
 }

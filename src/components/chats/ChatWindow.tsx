@@ -33,7 +33,9 @@ export function ChatWindow({ conversation, messages, onBack, onSendMessage,onDel
 
 
   const currentUserId = useSelector((state: RootState) => state.auth.user?.id);
-
+    console.log("typeof converstaion sender id", typeof conversation.sender?.id)
+    console.log("typeof converstaion receiver id", typeof conversation.receiver?.id)
+    console.log("typeof currentUserId", typeof currentUserId)
   const displayName =
     conversation.group?.name ||
     (currentUserId === conversation.receiver?.id
