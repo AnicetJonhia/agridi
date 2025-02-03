@@ -1,37 +1,31 @@
 import CryptoJS from 'crypto-js';
 
-const SECRET_KEY =  import.meta.env.VITE_SECRET_KEY || 'my-secret-key';  // Utilisation de la variable d'environnement
+const SECRET_KEY = import.meta.env.VITE_SECRET_KEY;
 
-export const encryptData = (data: string): string => {
+export const encryptData = (data: string | object) => {
   try {
-    // Vérifie si data est bien une chaîne
-    if (typeof data !== 'string') {
-      throw new Error('Data must be a string');
-    }
-    const encrypted = CryptoJS.AES.encrypt(data, SECRET_KEY).toString();
-    console.log("Encrypted data:", encrypted);
+    const dataToEncrypt = typeof data === 'object' ? JSON.stringify(data) : data;
+    const encrypted = CryptoJS.AES.encrypt(dataToEncrypt, SECRET_KEY).toString();
     return encrypted;
   } catch (error) {
-    console.error('Encryption failed:', error);
-    return '';
+    console.error("Encryption Error: ", error);
+    return null; // Retourner null en cas d'erreur
   }
 };
 
-export const decryptData = (encryptedData: string): string => {
+export const decryptData = (data: string) => {
   try {
+    const bytes = CryptoJS.AES.decrypt(data, SECRET_KEY);
+    const decryptedData = bytes.toString(CryptoJS.enc.Utf8);
 
-    if (typeof encryptedData !== 'string') {
-      throw new Error('Encrypted data must be a string');
+    // Si la décryption échoue ou renvoie un résultat vide
+    if (!decryptedData) {
+      console.error("Decryption Error: Unable to decrypt the token.");
+      return null;
     }
-    const bytes = CryptoJS.AES.decrypt(encryptedData, SECRET_KEY);
-    const decrypted = bytes.toString(CryptoJS.enc.Utf8);
-    if (!decrypted) {
-      throw new Error('Decryption failed, result is empty');
-    }
-    console.log("Decrypted data:", decrypted);
-    return decrypted;
+    return decryptedData;
   } catch (error) {
-    console.error('Decryption failed:', error);
-    return '';
+    console.error("Decryption Error: ", error);
+    return null;
   }
 };

@@ -21,11 +21,13 @@ const authSlice = createSlice({
             state.isAuthenticated = true;
             state.user = action.payload.user;
             state.token = action.payload.token;
+
         },
         logout(state) {
             state.isAuthenticated = false;
             state.user = null;
             state.token = null;
+
         },
         registerSuccess(state, action: PayloadAction<{ user: Record<string, unknown>; token: string }>) {
             state.isAuthenticated = true;

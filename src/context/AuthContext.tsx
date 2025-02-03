@@ -32,9 +32,9 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // Initial state
 const initialState: AuthState = {
-    isAuthenticated: !!localStorage.getItem('token'), // Check token in localStorage
+    isAuthenticated: false,
     user: null,
-    token: localStorage.getItem('token'), // Load token from localStorage
+    token: null,
 };
 
 // Reducer function
@@ -49,8 +49,8 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
                 token: action.payload?.token || null,
             };
         case 'LOGOUT':
-            localStorage.removeItem('token'); // Remove token on logout
-            return initialState; // Reset to initial state on logout
+
+            return initialState;
         default:
             return state;
     }
@@ -70,8 +70,7 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
         try {
             const data = await login(credentials);
             if (data.token) {
-                localStorage.setItem('token', data.token);
-                localStorage.setItem('userId', data.user_id);
+
 
                 dispatch({
                     type: 'LOGIN_SUCCESS',
@@ -94,8 +93,7 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
         try {
             const data = await register(userData);
             if (data.token) {
-                localStorage.setItem('token', data.token); // Store token in localStorage
-                localStorage.setItem('userId', data.user.id);
+
                 dispatch({ type: 'REGISTER_SUCCESS', payload: data });
                 reduxDispatch(registerSuccess({ user: { id: data.user.id, role: data.user.role }, token: data.token }));
             }

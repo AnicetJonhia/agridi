@@ -7,26 +7,42 @@ import { encryptData, decryptData } from "@/utils/cryptoUtils";
 
 const encryptTransform = createTransform(
   (inboundState, key) => {
-    if (key === 'auth' && inboundState.token) {
-      return {
-        ...inboundState,
-        token: encryptData(inboundState.token)
-      };
+    if (key === 'auth') {
+
+      if (inboundState.token) {
+        return {
+          ...inboundState,
+          token: encryptData(inboundState.token),
+        };
+      }
+    } else if (key === 'token' && inboundState) {
+
+      return encryptData(inboundState);
     }
+
     return inboundState;
   },
+
   (outboundState, key) => {
-    if (key === 'auth' && outboundState.token) {
+
+
+    if (key === 'auth' && outboundState && outboundState.token) {
       const decryptedToken = decryptData(outboundState.token);
       return {
         ...outboundState,
-        token: decryptedToken ? decryptedToken : null
+        token: decryptedToken ? decryptedToken : null,
       };
+    } else if (key === 'token' && outboundState) {
+      const decryptedToken = decryptData(outboundState);
+      return decryptedToken || null;
     }
+
     return outboundState;
   },
-  { whitelist: ['auth'] }
 );
+
+
+
 
 const persistConfig = {
   key: 'root',
