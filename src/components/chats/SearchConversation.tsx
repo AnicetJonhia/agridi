@@ -2,10 +2,13 @@ import React, { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { useSelector } from 'react-redux';
+import { RootState } from '@/stores';
+
 
 export function SearchConversation({ conversations, onSelectConversation, onClose }) {
   const [searchTerm, setSearchTerm] = useState("");
-   const currentUserId = Number(localStorage.getItem("userId"));
+   const currentUserId = useSelector((state: RootState) => state.auth.user?.id);
 
   const filteredConversations = conversations.filter((conversation) => {
     const displayName =

@@ -15,7 +15,7 @@ interface AuthAction {
     type: 'LOGIN_SUCCESS' | 'LOGOUT' | 'REGISTER_SUCCESS' | 'SET_USER';
     payload?: {
         user?: Record<string, unknown>;
-        token?: string;d
+        token?: string;
     };
 }
 
@@ -72,6 +72,7 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
             if (data.token) {
                 localStorage.setItem('token', data.token);
                 localStorage.setItem('userId', data.user_id);
+
                 dispatch({
                     type: 'LOGIN_SUCCESS',
                     payload: data

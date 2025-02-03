@@ -8,6 +8,9 @@ import SpecificGroupProfile from "@/components/chats/chat-window/chat-header/Spe
 import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
 import Swal from "sweetalert2";
 import { deleteConversation } from "@/services/chats-api.tsx";
+import { useSelector } from 'react-redux';
+import { RootState } from '@/stores';
+
 
 interface ChatHeaderProps {
   displayName: string;
@@ -22,6 +25,7 @@ interface ChatHeaderProps {
 
 const ChatHeader: React.FC<ChatHeaderProps> = ({ displayName, displayPhoto, userId, groupId, onBack, refreshConversations,
   setRefreshConversations }) => {
+    const token = useSelector((state: RootState) => state.auth.token);
   const [isUserDialogOpen, setUserDialogOpen] = useState(false);
   const [isGroupDialogOpen, setGroupDialogOpen] = useState(false);
   const { specificUser, fetchSpecificUser } = useUserStore();
@@ -29,7 +33,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ displayName, displayPhoto, user
 
 
   const handleDeleteConversation = async () => {
-  const token = localStorage.getItem("token");
+
   if (!token) return;
 
 
@@ -97,7 +101,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({ displayName, displayPhoto, user
 
   const handleOpenUserDialog = async () => {
     if (userId) {
-      await fetchSpecificUser(userId);
+      await fetchSpecificUser(token, userId);
       setUserDialogOpen(true);
     }
   };

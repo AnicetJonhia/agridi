@@ -3,7 +3,8 @@ import ChatHeader from "./chat-window/ChatHeader";
 import MessageInput from "./chat-window/MessageInput"
 import MessageList from "./chat-window/MessageList";
 import {Message} from "@/types/chat-type";
-
+import { useSelector } from 'react-redux';
+import { RootState } from '@/stores';
 
 interface Conversation {
   id: number;
@@ -31,7 +32,7 @@ export function ChatWindow({ conversation, messages, onBack, onSendMessage,onDel
   setRefreshConversations, }: ChatWindowProps) {
 
 
-  const currentUserId = Number(localStorage.getItem("userId"));
+  const currentUserId = useSelector((state: RootState) => state.auth.user?.id);
 
   const displayName =
     conversation.group?.name ||

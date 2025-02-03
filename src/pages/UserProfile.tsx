@@ -23,6 +23,8 @@ import {Dialog, DialogContent, DialogHeader, DialogTitle} from "@/components/ui/
 import {useToast} from "@/hooks/use-toast.ts";
 import {Toaster} from "@/components/ui/toaster.tsx";
 import {Drawer, DrawerClose, DrawerContent} from "@/components/ui/drawer.tsx";
+import { useSelector } from 'react-redux';
+import { RootState } from '@/stores';
 
 interface UserProfileProps {
     isOpen: boolean;
@@ -31,6 +33,7 @@ interface UserProfileProps {
 
 const UserProfile: React.FC<UserProfileProps> = ({isOpen, onClose}) => {
   const { user, fetchUserProfile, updateUserProfile } = useUserStore();
+   const token = useSelector((state: RootState) => state.auth.token);
   const [isEditing, setIsEditing] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { toast } = useToast();
@@ -65,7 +68,9 @@ const UserProfile: React.FC<UserProfileProps> = ({isOpen, onClose}) => {
 
   useEffect(() => {
     const fetchProfile = async () => {
-      await fetchUserProfile();
+      if (token) {
+        fetchUserProfile(token);
+      }
     };
     fetchProfile();
 
@@ -101,7 +106,9 @@ const UserProfile: React.FC<UserProfileProps> = ({isOpen, onClose}) => {
       updatedData.append('profile_picture', tempProfilePicture);
 
       try {
-        await updateUserProfile(updatedData);
+        if (token) {
+          await updateUserProfile(token, updatedData);
+        }
         setFormData({ ...formData, profile_picture: tempProfilePicture }); // Update the profile picture in formData
         setIsDialogOpen(false);
         toast({
@@ -141,7 +148,9 @@ const UserProfile: React.FC<UserProfileProps> = ({isOpen, onClose}) => {
       });
 
       try {
-        await updateUserProfile(updatedData);
+        if (token) {
+          await updateUserProfile(token, updatedData);
+        }
         setIsEditing(false);
         toast({
           title: "Success",

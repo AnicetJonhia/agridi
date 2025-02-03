@@ -1,10 +1,13 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
 import { useState } from "react";
+import { useSelector } from 'react-redux';
+import { RootState } from '@/stores';
+
 
 export function ConversationList({ conversations, onSelectConversation }) {
     const [selectedConversationId, setSelectedConversationId] = useState(null);
-    const currentUserId  = Number(localStorage.getItem("userId"));
+    const currentUserId  = useSelector((state: RootState) => state.auth.user?.id);
 
     if (!conversations) {
         return <div>No conversations available</div>;

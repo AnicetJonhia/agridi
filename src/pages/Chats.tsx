@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { SearchConversation } from "@/components/chats/SearchConversation.tsx";
 import useUserStore from '@/stores/userStore';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/stores';
 
 import { SearchUser } from "@/components/chats/SearchUser";
 import SpecificUserDialog from "@/components/chats/SpecifcUserDialog";
@@ -18,6 +20,8 @@ import {Toaster} from "@/components/ui/toaster.tsx";
 import { useToast } from "@/hooks/use-toast.ts";
 
 export default function Chat() {
+     const token = useSelector((state: RootState) => state.auth.token);
+     const currentUserId = useSelector((state: RootState) => state.auth.user?.id);
   const [selectedConversation, setSelectedConversation] = useState(null);
   const [showConversationList, setShowConversationList] = useState(true);
   const [messages, setMessages] = useState([]);
@@ -37,11 +41,15 @@ export default function Chat() {
     const fetchProfile = async () => {
       await fetchAllUsers();
     };
-    fetchProfile();
+    if (token) {
+      fetchProfile(token);
+    }
   }, []);
 
   const handleSelectUser = (user) => {
-    fetchSpecificUser(user.id);
+    if (token) {
+        fetchSpecificUser(token , user.id);
+    }
     setSpecificUserDialogOpen(true);
   };
 
@@ -66,7 +74,7 @@ export default function Chat() {
       return;
     }
 
-    const token = localStorage.getItem("token");
+
     if (token) {
       try {
         const selectedUsers = selectedMembers
@@ -87,7 +95,7 @@ export default function Chat() {
   };
 
   const fetchConversations = async () => {
-    const token = localStorage.getItem("token");
+
     if (token) {
       try {
         const fetchedConversations = await getConversations(token);
@@ -108,8 +116,9 @@ export default function Chat() {
       const fetchChatHistory = async () => {
         if (selectedConversation) {
           try {
-            const token = localStorage.getItem("token");
-            const currentUserId = Number(localStorage.getItem("userId"));
+
+            // const currentUserId = Number(localStorage.getItem("userId"));
+
             const isGroupConversation = Boolean(selectedConversation.group);
             const conversationId = isGroupConversation
               ? selectedConversation.group?.id
@@ -144,13 +153,13 @@ export default function Chat() {
 
 
   const handleSendMessage = async (content, files) => {
-      const token = localStorage.getItem("token");
+
       if (!token) {
         console.error("Token not found");
         return;
       }
 
-      const currentUserId = Number(localStorage.getItem("userId"));
+      // const currentUserId = Number(localStorage.getItem("userId"));
       const isGroupConversation = Boolean(selectedConversation?.group);
       const receiverId = selectedConversation
         ? currentUserId === selectedConversation.receiver?.id
@@ -232,7 +241,7 @@ export default function Chat() {
 
 
   const handleDeleteMessage = async (messageId: number) => {
-      const token = localStorage.getItem("token");
+
       if (!token) {
         console.error("Token not found");
         return;
@@ -250,7 +259,7 @@ export default function Chat() {
 
 
     const handleDeleteFile = async (messageId: number, fileId: number) => {
-          const token = localStorage.getItem("token");
+
           if (!token) {
             console.error("Token not found");
             return;
@@ -265,7 +274,7 @@ export default function Chat() {
     };
 
     const handleUpdateMessage = async (messageId: number, content: string) => {
-        const token = localStorage.getItem("token");
+
         if (!token) {
             console.error("Token not found");
             return;
@@ -281,7 +290,7 @@ export default function Chat() {
 
 
    const handleShareMessage = async (message: Message, user: any, group: any) => {
-      const token = localStorage.getItem("token");
+
       if (!token) {
         console.error("Token not found");
         return;

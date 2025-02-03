@@ -5,6 +5,9 @@ import {Mail, MapPin, Phone, Linkedin, Globe, Info, ChevronRight, MessageCircleO
 import { getConversations, deleteConversation } from "@/services/chats-api.tsx";
 import { useEffect } from "react";
 import Swal from "sweetalert2";
+import { RootState } from '@/stores';
+import { useSelector } from 'react-redux';
+
 
 const SpecificUserProfile = ({
   user,
@@ -13,6 +16,8 @@ const SpecificUserProfile = ({
   refreshConversations,
   setRefreshConversations,
 }) => {
+
+    const token = useSelector((state: RootState) => state.auth.token);
   if (!user) return null;
 
   const roleMap = {
@@ -24,7 +29,7 @@ const SpecificUserProfile = ({
   useEffect(() => {
     const fetchConversations = async () => {
       if (refreshConversations) {
-        const token = localStorage.getItem("token");
+
         if (token) {
           await getConversations(token);
           setRefreshConversations(false);
@@ -32,10 +37,10 @@ const SpecificUserProfile = ({
       }
     };
     fetchConversations();
-  }, [refreshConversations, setRefreshConversations]);
+  }, [refreshConversations]);
 
   const handleDeleteConversation = async () => {
-  const token = localStorage.getItem("token");
+
   const type = "private";
   if (!token) return;
 

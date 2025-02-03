@@ -32,6 +32,8 @@ import useChatStore from "@/stores/chatStore.ts";
 import {Card} from "@/components/ui/card.tsx";
 import {Checkbox} from "@/components/ui/checkbox.tsx";
 import useUserStore from "@/stores/userStore.ts";
+import { useSelector } from 'react-redux';
+import { RootState } from '@/stores';
 
 
 const SpecificGroupProfile = ({ group, open, onClose, refreshConversations, setRefreshConversations }) => {
@@ -42,6 +44,7 @@ const SpecificGroupProfile = ({ group, open, onClose, refreshConversations, setR
   const {users} = useUserStore();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedMembers, setSelectedMembers] = useState<number[]>([]);
+   const token = useSelector((state: RootState) => state.auth.token);
 
 
 
@@ -116,7 +119,7 @@ const SpecificGroupProfile = ({ group, open, onClose, refreshConversations, setR
   useEffect(() => {
     const fetchConversations = async () => {
       if (refreshConversations) {
-        const token = localStorage.getItem("token");
+
         if (token) {
           await getConversations(token);
           setRefreshConversations(false);
@@ -137,7 +140,7 @@ const SpecificGroupProfile = ({ group, open, onClose, refreshConversations, setR
 
   const handleUpdateGroupName = () => {
     if (!groupName) return;
-    const token = localStorage.getItem("token");
+
     if (!token) return;
     try{
       const updatedGroupName = { name: groupName };
@@ -189,7 +192,7 @@ const SpecificGroupProfile = ({ group, open, onClose, refreshConversations, setR
   };
 
   const handleUpdateGroupPhoto = async () => {
-    const token = localStorage.getItem("token");
+
     if (!token) return;
 
     if (temporaryGroupPhoto) {
@@ -240,7 +243,7 @@ const SpecificGroupProfile = ({ group, open, onClose, refreshConversations, setR
   };
 
   const handleLeaveGroup = async () => {
-    const token = localStorage.getItem("token");
+
     if (!token) return;
 
     onClose();
@@ -299,7 +302,7 @@ const SpecificGroupProfile = ({ group, open, onClose, refreshConversations, setR
   };
 
   const handleDeleteConversation = async () => {
-    const token = localStorage.getItem("token");
+
     if (!token) return;
     onClose();
     const result = await Swal.fire({
@@ -357,7 +360,7 @@ const SpecificGroupProfile = ({ group, open, onClose, refreshConversations, setR
 
 
   const handleRemoveMemberFromGroup = async (memberId: number) => {
-  const token = localStorage.getItem("token");
+
   if (!token) return;
   onClose();
   const result = await Swal.fire({
@@ -415,7 +418,7 @@ const SpecificGroupProfile = ({ group, open, onClose, refreshConversations, setR
 };
 
   const handleAddMembers = async (memberIds: number[] = selectedMembers) => {
-    const token = localStorage.getItem("token");
+
     if (!token) return;
     onClose();
     try {

@@ -1,3 +1,108 @@
+// import { create } from 'zustand';
+// import {
+//   getUserProfile,
+//   updateUserProfile as updateUserProfileAPI,
+//   getAllUsers,
+//   getSpecificUSer
+// } from '@/services/user-api.tsx';
+//
+// interface UserProfile {
+//   id: number;
+//   username: string;
+//   first_name: string;
+//   last_name: string;
+//   email: string;
+//   phone_number: string;
+//   address: string;
+//   bio: string;
+//   website: string;
+//   role: string;
+//   profile_picture?: string;
+//   date_of_birth?: string;
+//   alternate_email?: string;
+//   linkedin?: string;
+//   is_active?: boolean;
+// }
+//
+// interface UserState {
+//   user: UserProfile | null;
+//   users: UserProfile[]; // Ajout de la liste des utilisateurs
+//   specificUser: UserProfile | null;
+//   token: string | null;
+//   isAuthenticated: boolean;
+//   fetchUserProfile: () => Promise<void>;
+//   updateUserProfile: (profileData: FormData) => Promise<void>;
+//   fetchAllUsers: () => Promise<void>;
+//   fetchSpecificUser: (userId: number) => Promise<void>;
+// }
+//
+// const useUserStore = create<UserState>((set) => ({
+//   user: null,
+//   users: [],
+//   specificUser: null,
+//   token: localStorage.getItem('token'),
+//   isAuthenticated: !!localStorage.getItem('token'),
+//
+//   fetchUserProfile: async () => {
+//     const token = localStorage.getItem('token');
+//     if (!token) return;
+//
+//     try {
+//       const userProfile = await getUserProfile(token);
+//       set({ user: userProfile, isAuthenticated: true });
+//     } catch (error) {
+//       console.error('Failed to fetch user profile:', error);
+//     }
+//   },
+//
+//   updateUserProfile: async (profileData: FormData) => {
+//     const token = localStorage.getItem('token');
+//     if (!token) {
+//       console.error('No token available to update profile.');
+//       return;
+//     }
+//
+//     try {
+//       const updatedProfile = await updateUserProfileAPI(token, profileData);
+//       set({ user: updatedProfile });
+//     } catch (error) {
+//       console.error('Failed to update user profile:', error);
+//     }
+//   },
+//
+//   fetchAllUsers: async () => { // Correction du nom de la méthode
+//     const token = localStorage.getItem('token');
+//     if (!token) return;
+//
+//     try {
+//       const users = await getAllUsers(token);
+//
+//       set({ users : users, isAuthenticated: true });
+//
+//
+//     } catch (error) {
+//       console.error('Failed to fetch users:', error);
+//     }
+//   },
+//
+//   fetchSpecificUser: async (userId: number) => { // Implémentation de la méthode
+//     const token = localStorage.getItem('token');
+//     if (!token) return;
+//
+//     try {
+//       const specificUser = await getSpecificUSer(token, userId);
+//       set({ specificUser });
+//     } catch (error) {
+//       console.error('Failed to fetch specific user profile:', error);
+//     }
+//   },
+//
+// }));
+//
+// export default useUserStore;
+
+
+
 import { create } from 'zustand';
 import {
   getUserProfile,
@@ -26,25 +131,22 @@ interface UserProfile {
 
 interface UserState {
   user: UserProfile | null;
-  users: UserProfile[]; // Ajout de la liste des utilisateurs
+  users: UserProfile[];
   specificUser: UserProfile | null;
-  token: string | null;
   isAuthenticated: boolean;
-  fetchUserProfile: () => Promise<void>;
-  updateUserProfile: (profileData: FormData) => Promise<void>;
-  fetchAllUsers: () => Promise<void>;
-  fetchSpecificUser: (userId: number) => Promise<void>;
+  fetchUserProfile: (token: string) => Promise<void>;
+  updateUserProfile: (token: string, profileData: FormData) => Promise<void>;
+  fetchAllUsers: (token: string) => Promise<void>;
+  fetchSpecificUser: (token: string, userId: number) => Promise<void>;
 }
 
 const useUserStore = create<UserState>((set) => ({
   user: null,
   users: [],
   specificUser: null,
-  token: localStorage.getItem('token'),
-  isAuthenticated: !!localStorage.getItem('token'),
+  isAuthenticated: false,
 
-  fetchUserProfile: async () => {
-    const token = localStorage.getItem('token');
+  fetchUserProfile: async (token: string) => {
     if (!token) return;
 
     try {
@@ -55,8 +157,7 @@ const useUserStore = create<UserState>((set) => ({
     }
   },
 
-  updateUserProfile: async (profileData: FormData) => {
-    const token = localStorage.getItem('token');
+  updateUserProfile: async (token: string, profileData: FormData) => {
     if (!token) {
       console.error('No token available to update profile.');
       return;
@@ -70,23 +171,18 @@ const useUserStore = create<UserState>((set) => ({
     }
   },
 
-  fetchAllUsers: async () => { // Correction du nom de la méthode
-    const token = localStorage.getItem('token');
+  fetchAllUsers: async (token: string) => {
     if (!token) return;
 
     try {
       const users = await getAllUsers(token);
-
-      set({ users : users, isAuthenticated: true });
-
-
+      set({ users, isAuthenticated: true });
     } catch (error) {
       console.error('Failed to fetch users:', error);
     }
   },
 
-  fetchSpecificUser: async (userId: number) => { // Implémentation de la méthode
-    const token = localStorage.getItem('token');
+  fetchSpecificUser: async (token: string, userId: number) => {
     if (!token) return;
 
     try {
@@ -96,7 +192,7 @@ const useUserStore = create<UserState>((set) => ({
       console.error('Failed to fetch specific user profile:', error);
     }
   },
-
 }));
 
 export default useUserStore;
+

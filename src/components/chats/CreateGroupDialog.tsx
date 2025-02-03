@@ -1,14 +1,11 @@
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
 import {Label} from "@/components/ui/label";
-import {createGroup} from "@/services/chats-api";
-import useUserStore from "@/stores/userStore";
 import {Badge} from "@/components/ui/badge";
 import {Images, X} from "lucide-react";
 import {User} from "@/types/chat-type.ts";
 import {Avatar, AvatarFallback} from "@/components/ui/avatar";
-import { useToast } from "@/hooks/use-toast.ts";
 import {Toaster} from "@/components/ui/toaster.tsx";
 
 
