@@ -14,6 +14,7 @@ const Seasons = () => {
       <p>User Role: {user?.role}</p>
 
       <p>Token: {token}</p>
+
     </div>
   );
 };

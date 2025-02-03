@@ -236,7 +236,7 @@ export const sendMessage = async (
   token: string,
   files?: File[]
 ): Promise<Message> => {
-  setAuthToken(token); // Ensure the token is set
+  setAuthToken(token);
 
   try {
     const formData = new FormData();

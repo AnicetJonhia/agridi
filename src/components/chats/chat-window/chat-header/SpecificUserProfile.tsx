@@ -18,6 +18,7 @@ const SpecificUserProfile = ({
 }) => {
 
     const token = useSelector((state: RootState) => state.auth.token);
+     if (!token) return;
   if (!user) return null;
 
   const roleMap = {
@@ -42,7 +43,7 @@ const SpecificUserProfile = ({
   const handleDeleteConversation = async () => {
 
   const type = "private";
-  if (!token) return;
+
 
   onClose();
 

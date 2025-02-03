@@ -94,7 +94,7 @@ const SpecificGroupProfile = ({ group, open, onClose, refreshConversations, setR
 
 
         const getSpecificGroup = async () => {
-          await fetchSpecificGroup(group.id);
+          await fetchSpecificGroup(group?.id);
         };
         getSpecificGroup();
 

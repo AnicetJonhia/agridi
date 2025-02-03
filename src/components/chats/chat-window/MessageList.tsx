@@ -187,7 +187,7 @@ const MessageList: React.FC<MessageListProps> = ({ messages, currentUserId, conv
           );
         }
 
-        const isCurrentUserSender = msg.sender.id === currentUserId;
+        const isCurrentUserSender = msg?.sender?.id === currentUserId;
 
         acc.push(
           <div
