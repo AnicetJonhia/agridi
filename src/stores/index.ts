@@ -8,7 +8,6 @@ import { encryptData, decryptData } from "@/utils/cryptoUtils";
 const encryptTransform = createTransform(
   (inboundState, key) => {
     if (key === 'auth') {
-
       if (inboundState.token) {
         return {
           ...inboundState,
@@ -16,7 +15,6 @@ const encryptTransform = createTransform(
         };
       }
     } else if (key === 'token' && inboundState) {
-
       return encryptData(inboundState);
     }
 
@@ -47,7 +45,7 @@ const encryptTransform = createTransform(
 const persistConfig = {
   key: 'root',
   storage,
-  transforms: [encryptTransform],
+  // transforms: [encryptTransform],
 };
 
 const persistedReducer = persistReducer(persistConfig, authReducer);

@@ -29,12 +29,9 @@ const SpecificUserProfile = ({
 
   useEffect(() => {
     const fetchConversations = async () => {
-      if (refreshConversations) {
-
-        if (token) {
-          await getConversations(token);
-          setRefreshConversations(false);
-        }
+      if (refreshConversations && token) {
+        await getConversations(token);
+        setRefreshConversations(false);
       }
     };
     fetchConversations();
